@@ -15,8 +15,8 @@ const SongList: React.FC<{userData: UserData}> = ({userData}) =>{
         wide_racks: false
     });
 
-    const [artistBlocks, setArtistBlocks] = useState<any[]>([]);
-    const [letterButtons, setLetterButtons] = useState<any[]>([]);
+    const [artistBlocks, setArtistBlocks] = useState<JSX.Element[]>([]);
+    const [letterButtons, setLetterButtons] = useState<JSX.Element[]>([]);
 
     const [songListData, setSongListData] = useState<SongListEntry[]>([]);
     const [filteredSongListData, setFilteredSongListData] = useState<SongListEntry[]>([]);
@@ -136,8 +136,8 @@ const SongList: React.FC<{userData: UserData}> = ({userData}) =>{
             let blockCount = 0;
             let curBlock: SongListEntry[] = [];
             let prevFirstLetter = artistList[0][0];
-            let curBlocks = [];
-            let letterArray = [];
+            let curBlocks: {key: number, artist: string, songs: SongListEntry[]}[] = [];
+            let letterArray: string[] = [];
 
             setArtistBlocks([]);
             
@@ -167,7 +167,6 @@ const SongList: React.FC<{userData: UserData}> = ({userData}) =>{
                 }else if(curBlock[0]){
                     const blockCopy = [...curBlock];
                     const countCopy = blockCount;
-                    // setArtistBlocks(prevBlocks => [...prevBlocks, <ArtistItem key={countCopy} artist={curArtist} songs={blockCopy}/>]);
                     curBlocks.push({key: countCopy, artist: curArtist, songs: blockCopy});
                     artistNumber++;
                     blockCount++;
@@ -207,14 +206,16 @@ const SongList: React.FC<{userData: UserData}> = ({userData}) =>{
                     {letterButtons}
                 </div>
             </div>
-            {userData.is_admin && <button onClick={addClick}>Add</button>}
-            {showAddField && 
-            <div className="list-item">
-                <input type='text' name='artist' onChange={newSongHandleChangeEvent} placeholder='Artist' value={newSongData.artist} />
-                <input type='text' name='song_name' onChange={newSongHandleChangeEvent} placeholder='Song name' value={newSongData.song_name} />
-                <input type='text' name='date' onChange={newSongHandleChangeEvent} placeholder='Date' value={newSongData.date} />
-                <input type='text' name='tag' onChange={newSongHandleChangeEvent} placeholder='Tag' value={newSongData.tag} />
-            </div>}
+            <div className="add-block">
+                {userData.is_admin && <button onClick={addClick}>Add</button>}
+                {showAddField && 
+                <div className="list-item">
+                    <input type='text' name='artist' onChange={newSongHandleChangeEvent} placeholder='Artist' value={newSongData.artist} />
+                    <input type='text' name='song_name' onChange={newSongHandleChangeEvent} placeholder='Song name' value={newSongData.song_name} />
+                    <input type='text' name='date' onChange={newSongHandleChangeEvent} placeholder='Date' value={newSongData.date} />
+                    <input type='text' name='tag' onChange={newSongHandleChangeEvent} placeholder='Tag' value={newSongData.tag} />
+                </div>}
+            </div>
             <div className='song-blocks'>
                 { artistBlocks } 
             </div>

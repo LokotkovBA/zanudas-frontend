@@ -1,0 +1,141 @@
+.queue-list{
+    grid-column: 1/-1;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+}
+
+.pleb-view{
+    grid-column: 5 / 9;
+}
+
+.order-button{
+    margin: .5em 0;
+}
+
+.chad-view{
+    grid-column: 3 / 10;
+    justify-items: start;
+}
+
+.queue{
+    justify-content: space-between;
+}
+.mod-view{
+    grid-column: 2/-1;
+    background-color: #38023B;
+    border: solid #38023B .1em;
+    border-radius: 1em;
+    display: grid;
+    margin-top: 1em;
+    /* align-items: center; */
+    /* justify-items: start; */
+    padding: .8em;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(5, .5fr);
+    gap: .2em;
+}
+
+.mod-view:hover {
+    border: solid #F2AF29 .1em;
+}
+
+
+
+.moved{
+    border-color: #DE0D92;
+}
+
+.list-item b{
+    color: #DE0D92;
+}
+
+.reaction{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    justify-items: end;
+    justify-self: start;
+    gap: .7em;
+}
+
+.reaction > p{
+    font-size: 1.5rem;
+}
+
+.reaction-buttons{
+    display: grid;
+    gap: .1em;
+}
+
+.reaction-buttons > img{
+    cursor: pointer;
+}
+
+.mod-view > *{
+    color: #fff;
+}
+.queue-num{
+    color: #F2AF29;
+    grid-column: 1/4;
+    align-self: center;
+    font-size: 1.1rem;
+}
+
+.mod-view > input{
+    font-size: 1rem;
+    background-color: #33002C;
+    border: none;
+    padding: .2em;
+    margin-top: .5em;
+    width: 15ch;
+}
+
+.mod-view > textarea{
+    font-size: 1rem;
+    background-color: #33002C;
+    border: none;
+    padding: .2em;
+    grid-column: 1/3;
+    grid-row: 4/-1;
+}
+.mod-view .button-group{
+    grid-column: -1;
+
+    display: flex;
+}
+
+
+.checkboxes{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+    align-items: center;
+}
+
+.last-block{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: end;
+}
+
+
+@media (width < 100em) {
+    .pleb-view{
+        grid-column: 4 / 10;
+    }
+}
+
+@media (width < 55em) {
+    .pleb-view{
+        grid-column: 3 / 11;
+    }
+    .chad-view{
+        grid-column: 3 / 11;
+    }
+}
+
+@media (width < 30em) {
+    .pleb-view{
+        grid-column: 2 / 12;
+    }
+}

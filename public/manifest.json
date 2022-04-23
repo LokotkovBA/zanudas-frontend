@@ -1,0 +1,15 @@
+{
+  "short_name": "Kalny App",
+  "name": "Queue and Song List for Zanuda's kalny streams",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "36x36",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#23001E"
+}

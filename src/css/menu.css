@@ -1,0 +1,74 @@
+nav{
+    background-color: #33002C;
+    margin: 0;
+    color: white;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 30px;
+}
+
+button{
+    margin: 1em 0;
+    margin-right: .7em;
+    padding: .3em;
+    color: #FFF;
+    background-color: #D81159;
+    border: solid 2px #D81159;
+    font-size: 1.125rem;
+    border-radius: 10px;
+    font-weight: 510;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.pressed{
+    background-color: #F2AF29;
+    border-color: #F2AF29;
+    color: #23001E;
+}
+
+button:hover{
+    border-color: #F2AF29;
+    
+}
+
+.pressed:hover{
+    border-color: #D81159;
+}
+
+
+.label{
+    color: #F2AF29;
+}
+
+.login-btn{
+    background-color: #DE0D92;
+    border-color: #DE0D92;
+    margin-left: auto;
+    
+}
+
+button img{
+    padding: 0;
+    margin-left: .3em;
+}
+
+.user-info{
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.user-info img{
+    width: 1.5em;
+    border-radius: 1em;
+    border: solid .1em #DE0D92;
+}
+
+.user-info p{
+    text-align: center;
+    font-size: 1.125rem;
+    color: #F2AF29;
+}

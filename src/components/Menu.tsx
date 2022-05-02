@@ -11,6 +11,8 @@ const logoutLink = "http://localhost:5100/auth/logout";
 const daLink = "http://localhost:5300/da/auth";
 const daStart = "http://localhost:5300/da/start";
 const daStop = "http://localhost:5300/da/stop";
+const adminGetTokens = "http://localhost:5100/admin/getToken";
+const adminGetMods = "http://localhost:5100/admin/getMods";
 
 
 
@@ -31,6 +33,8 @@ const Menu: React.FC<{userData: UserData}> = ({userData}) =>{
             {userData.is_admin &&<button  onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
             {userData.is_admin &&<button  onClick={() => window.location.href = daStart}>Start<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
             {userData.is_admin && <button  onClick={() => window.location.href = daStop}>Stop<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
+            {userData.is_admin && <button  onClick={() => window.location.href = adminGetTokens}>Get Token</button>}
+            {userData.is_admin && <button  onClick={() => window.location.href = adminGetMods}>Get Mods</button>}
             {userData.display_name &&<div className="user-info">
                 <img src={userData.profile_image_url} alt='user avatar'/>
                 <p>{userData.display_name}</p>

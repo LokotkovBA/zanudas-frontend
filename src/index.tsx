@@ -5,12 +5,12 @@ import './css/index.css';
 
 
 const root = ReactDOM.createRoot(
-  document.querySelector('#root') as HTMLElement
+    document.querySelector('#root') as HTMLElement
 );
 root.render(
-  // <React.StrictMode>
+    // <React.StrictMode>
     <BrowserRouter>
-      <App />
+        <App />
     </BrowserRouter>
-  // </React.StrictMode>
+    // </React.StrictMode>
 );

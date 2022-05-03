@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Link, useLocation} from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { UserData } from '../utils/interfaces';
 
 import twitchIconPath from '../icons/twitch.svg';
@@ -17,10 +17,10 @@ const adminGetMods = "http://localhost:5100/admin/getMods";
 
 
 
-const Menu: React.FC<{userData: UserData}> = ({userData}) =>{
+const Menu: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const url = useLocation();
-    
+
     return (
         <nav id='menu'>
             <p className="label">&gt;3</p>
@@ -30,17 +30,17 @@ const Menu: React.FC<{userData: UserData}> = ({userData}) =>{
             <Link to="/songlist" style={{ textDecoration: 'none' }}>
                 <button className={`menu ${url.pathname === '/songlist' && "pressed"}`}>Song list</button>
             </Link>
-            {userData.is_admin &&<button  onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
-            {userData.is_admin &&<button  onClick={() => window.location.href = daStart}>Start<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
-            {userData.is_admin && <button  onClick={() => window.location.href = daStop}>Stop<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
-            {userData.is_admin && <button  onClick={() => window.location.href = adminGetTokens}>Get Token</button>}
-            {userData.is_admin && <button  onClick={() => window.location.href = adminGetMods}>Get Mods</button>}
-            {userData.display_name &&<div className="user-info">
-                <img src={userData.profile_image_url} alt='user avatar'/>
+            {userData.is_admin && <button onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
+            {userData.is_admin && <button onClick={() => window.location.href = daStart}>Start<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
+            {userData.is_admin && <button onClick={() => window.location.href = daStop}>Stop<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
+            {userData.is_admin && <button onClick={() => window.location.href = adminGetTokens}>Get Token</button>}
+            {userData.is_admin && <button onClick={() => window.location.href = adminGetMods}>Get Mods</button>}
+            {userData.display_name && <div className="user-info">
+                <img src={userData.profile_image_url} alt='user avatar' />
                 <p>{userData.display_name}</p>
                 <button className="login-btn" onClick={() => window.location.href = logoutLink}>Log out</button>
             </div>}
-            {!userData.display_name && <button className="login-btn" onClick={() => window.location.href = loginLink}>Login<img src={twitchIconPath} alt="twitch icon" width="20px"/></button>}
+            {!userData.display_name && <button className="login-btn" onClick={() => window.location.href = loginLink}>Login<img src={twitchIconPath} alt="twitch icon" width="20px" /></button>}
         </nav>
     );
 }

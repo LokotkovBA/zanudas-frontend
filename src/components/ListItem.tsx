@@ -1,6 +1,6 @@
 import { SongListEntry } from "../utils/interfaces";
 
-const ListItem: React.FC<{song: SongListEntry}> = ({song}) =>{
+const ListItem: React.FC<{ song: SongListEntry }> = ({ song }) => {
     return (
         <div className="list-item">
             <p className="song-info">{song.song_name}</p>

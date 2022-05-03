@@ -1,6 +1,6 @@
 import headers from "./headers";
 
-export function getRequest(address: string, port: string){
+export function getRequest(address: string, port: string) {
 
     return fetch(`http://localhost:${port}/${address}`, {
         method: "GET",
@@ -9,7 +9,7 @@ export function getRequest(address: string, port: string){
     });
 }
 
-export function postRequest(address: string, port: number | string, body: string){
+export function postRequest(address: string, port: number | string, body: string) {
     return fetch(`http://localhost:${port}/${address}`, {
         method: "POST",
         credentials: "include",

@@ -1,16 +1,14 @@
-
-
-.song-list{
+.song-list {
     grid-column: 4 / 10;
     display: grid;
     grid-template-columns: repeat(10, 1fr);
 }
 
-.song-list > *{
+.song-list>* {
     grid-column: 2 / 10;
 }
 
-.search-bar{
+.search-bar {
     background-color: #23001E;
     border: none;
     color: #fff;
@@ -19,23 +17,24 @@
     margin: .5em 0;
 }
 
-.song-list button{
+.song-list button {
     margin: 0;
     margin-top: .2em;
 }
 
-.artist-block{
+.artist-block {
     margin-top: 1em;
 }
-.song-blocks{
+
+.song-blocks {
     grid-column: 2/10;
 }
 
-.add-block > .list-item{
+.add-block>.list-item {
     flex-wrap: wrap;
 }
 
-.list-item input{
+.list-item input {
     background-color: #33002C;
     border: none;
     color: #fff;
@@ -46,7 +45,7 @@
     padding: .2em;
 }
 
-.list-item{
+.list-item {
     margin: 0;
     margin-top: .5em;
     margin-bottom: .5em;
@@ -60,18 +59,18 @@
     display: flex;
 }
 
-.song-info{
+.song-info {
     margin-right: auto;
 }
 
-.learn-date{
+.learn-date {
     font-size: .6rem;
     text-align: right;
     width: 27ch;
     padding-left: 1em;
 }
 
-.background-menu{
+.background-menu {
     grid-column: 1/ -1;
     background-color: #33002C;
     border-bottom-left-radius: 20px;
@@ -80,7 +79,7 @@
     padding-top: 0;
 }
 
-.top-bar{
+.top-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -88,13 +87,13 @@
     gap: .5em
 }
 
-.top-button{
+.top-button {
     padding: 0;
     border-radius: 2em;
 }
 
 
-.top-button > *{
+.top-button>* {
     margin: 0;
 }
 
@@ -107,23 +106,23 @@
     justify-items: center;
 }
 
-.artist-title{
+.artist-title {
     color: #F2AF29;
     margin-top: .4em;
     font-size: 1.1rem;
 }
 
-.letter-buttons{
-   
+.letter-buttons {
+
     display: grid;
     justify-items: center;
     grid-template-columns: repeat(20, 1fr);
     gap: .5em;
 
-    
+
 }
 
-.letter-buttons a{
+.letter-buttons a {
     background-color: #D81159;
     color: #fff;
     cursor: pointer;
@@ -134,51 +133,53 @@
     border-radius: .5ch;
 }
 
-.letter-buttons a:hover{
+.letter-buttons a:hover {
     background-color: #F2AF29;
     color: #33002C;
-    
+
 }
 
 
 @media (width < 90em) {
-    .letter-buttons{
+    .letter-buttons {
         grid-template-columns: repeat(15, 1fr);
     }
 }
 
 @media (width < 70em) {
-    .song-list{
+    .song-list {
         grid-column: 2 / 12;
-    } 
-    .letter-buttons{
+    }
+
+    .letter-buttons {
         grid-template-columns: repeat(20, 1fr);
     }
 }
 
 @media (width < 60em) {
-    .letter-buttons{
+    .letter-buttons {
         grid-template-columns: repeat(15, 1fr);
     }
 }
 
 @media (width < 45em) {
-    .letter-buttons{
+    .letter-buttons {
         grid-template-columns: repeat(10, 1fr);
     }
 }
 
 @media (width < 30em) {
-    .letter-buttons{
+    .letter-buttons {
         grid-template-columns: repeat(8, 1fr);
     }
 }
 
 @media (width < 25em) {
-    .letter-buttons{
+    .letter-buttons {
         grid-template-columns: repeat(5, 1fr);
     }
-    .song-list{
+
+    .song-list {
         grid-column: 1 / -1;
-    } 
+    }
 }

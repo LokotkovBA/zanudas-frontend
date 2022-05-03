@@ -1,4 +1,4 @@
-nav{
+nav {
     background-color: #33002C;
     margin: 0;
     color: white;
@@ -8,7 +8,7 @@ nav{
     font-size: 30px;
 }
 
-button{
+button {
     margin: 1em 0;
     margin-right: .7em;
     padding: .3em;
@@ -23,51 +23,51 @@ button{
     cursor: pointer;
 }
 
-.pressed{
+.pressed {
     background-color: #F2AF29;
     border-color: #F2AF29;
     color: #23001E;
 }
 
-button:hover{
+button:hover {
     border-color: #F2AF29;
-    
+
 }
 
-.pressed:hover{
+.pressed:hover {
     border-color: #D81159;
 }
 
 
-.label{
+.label {
     color: #F2AF29;
 }
 
-.login-btn{
+.login-btn {
     background-color: #DE0D92;
     border-color: #DE0D92;
     margin-left: auto;
-    
+
 }
 
-button img{
+button img {
     padding: 0;
     margin-left: .3em;
 }
 
-.user-info{
+.user-info {
     display: flex;
     align-items: center;
     margin-left: auto;
 }
 
-.user-info img{
+.user-info img {
     width: 1.5em;
     border-radius: 1em;
     border: solid .1em #DE0D92;
 }
 
-.user-info p{
+.user-info p {
     text-align: center;
     font-size: 1.125rem;
     color: #F2AF29;

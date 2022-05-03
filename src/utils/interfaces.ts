@@ -6,14 +6,14 @@ export interface UserData {
     is_admin: boolean;
 };
 
-export interface Filters{
-    foreign: boolean; 
-    russian: boolean; 
-    ost: boolean; 
+export interface Filters {
+    foreign: boolean;
+    russian: boolean;
+    ost: boolean;
     wide_racks: boolean;
 };
 
-export interface SongListEntry{
+export interface SongListEntry {
     id?: number;
     artist: string;
     song_name: string;
@@ -22,7 +22,7 @@ export interface SongListEntry{
     count: number;
 };
 
-export interface DBSongListEntry{
+export interface DBSongListEntry {
     id: string;
     artist: string;
     song_name: string;
@@ -31,7 +31,7 @@ export interface DBSongListEntry{
     count: string;
 };
 
-export interface DBQueueEntry{
+export interface DBQueueEntry {
     id: string;
     artist: string;
     song_name: string;
@@ -47,7 +47,7 @@ export interface DBQueueEntry{
     classN?: string;
 };
 
-export interface QueueEntry{
+export interface QueueEntry {
     id: number;
     artist: string;
     song_name: string;
@@ -63,12 +63,12 @@ export interface QueueEntry{
     classN?: string;
 };
 
-export interface DBLikesState{
+export interface DBLikesState {
     is_positive: number;
     song_id: string;
 };
 
-export interface LikesState{
+export interface LikesState {
     is_positive: number;
     song_id: number;
 };

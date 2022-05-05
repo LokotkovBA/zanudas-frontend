@@ -14,6 +14,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [queueData, setQueueData] = useState<QueueEntry[]>([]);
     const [queueComponents, setQueueComponents] = useState<JSX.Element[]>([]);
     const [queueLikes, setQueueLikes] = useState<LikesState[]>([]);
+    const [isLive, setIsLive] = useState<boolean>(false);
 
     function getQueue() {
         getRequest('queue/get', '5100')
@@ -205,11 +206,16 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     useEffect(() => {
         getQueue();
         const socket = io(SERVER_URL);
+        socket.on('connected', (data) => {
+            setIsLive(data);
+        });
         socket.on('queue change', (data) => {
             setQueueData(data.songs.map((song: DBQueueEntry) => (queueDBtoData(song))));
             getCurLikes();
         });
-        // socket.on('queue status')
+        socket.on('queue status', (data) => {
+            setIsLive(data);
+        });
         return (() => {
             socket.disconnect();
         })
@@ -236,7 +242,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                     </DragDropContext>
                 </div>
                 :
-                (<div className="pleb-view">
+                (isLive && <div className="pleb-view">
                     {queueComponents}
                 </div>)
             }

@@ -16,12 +16,15 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [queueComponents, setQueueComponents] = useState<JSX.Element[]>([]);
     const [queueLikes, setQueueLikes] = useState<LikesState[]>([]);
     const [isLive, setIsLive] = useState<boolean>(false);
+    const [minDonate, setMinDonate] = useState<number>(0);
 
     function getQueue() {
         getRequest('queue/get', '5100')
             .then(response => response.json())
-            .then(data =>
-                setQueueData(data.songs.map((song: DBQueueEntry) => queueDBtoData(song))));
+            .then(data =>{
+                setQueueData(data.songs.map((song: DBQueueEntry) => queueDBtoData(song)));
+                setMinDonate(data.min_donate);
+            });
     };
 
     const changeQueueEntry = useCallback((entryId: number) => {
@@ -163,7 +166,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 </Draggable>
             ));
         } else {
-            setQueueComponents(queueData.filter(entry => entry.artist).map((entry, index) => {
+            setQueueComponents(queueData.filter(entry => entry.artist).filter(entry => entry.currency === 'RUB' && entry.donate_amount >= minDonate).map((entry, index) => {
                 const curIndex = queueLikes.findIndex(like => like.song_id === entry.id);
                 let curLike = pathToThumbsUpWhite;
                 let curDislike = pathToThumbsDownWhite;
@@ -200,7 +203,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             }
             ))
         }
-    }, [queueData, queueLikes, userData.is_mod, changeQueueEntry, deleteQueueEntry, clickLikeHandler]);
+    }, [queueData, queueLikes, minDonate, userData.is_mod, changeQueueEntry, deleteQueueEntry, clickLikeHandler]);
 
     const SERVER_URL = 'http://localhost:5200';
 
@@ -216,6 +219,9 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         });
         socket.on('queue status', (data) => {
             setIsLive(data);
+        });
+        socket.on('min donate amount changed', (data) => {
+            setMinDonate(data);
         });
         return (() => {
             socket.disconnect();
@@ -249,7 +255,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             }
             {userData.is_admin &&
                 <div className="admin-menu">
-                    <AdminMenu is_admin={userData.is_admin} />
+                    <AdminMenu is_admin={userData.is_admin} min_donate={minDonate} />
                 </div>}
         </div>
     );

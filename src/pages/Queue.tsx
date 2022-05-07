@@ -9,6 +9,7 @@ import pathToThumbsUpWhite from '../icons/thumbs-up-white.svg';
 import pathToThumbsDown from '../icons/thumbs-down.svg';
 import pathToThumbsDownWhite from '../icons/thumbs-down-white.svg';
 import { queueDBtoData } from "../utils/conversions";
+import { AdminMenu } from "../components/AdminMenu";
 
 const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [queueData, setQueueData] = useState<QueueEntry[]>([]);
@@ -246,6 +247,10 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                     {queueComponents}
                 </div>)
             }
+            {userData.is_admin &&
+                <div className="admin-menu">
+                    <AdminMenu is_admin={userData.is_admin} />
+                </div>}
         </div>
     );
 }

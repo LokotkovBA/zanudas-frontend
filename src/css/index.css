@@ -44,6 +44,7 @@ nav p {
 .content {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
+
 }
 
 @media (30em < width <=55em) {

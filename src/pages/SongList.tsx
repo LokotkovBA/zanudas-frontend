@@ -3,7 +3,6 @@ import { getRequest, postRequest } from "../utils/api-requests";
 import { formatDate, getFormatDate } from "../utils/date";
 import { DBSongListEntry, Filters, SongListEntry, UserData } from "../utils/interfaces";
 
-import topIconPath from '../icons/top.svg';
 import ArtistItem from "../components/ArtistItem";
 import { Link } from "react-scroll";
 
@@ -191,10 +190,10 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         <div className="song-list">
             <div className='background-menu set-sticky'>
                 <div className='top-bar'>
-                    <input className='search-bar' type='text' placeholder='Search' onChange={searchHandleChange} value={searchTerm} />
                     <Link to='menu' smooth={true}>
-                        <button className='top-button'><img width='20em' src={topIconPath} alt='arrow up' /></button>
+                        <button className='top-button'>Up</button>
                     </Link>
+                    <input className='search-bar' type='text' placeholder='Search' onChange={searchHandleChange} value={searchTerm} />
                 </div>
                 <div className='filters'>
                     <button className={pressedButtons.foreign ? 'pressed' : ''} onClick={foreignFilter}>Foreign</button>

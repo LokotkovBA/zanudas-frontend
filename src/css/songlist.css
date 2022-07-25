@@ -9,16 +9,22 @@
 }
 
 .search-bar {
-    background-color: #23001E;
-    border: none;
-    color: #fff;
     border-radius: 1em;
-    padding: .5em;
     margin: .5em 0;
+    grid-column: 2/3;
+    font-weight: bolder;
+}
+.search-bar::placeholder{
+    color: #38023B;
+    font-weight: lighter;
+}
+.search-bar:focus{
+    outline: none;
+    border-style: solid;
+    border-color: #D81159;
 }
 
 .song-list button {
-    margin: 0;
     margin-top: .2em;
 }
 
@@ -34,11 +40,11 @@
     flex-wrap: wrap;
 }
 
-.content input {
-    background-color: #33002C;
-    border: none;
-    color: #fff;
-    width: 15ch;
+.top-bar input {
+    background-color: #F2AF29;
+    border-color: #F2AF29;
+    border-style: solid;
+    color: #38023B;
     margin-top: .1em;
     margin-bottom: .1em;
     margin-right: 1em;
@@ -57,6 +63,11 @@
     font-size: .92rem;
 
     display: flex;
+    align-items: center;
+}
+
+.copy-button{
+    margin: 0;
 }
 
 .song-info {
@@ -80,15 +91,14 @@
 }
 
 .top-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: .5em
+    display: grid;
+    justify-content: center;
+    grid-template-columns: .1fr 1fr .1fr;
+    padding-bottom: .5em;
 }
 
 .top-button {
-    padding: 0;
+    margin: 0 1em 0 0;
     border-radius: 2em;
 }
 
@@ -100,10 +110,9 @@
 .filters {
     display: flex;
     flex-wrap: wrap;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 5%;
+    gap: 1%;
     margin-bottom: 1em;
-    justify-items: center;
+    justify-content: space-between;
 }
 
 .artist-title {

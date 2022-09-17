@@ -44,6 +44,8 @@ export interface DBQueueEntry {
     like_count: string;
     played: boolean;
     will_add: boolean;
+    visible: boolean;
+    current: boolean;
     classN?: string;
 };
 
@@ -60,6 +62,8 @@ export interface QueueEntry {
     like_count: number;
     played: boolean;
     will_add: boolean;
+    visible: boolean;
+    current: boolean;
     classN?: string;
 };
 

@@ -158,6 +158,10 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                                         <label htmlFor='played'>played</label> {/*если сыграно, то нельзя менять порядок */}
                                         <input type='checkbox' className={entry.id.toString()} name='will_add' checked={entry.will_add} onChange={queueEntryChangeEvent} />
                                         <label htmlFor='will_add'>will add</label>
+                                        <input type='checkbox' className={entry.id.toString()} name='visible' checked={entry.visible} onChange={queueEntryChangeEvent} />
+                                        <label htmlFor='visible'>visible</label>
+                                        <input type='checkbox' className={entry.id.toString()} name='current' checked={entry.current} onChange={queueEntryChangeEvent} />
+                                        <label htmlFor='current'>current</label>
                                     </div>
                                 </div>
                             </div>);
@@ -166,7 +170,9 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 </Draggable>
             ));
         } else {
-            setQueueComponents(queueData.filter(entry => entry.artist).filter(entry => entry.currency === 'RUB' && entry.donate_amount >= minDonate).map((entry, index) => {
+            setQueueComponents(queueData.filter(entry => entry.artist && 
+                ((entry.currency === 'RUB' && entry.donate_amount >= minDonate) || (entry.currency !== 'RUB')) &&
+                entry.visible).map((entry, index) => {
                 const curIndex = queueLikes.findIndex(like => like.song_id === entry.id);
                 let curLike = pathToThumbsUpWhite;
                 let curDislike = pathToThumbsDownWhite;

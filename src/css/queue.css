@@ -143,6 +143,18 @@
 }
 
 
+
+@media (width > 62em) {
+    .mod-view>input {
+        width: 20ch;
+    }
+}
+@media (width > 90em) {
+    .mod-view>input {
+        width: 30ch;
+    }
+}
+
 @media (width < 100em) {
     .pleb-view {
         grid-column: 4 / 10;

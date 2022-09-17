@@ -8,6 +8,12 @@
     grid-column: 2 / 10;
 }
 
+.top-bar {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(10, 1fr);
+    padding-bottom: .5em;
+}
 .search-bar {
     border-radius: 1em;
     margin: .5em 0;
@@ -90,12 +96,6 @@
     padding-top: 0;
 }
 
-.top-bar {
-    display: grid;
-    justify-content: center;
-    grid-template-columns: .1fr 1fr .1fr;
-    padding-bottom: .5em;
-}
 
 .top-button {
     margin: 0 1em 0 0;

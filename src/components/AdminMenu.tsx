@@ -14,21 +14,37 @@ const adminGetMods = "http://localhost:5100/admin/getMods";
 interface AdminMenuProps {
     is_admin: boolean;
     min_donate: number;
+    max_display: number;
 }
 
-export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, min_donate }) => {
+export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, min_donate, max_display }) => {
     const [newMinDonate, setNewMinDonate] = useState<number>(min_donate);
+    const [newMaxDisplay, setNewMaxDisplay] = useState<number>(max_display);
 
     useEffect(() => {   
         setNewMinDonate(min_donate);
-    },[min_donate])
+    },[min_donate]);
+
+    useEffect(() => {   
+        setNewMaxDisplay(max_display);
+    },[max_display]);
 
     function onMinAmountChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNewMinDonate(parseInt(event.target.value));
     };
 
+    function onMaxDisplayChange(event: React.ChangeEvent<HTMLInputElement>) {
+        console.log(newMaxDisplay);
+        setNewMaxDisplay(parseInt(event.target.value));
+        console.log(newMaxDisplay);
+    };
+
     function sendNewAmount(){
         postRequest('da/setMinDonate', 5100, JSON.stringify({ new_min_donate: newMinDonate}));
+    };
+
+    function sendNewMaxDisplay(){
+        postRequest('da/setMaxDisplay', 5100, JSON.stringify({ new_max_display: newMaxDisplay}));
     }
 
     function startQueue() {
@@ -53,6 +69,11 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, min_donate }) =>
             <div>
                 <input type='number' value={newMinDonate} onChange={onMinAmountChange} />
                 <button onClick={sendNewAmount}>Set Min Amount</button>
+            </div>}
+            {is_admin && 
+            <div>
+                <input type='number' value={newMaxDisplay} onChange={onMaxDisplayChange} />
+                <button onClick={sendNewMaxDisplay}>Set max overlay display</button>
             </div>}
         </div>
     );

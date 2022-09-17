@@ -17,6 +17,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [queueLikes, setQueueLikes] = useState<LikesState[]>([]);
     const [isLive, setIsLive] = useState<boolean>(false);
     const [minDonate, setMinDonate] = useState<number>(0);
+    const [maxDisplay, setMaxDisplay] = useState<number>(0);
 
     function getQueue() {
         getRequest('queue/get', '5100')
@@ -24,6 +25,8 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             .then(data =>{
                 setQueueData(data.songs.map((song: DBQueueEntry) => queueDBtoData(song)));
                 setMinDonate(data.min_donate);
+                console.log(data)
+                setMaxDisplay(data.max_display);
             });
     };
 
@@ -261,7 +264,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             }
             {userData.is_admin &&
                 <div className="admin-menu">
-                    <AdminMenu is_admin={userData.is_admin} min_donate={minDonate} />
+                    <AdminMenu is_admin={userData.is_admin} min_donate={minDonate} max_display={maxDisplay} />
                 </div>}
         </div>
     );

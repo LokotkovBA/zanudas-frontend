@@ -9,8 +9,8 @@ nav {
 }
 
 button {
-    margin: 1em 0;
     margin-right: .7em;
+    margin-bottom: .1em;
     padding: .3em;
     color: #FFF;
     background-color: #D81159;
@@ -21,6 +21,10 @@ button {
     display: flex;
     align-items: center;
     cursor: pointer;
+}
+
+nav button{
+    margin: 1em .7em 1em 0;
 }
 
 .pressed {

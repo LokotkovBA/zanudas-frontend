@@ -25,7 +25,6 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             .then(data =>{
                 setQueueData(data.songs.map((song: DBQueueEntry) => queueDBtoData(song)));
                 setMinDonate(data.min_donate);
-                console.log(data)
                 setMaxDisplay(data.max_display);
             });
     };
@@ -43,6 +42,17 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             return newQueueData;
         })
         postRequest('queue/delete', '5100', JSON.stringify({ id: entryId }));
+    }, [queueData]);
+
+    const changeModView = useCallback((enrtyId: number) =>{
+        const index = queueData.findIndex(enrty => enrty.id === enrtyId);
+        setQueueData(prevQueueData =>{
+            let newQueuedata = [...prevQueueData];
+            newQueuedata[index].modView = !prevQueueData[index].modView;
+            newQueuedata[index].style = newQueuedata[index].modView ? 'mod-view' : 'simple-view';
+            newQueuedata[index].button_text = newQueuedata[index].modView ? 'Hide' : 'More';
+            return newQueuedata;
+        });
     }, [queueData]);
 
     const getCurLikes = useCallback(() => {
@@ -123,7 +133,8 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                             curDislike = queueLikes[curIndex].is_positive === -1 ? pathToThumbsDown : pathToThumbsDownWhite;
                         }
                         return (
-                            <div className={`mod-view ${entry.classN}`} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+                            <div className={`${entry.style} ${entry.classN}`} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+                                {entry.modView && <>
                                 <p className="queue-num">{index + 1}</p>
                                 <input type='text' name='artist' placeholder="artist" className={entry.id.toString()} onChange={queueEntryChangeEvent} value={entry.artist ? entry.artist : ''} />
                                 <input type='text' name='song_name' placeholder="song name" className={entry.id.toString()} onChange={queueEntryChangeEvent} value={entry.song_name ? entry.song_name : ''} />
@@ -132,9 +143,18 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                                 <input type='text' name='currency' placeholder="currency" className={entry.id.toString()} onChange={queueEntryChangeEvent} value={entry.currency} />
                                 <input type='text' name='tag' placeholder="tag" className={entry.id.toString()} onChange={queueEntryChangeEvent} value={entry.tag ? entry.tag : ''} />
                                 <textarea name='donor_text' className={entry.id.toString()} onChange={queueEntryTextAreaChangeEvent} value={entry.donor_text} />
+                                </>}
+                                {!entry.modView && 
+                                    <div className="queue-item-info">
+                                        <p className="queue-num">{index + 1}</p>
+                                        <p>{entry.artist} - {entry.song_name}</p>
+                                        <p>{entry.donate_amount} {entry.currency} from <b>{entry.donor_name}</b></p>
+                                    </div>
+                                }
                                 <div className='button-group'>
                                     <button onClick={() => changeQueueEntry(entry.id)}>Change</button>
                                     <button onClick={() => deleteQueueEntry(entry.id)}>Delete</button>
+                                    <button onClick={() => changeModView(entry.id)}>{entry.button_text}</button>
                                 </div>
                                 <div className="last-block">
                                     <div className="reaction">
@@ -212,7 +232,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             }
             ))
         }
-    }, [queueData, queueLikes, minDonate, userData.is_mod, changeQueueEntry, deleteQueueEntry, clickLikeHandler]);
+    }, [queueData, queueLikes, minDonate, userData.is_mod, changeQueueEntry, deleteQueueEntry, clickLikeHandler, changeModView]);
 
     const SERVER_URL = 'http://localhost:5200';
 

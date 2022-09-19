@@ -44,6 +44,18 @@
     justify-content: space-between;
 }
 
+.simple-view{
+    color: #FFFFFF;
+    grid-column: 2/-1;
+    background-color: #38023B;
+    border: solid #38023B .1em;
+    border-radius: 1em;
+    margin-top: 1em;
+    padding: .1em .8em;
+    display: grid;
+    grid-template-columns: 1fr .1fr .5fr;
+    align-items: center;
+}
 .mod-view {
     grid-column: 2/-1;
     background-color: #38023B;
@@ -56,18 +68,22 @@
     grid-template-rows: repeat(5, .5fr);
     gap: .2em;
 }
+.button-group{
+    display: flex;
+}
 
+.simple-view:hover {
+    border: solid #F2AF29 .1em;
+}
 .mod-view:hover {
     border: solid #F2AF29 .1em;
 }
-
-
 
 .moved {
     border-color: #DE0D92;
 }
 
-.list-item b {
+ b {
     color: #DE0D92;
 }
 
@@ -122,12 +138,9 @@
     grid-row: 4/-1;
 }
 
-.mod-view .button-group {
+.mod-view>.button-group {
     grid-column: -1;
-
-    display: flex;
 }
-
 
 .checkboxes {
     display: grid;
@@ -142,9 +155,22 @@
     justify-items: end;
 }
 
+@media (width < 49em) {
+    .simple-view>.button-group{
+        display: block;
+    }
+}
 
+@media (width < 50em) {
+    .mod-view>.button-group {
+        display: block;
+    }
+    .queue-num {
+        grid-column: 1;
+    }
+}
 
-@media (width > 62em) {
+@media (width > 70em) {
     .mod-view>input {
         width: 20ch;
     }

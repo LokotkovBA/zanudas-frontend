@@ -1,3 +1,5 @@
+import { StringLiteral } from "typescript";
+
 export interface UserData {
     id: number;
     display_name: string;
@@ -64,6 +66,9 @@ export interface QueueEntry {
     will_add: boolean;
     visible: boolean;
     current: boolean;
+    modView: boolean;
+    style: string;
+    button_text: string;
     classN?: string;
 };
 

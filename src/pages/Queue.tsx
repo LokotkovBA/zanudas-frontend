@@ -17,8 +17,11 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [queueData, setQueueData] = useState<QueueEntry[]>([]);
     const [queueComponents, setQueueComponents] = useState<JSX.Element[]>([]);
     const [queueLikes, setQueueLikes] = useState<LikesState[]>([]);
+
     const [isLive, setIsLive] = useState<boolean>(false);
+
     const [minDonate, setMinDonate] = useState<number>(0);
+
     const [maxDisplay, setMaxDisplay] = useState<number>(0);
 
     function getQueue() {
@@ -38,12 +41,21 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const deleteQueueEntry = useCallback((entryId: number) => {
         const delIndex = queueData.findIndex(entry => entry.id === entryId);
-        setQueueData(prevQueueData => {
-            let newQueueData = [...prevQueueData];
-            newQueueData.splice(delIndex, 1);
-            return newQueueData;
-        })
-        postRequest('queue/delete', '5100', JSON.stringify({ id: entryId }));
+        if(queueData[delIndex].delete_intention){
+            setQueueData(prevQueueData => {
+                let newQueueData = [...prevQueueData];
+                newQueueData.splice(delIndex, 1);
+                return newQueueData;
+            });
+            postRequest('queue/delete', '5100', JSON.stringify({ id: entryId }));
+        }else{
+            setQueueData(prevQueueData => {
+                let newQueueData = [...prevQueueData];
+                newQueueData[delIndex].delete_button_text = 'Sure?';
+                newQueueData[delIndex].delete_intention = true;
+                return newQueueData;
+            });
+        }
     }, [queueData]);
 
     const changeModView = useCallback((enrtyId: number) =>{
@@ -155,7 +167,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                                 }
                                 <div className='button-group'>
                                     <button onClick={() => changeQueueEntry(entry.id)}>Change</button>
-                                    <button onClick={() => deleteQueueEntry(entry.id)}>Delete</button>
+                                    <button onClick={() => deleteQueueEntry(entry.id)}>{entry.delete_button_text}</button>
                                     <button onClick={() => changeModView(entry.id)}>{entry.button_text}</button>
                                 </div>
                                 <div className="last-block">
@@ -196,7 +208,6 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             ));
         } else {
             setQueueComponents(queueData.filter(entry => entry.artist && 
-                ((entry.currency === 'RUB' && entry.donate_amount >= minDonate) || (entry.currency !== 'RUB')) &&
                 entry.visible).map((entry, index) => {
                 const curIndex = queueLikes.findIndex(like => like.song_id === entry.id);
                 let curLike = pathToThumbsUpWhite;
@@ -212,7 +223,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                         <div className={(entry.played ? "played " : (entry.current ? "current " : "")) +"queue-item-info"}>
                             <p className="queue-num">{index + 1}</p>
                             <p>{entry.artist} - {entry.song_name}</p>
-                            <p>{entry.donate_amount} {entry.currency} from <b>{entry.donor_name}</b></p>
+                            {entry.donate_amount > 0 && <p>{entry.donate_amount} {entry.currency} from <b>{entry.donor_name}</b></p>}
                         </div>
                     </div>
                     <div className="reaction">

@@ -10,6 +10,8 @@ export function queueDBtoData(input: DBQueueEntry): QueueEntry {
         like_count: parseInt(input.like_count),
         modView: false,
         style: 'simple-view',
-        button_text: 'More'
+        button_text: 'More',
+        delete_button_text: 'Delete',
+        delete_intention: false
     });
 }

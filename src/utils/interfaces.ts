@@ -70,6 +70,8 @@ export interface QueueEntry {
     style: string;
     button_text: string;
     classN?: string;
+    delete_intention: boolean;
+    delete_button_text: string;
 };
 
 export interface DBLikesState {

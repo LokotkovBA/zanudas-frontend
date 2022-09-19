@@ -44,6 +44,18 @@
     justify-content: space-between;
 }
 
+.arrow-info-block{
+    display: flex;
+}
+
+.played{
+    color: gray;
+}
+
+.current{
+    color:#F2AF29;
+}
+
 .simple-view{
     color: #FFFFFF;
     grid-column: 2/-1;

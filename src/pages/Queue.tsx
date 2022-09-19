@@ -8,6 +8,8 @@ import pathToThumbsUp from '../icons/thumbs-up.svg';
 import pathToThumbsUpWhite from '../icons/thumbs-up-white.svg';
 import pathToThumbsDown from '../icons/thumbs-down.svg';
 import pathToThumbsDownWhite from '../icons/thumbs-down-white.svg';
+import pathToArrowRight from '../icons/arrow-right.svg';
+
 import { queueDBtoData } from "../utils/conversions";
 import { AdminMenu } from "../components/AdminMenu";
 
@@ -203,11 +205,15 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                     curLike = queueLikes[curIndex].is_positive === 1 ? pathToThumbsUp : pathToThumbsUpWhite;
                     curDislike = queueLikes[curIndex].is_positive === -1 ? pathToThumbsDown : pathToThumbsDownWhite;
                 }
-                return (<div className="list-item queue" key={entry.id}>
-                    <div className="queue-item-info">
-                        <p className="queue-num">{index + 1}</p>
-                        <p>{entry.artist} - {entry.song_name}</p>
-                        <p>{entry.donate_amount} {entry.currency} from <b>{entry.donor_name}</b></p>
+                return (
+                <div className="list-item queue" key={entry.id}>
+                    <div className="arrow-info-block">
+                    {entry.current && <img src={pathToArrowRight} alt="arrow pointing right"/>}
+                        <div className={(entry.played ? "played " : (entry.current ? "current " : "")) +"queue-item-info"}>
+                            <p className="queue-num">{index + 1}</p>
+                            <p>{entry.artist} - {entry.song_name}</p>
+                            <p>{entry.donate_amount} {entry.currency} from <b>{entry.donor_name}</b></p>
+                        </div>
                     </div>
                     <div className="reaction">
                         <p className="like-count">{entry.like_count}</p>
@@ -228,7 +234,8 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                             }} alt='thumbs down' />
                         </div>
                     </div>
-                </div>);
+                </div>
+                );
             }
             ))
         }

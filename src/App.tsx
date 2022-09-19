@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import Menu from './components/Menu';
 import Queue from './pages/Queue';
 import SongList from './pages/SongList';
+import { Users } from './pages/Users';
 import { getRequest } from './utils/api-requests';
 import { UserData } from './utils/interfaces';
 
@@ -38,6 +39,7 @@ export default function App() {
                     <Route path='/' element={<Navigate to='/queue' />} />
                     <Route path="/queue" element={<Queue userData={userData} />} />
                     <Route path="/songlist" element={<SongList userData={userData} />} />
+                    <Route path="/users" element={<Users userData={userData} />} />
                 </Routes>
             </div>
         </div>

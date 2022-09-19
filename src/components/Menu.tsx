@@ -21,6 +21,10 @@ const Menu: React.FC<{ userData: UserData }> = ({ userData }) => {
             <Link to="/songlist" style={{ textDecoration: 'none' }}>
                 <button className={`menu ${url.pathname === '/songlist' && "pressed"}`}>Song list</button>
             </Link>
+            {userData.is_admin && 
+            <Link to="/users" style={{ textDecoration: 'none' }}>
+                <button className={`menu ${url.pathname === '/users' && "pressed"}`}>Users</button>
+            </Link>}
             {userData.display_name && <div className="user-info">
                 <img src={userData.profile_image_url} alt='user avatar' />
                 <p>{userData.display_name}</p>

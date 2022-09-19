@@ -83,3 +83,12 @@ export interface LikesState {
     is_positive: number;
     song_id: number;
 };
+
+export interface UserEntry{
+    id: number;
+    login: string;
+    is_mod: boolean;
+    is_admin: boolean;
+    is_cthulhu: boolean;
+    is_queen: boolean;
+};

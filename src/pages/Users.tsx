@@ -49,10 +49,11 @@ export const Users: React.FC<UsersProps> = ({userData}) => {
 
     return (
         <div className='user-list'>
+            {userData.is_admin &&
             <div className='background-menu set-sticky'>
                 <SearchBar searchHandleChange={searchHandleChange} searchTerm={searchTerm}/>
                 <button onClick={toggleOnlyMods}>{onlyModsButtonText}</button>
-            </div>
+            </div>}
             {userList}
         </div>
     );

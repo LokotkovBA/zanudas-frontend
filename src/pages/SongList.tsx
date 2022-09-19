@@ -5,6 +5,7 @@ import { DBSongListEntry, Filters, SongListEntry, UserData } from "../utils/inte
 
 import ArtistItem from "../components/ArtistItem";
 import { Link } from "react-scroll";
+import { SearchBar } from "../components/SearchBar";
 
 const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [pressedButtons, setPressedButtons] = useState<Filters>({
@@ -86,7 +87,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     function searchHandleChange(event: React.ChangeEvent<HTMLInputElement>) {
         setSearchTerm(event.target.value);
         localStorage.setItem('searchTerm', event.target.value);
-    }
+    };
 
     useEffect(() => {
         if (songListData) {
@@ -189,12 +190,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     return (
         <div className="song-list">
             <div className='background-menu set-sticky'>
-                <div className='top-bar'>
-                    <Link to='menu' smooth={true}>
-                        <button className='top-button'>Up</button>
-                    </Link>
-                    <input className='search-bar' type='text' placeholder='Search' onChange={searchHandleChange} value={searchTerm} />
-                </div>
+                <SearchBar searchHandleChange={searchHandleChange} searchTerm={searchTerm}/>
                 <div className='filters'>
                     <button className={pressedButtons.foreign ? 'pressed' : ''} onClick={foreignFilter}>Foreign</button>
                     <button className={pressedButtons.russian ? 'pressed' : ''} onClick={russianFilter}>Russian</button>

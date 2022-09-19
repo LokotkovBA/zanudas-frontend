@@ -157,6 +157,20 @@
 
 }
 
+.list-item>.song-info:hover{
+    cursor: pointer;
+}
+
+.list-item>.like-text{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    justify-items: center;
+}
+
+.list-item>.like-text>img{
+    width: 1.2em;
+}
 
 @media (width < 90em) {
     .letter-buttons {

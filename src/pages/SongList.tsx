@@ -28,6 +28,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         song_name: '',
         date: getFormatDate(),
         tag: '',
+        likes: 0,
         count: 0
     };
 
@@ -53,7 +54,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                         if (!(artistL.includes(entry.artist))) {
                             artistL.push(entry.artist);
                         }
-                        return { ...entry, date: formatDate(entry.date), id: parseInt(entry.id) };
+                        return { ...entry, date: formatDate(entry.date), id: parseInt(entry.id), likes: parseInt(entry.likes) };
                     }); //format date
                     return data.songs;
                 });

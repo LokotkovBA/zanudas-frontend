@@ -22,6 +22,7 @@ export interface SongListEntry {
     date: string;
     tag: string;
     count: number;
+    likes: number;
 };
 
 export interface DBSongListEntry {
@@ -31,6 +32,7 @@ export interface DBSongListEntry {
     date: string;
     tag: string;
     count: string;
+    likes: string;
 };
 
 export interface DBQueueEntry {

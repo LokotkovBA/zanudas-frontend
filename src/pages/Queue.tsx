@@ -24,7 +24,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const [maxDisplay, setMaxDisplay] = useState<number>(0);
 
-    function getQueue() {
+    const getQueue = useCallback( () => {
         getRequest('queue/get', '5100')
             .then(response => response.json())
             .then(data =>{
@@ -32,7 +32,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 setMinDonate(data.min_donate);
                 setMaxDisplay(data.max_display);
             });
-    };
+    },[]);
 
     const changeQueueEntry = useCallback((entryId: number) => {
         const curIndex = queueData.findIndex(entry => entry.id === entryId);
@@ -256,6 +256,9 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     useEffect(() => {
         getQueue();
+    },[getQueue])
+
+    useEffect(() => {
         const socket = io(SERVER_URL);
         socket.on('connected', (data) => {
             setIsLive(data);

@@ -151,7 +151,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                         const copyPrevFL = prevFirstLetter;
                         setArtistBlocks(prevBlocks => [...prevBlocks,
                         <div className='letter-block' key={copyPrevFL} id={copyPrevFL}>
-                            {curBlocksCopy.map(block => <ArtistItem key={block.key} artist={block.artist} songs={block.songs} />)}
+                            {curBlocksCopy.map(block => <ArtistItem key={block.key} artist={block.artist} songs={block.songs}  userData={userData}/>)}
                         </div>
                         ]);
                         curBlocks = [];
@@ -184,7 +184,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
             setLetterButtons(letterArray.map(letter => <Link key={letter} smooth={true} offset={-200} to={letter}>{letter}</Link>)) //todo: change offset to different css class on scroll
         }
         if (filteredSongListData && artistList[0]) generateArtistBlocks();
-    }, [pressedButtons, filteredSongListData, artistList]);
+    }, [pressedButtons, filteredSongListData, artistList, userData]);
 
     return (
         <div className="song-list">

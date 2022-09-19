@@ -72,6 +72,15 @@
     align-items: center;
 }
 
+.list-item>input {
+    font-size: 1rem;
+    background-color: #33002C;
+    border: none;
+    padding: .2em;
+    width: 15ch;
+    color: #FFFFFF;
+}
+
 .copy-button{
     margin: 0;
 }

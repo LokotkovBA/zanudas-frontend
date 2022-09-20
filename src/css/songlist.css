@@ -62,12 +62,16 @@
     margin-top: .5em;
     margin-bottom: .5em;
     border-radius: 1em;
-    padding: 1em;
+    padding: .8em;
 
     background-color: #38023B;
     color: #FFF;
     font-size: .92rem;
 
+    border-color: #38023B;
+    border-width: .2em;
+    border-style: solid;
+    
     display: flex;
     align-items: center;
 }
@@ -79,6 +83,27 @@
     padding: .2em;
     width: 15ch;
     color: #FFFFFF;
+}
+
+.list-item:hover{
+    cursor: pointer;
+    border-color: #F2AF29;
+}
+
+.clicked {
+    color:#33002C;
+    background-color: #F2AF29;
+}
+
+.list-item>.like-text{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    justify-items: center;
+}
+
+.list-item>.like-text>img{
+    width: 1.2em;
 }
 
 .copy-button{
@@ -155,21 +180,6 @@
     background-color: #F2AF29;
     color: #33002C;
 
-}
-
-.list-item>.song-info:hover{
-    cursor: pointer;
-}
-
-.list-item>.like-text{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    justify-items: center;
-}
-
-.list-item>.like-text>img{
-    width: 1.2em;
 }
 
 @media (width < 90em) {

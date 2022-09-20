@@ -15,11 +15,13 @@ interface AdminMenuProps {
     is_admin: boolean;
     min_donate: number;
     max_display: number;
+    font_size: string;
 }
 
-export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, min_donate, max_display }) => {
+export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, min_donate, max_display, font_size }) => {
     // const [newMinDonate, setNewMinDonate] = useState<number>(min_donate);
     const [newMaxDisplay, setNewMaxDisplay] = useState<number>(max_display);
+    const [newFontSize, setNewFontSize] = useState<string>(font_size);
 
     // useEffect(() => {   
     //     setNewMinDonate(min_donate);
@@ -29,32 +31,53 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, min_donate, max_
         setNewMaxDisplay(max_display);
     },[max_display]);
 
+    useEffect(() => {
+        setNewFontSize(font_size);
+    },[font_size]);
+
     // function onMinAmountChange(event: React.ChangeEvent<HTMLInputElement>) {
     //     setNewMinDonate(parseInt(event.target.value));
     // };
-
+        
     function onMaxDisplayChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNewMaxDisplay(parseInt(event.target.value));
     };
-
+        
+    function onFontSizeChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setNewFontSize(event.target.value);
+    };
     // function sendNewAmount(){
     //     postRequest('da/setMinDonate', 5100, JSON.stringify({ new_min_donate: newMinDonate}));
     // };
 
     function sendNewMaxDisplay(){
-        postRequest('da/setMaxDisplay', 5100, JSON.stringify({ new_max_display: newMaxDisplay}));
-    }
+        if(is_admin){
+            postRequest('da/setMaxDisplay', 5100, JSON.stringify({ new_max_display: newMaxDisplay}));
+        };
+    };
+
+    function sendNewFontSize(){
+        if(is_admin){
+            postRequest('admin/changeFontSize', 5100, JSON.stringify({ fontSize: newFontSize}));
+        };
+    };
 
     function startQueue() {
-        getRequest('queue/start', '5100');
+        if(is_admin){
+            getRequest('queue/start', '5100');
+        };
     };
 
     function stopQueue() {
-        getRequest('queue/stop', '5100');
+        if(is_admin){
+            getRequest('queue/stop', '5100');
+        };
     };
 
     function addQueueSong(){
-        getRequest('queue/add', '5100');
+        if(is_admin){
+            getRequest('queue/add', '5100');
+        };
     };
 
     return (
@@ -73,6 +96,10 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, min_donate, max_
                     <input type='number' value={newMinDonate} onChange={onMinAmountChange} />
                     <button onClick={sendNewAmount}>Set Min Amount</button>
                 </div> */}
+                <div>
+                    <input type='string' value={newFontSize} onChange={onFontSizeChange} />
+                    <button onClick={sendNewFontSize}>Set font size of overlay</button>
+                </div>
                 <div>
                     <input type='number' value={newMaxDisplay} onChange={onMaxDisplayChange} />
                     <button onClick={sendNewMaxDisplay}>Set max overlay display</button>

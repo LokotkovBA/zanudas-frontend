@@ -24,6 +24,8 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const [maxDisplay, setMaxDisplay] = useState<number>(0);
 
+    const [curFontSize, setCurFontSize] = useState<string>('');
+
     const getQueue = useCallback( () => {
         getRequest('queue/get', '5100')
             .then(response => response.json())
@@ -256,7 +258,13 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     useEffect(() => {
         getQueue();
-    },[getQueue])
+    },[getQueue]);
+
+    useEffect(() => {
+        getRequest('admin/getFontSize', '5100')
+        .then(response => response.json())
+        .then(data => setCurFontSize(data.fontSize));
+    },[]);
 
     useEffect(() => {
         const socket = io(SERVER_URL);
@@ -272,6 +280,12 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         });
         socket.on('min donate amount changed', (data) => {
             setMinDonate(data);
+        });
+        socket.on('max display changed', (data) => {
+            setMaxDisplay(data);
+        });
+        socket.on('font size changed', (data) => {
+            setCurFontSize(data);
         });
         return (() => {
             socket.disconnect();
@@ -305,7 +319,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             }
             {userData.is_admin &&
                 <div className="admin-menu">
-                    <AdminMenu is_admin={userData.is_admin} min_donate={minDonate} max_display={maxDisplay} />
+                    <AdminMenu is_admin={userData.is_admin} min_donate={minDonate} max_display={maxDisplay} font_size={curFontSize}/>
                 </div>}
         </div>
     );

@@ -9,9 +9,12 @@ import pathToThumbsUpWhite from '../icons/thumbs-up-white.svg';
 import pathToThumbsDown from '../icons/thumbs-down.svg';
 import pathToThumbsDownWhite from '../icons/thumbs-down-white.svg';
 import pathToArrowRight from '../icons/arrow-right.svg';
+import telegramIconPath from "../icons/telegram.svg";
+import twitchIconPath from '../icons/twitch.svg';
 
 import { queueDBtoData } from "../utils/conversions";
 import { AdminMenu } from "../components/AdminMenu";
+
 
 const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [queueData, setQueueData] = useState<QueueEntry[]>([]);
@@ -315,6 +318,15 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 <div className="admin-menu">
                     <AdminMenu is_admin={userData.is_admin} max_display={maxDisplay} font_size={curFontSize}/>
                 </div>}
+            {!userData.is_mod && !userData.is_admin && !isLive && (
+            <div className="dead-queue">
+                Queue is not live!
+                <div>
+                    Check out
+                    <a rel="noreferrer" target='_blank' href="https://www.twitch.tv/zanuda"><img src={twitchIconPath} alt='twitch icon'/></a>
+                    <a rel="noreferrer" target='_blank' href="https://t.me/etzalert"><img src={telegramIconPath} alt='telegram icon'/></a>
+                </div>
+            </div>)}
         </div>
     );
 }

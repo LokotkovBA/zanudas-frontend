@@ -4,6 +4,28 @@
     grid-template-columns: repeat(12, 1fr);
 }
 
+.dead-queue{
+    padding: 1em;
+    background-color: #33002C;
+
+    border-radius: 0 0 1rem 1rem;
+    color: #FFFFFF;
+    grid-column: 5 / 9;
+    font-size: 1.5rem;
+    display: grid;
+    gap: .5em;
+    justify-content: center;
+}
+
+.dead-queue>div{
+    display: flex;
+    align-items: center;
+}
+
+.dead-queue img{
+    margin-left: .5em;
+    width: 2ch;
+}
 .pleb-view {
     grid-column: 5 / 9;
 }

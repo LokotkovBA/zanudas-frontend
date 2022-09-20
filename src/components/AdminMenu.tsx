@@ -13,19 +13,13 @@ const adminGetMods = "http://localhost:5100/admin/getMods";
 
 interface AdminMenuProps {
     is_admin: boolean;
-    min_donate: number;
     max_display: number;
     font_size: string;
 }
 
-export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, min_donate, max_display, font_size }) => {
-    // const [newMinDonate, setNewMinDonate] = useState<number>(min_donate);
+export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, font_size }) => {
     const [newMaxDisplay, setNewMaxDisplay] = useState<number>(max_display);
     const [newFontSize, setNewFontSize] = useState<string>(font_size);
-
-    // useEffect(() => {   
-    //     setNewMinDonate(min_donate);
-    // },[min_donate]);
 
     useEffect(() => {   
         setNewMaxDisplay(max_display);
@@ -34,10 +28,6 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, min_donate, max_
     useEffect(() => {
         setNewFontSize(font_size);
     },[font_size]);
-
-    // function onMinAmountChange(event: React.ChangeEvent<HTMLInputElement>) {
-    //     setNewMinDonate(parseInt(event.target.value));
-    // };
         
     function onMaxDisplayChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNewMaxDisplay(parseInt(event.target.value));
@@ -46,9 +36,6 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, min_donate, max_
     function onFontSizeChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNewFontSize(event.target.value);
     };
-    // function sendNewAmount(){
-    //     postRequest('da/setMinDonate', 5100, JSON.stringify({ new_min_donate: newMinDonate}));
-    // };
 
     function sendNewMaxDisplay(){
         if(is_admin){
@@ -92,10 +79,6 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, min_donate, max_
                 <button onClick={startQueue}>Start queue</button>
                 <button onClick={stopQueue}>Stop queue</button>
                 <button onClick={addQueueSong}>Add song</button>
-                {/* <div>
-                    <input type='number' value={newMinDonate} onChange={onMinAmountChange} />
-                    <button onClick={sendNewAmount}>Set Min Amount</button>
-                </div> */}
                 <div>
                     <input type='string' value={newFontSize} onChange={onFontSizeChange} />
                     <button onClick={sendNewFontSize}>Set font size of overlay</button>

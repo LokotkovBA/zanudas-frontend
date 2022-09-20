@@ -20,8 +20,6 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const [isLive, setIsLive] = useState<boolean>(false);
 
-    const [minDonate, setMinDonate] = useState<number>(0);
-
     const [maxDisplay, setMaxDisplay] = useState<number>(0);
 
     const [curFontSize, setCurFontSize] = useState<string>('');
@@ -31,7 +29,6 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             .then(response => response.json())
             .then(data =>{
                 setQueueData(data.songs.map((song: DBQueueEntry) => queueDBtoData(song)));
-                setMinDonate(data.min_donate);
                 setMaxDisplay(data.max_display);
             });
     },[]);
@@ -252,7 +249,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             }
             ))
         }
-    }, [queueData, queueLikes, minDonate, userData.is_mod, changeQueueEntry, deleteQueueEntry, clickLikeHandler, changeModView]);
+    }, [queueData, queueLikes, userData.is_mod, changeQueueEntry, deleteQueueEntry, clickLikeHandler, changeModView]);
 
     const SERVER_URL = 'http://localhost:5200';
 
@@ -277,9 +274,6 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         });
         socket.on('queue status', (data) => {
             setIsLive(data);
-        });
-        socket.on('min donate amount changed', (data) => {
-            setMinDonate(data);
         });
         socket.on('max display changed', (data) => {
             setMaxDisplay(data);
@@ -319,7 +313,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             }
             {userData.is_admin &&
                 <div className="admin-menu">
-                    <AdminMenu is_admin={userData.is_admin} min_donate={minDonate} max_display={maxDisplay} font_size={curFontSize}/>
+                    <AdminMenu is_admin={userData.is_admin} max_display={maxDisplay} font_size={curFontSize}/>
                 </div>}
         </div>
     );

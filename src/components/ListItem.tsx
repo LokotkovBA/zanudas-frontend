@@ -35,7 +35,7 @@ const ListItem: React.FC<{ song: SongListEntry, userData: UserData  }> = ({ song
 
     function deleteItem(event: React.MouseEvent<HTMLButtonElement, MouseEvent>){
         event.stopPropagation();
-        if(deleteIntention){
+        if(deleteIntention && userData.is_admin){
             postRequest('songlist/delete', '5100', `{"id": ${songData.id}}`);
             setDeleteIntention(false);
             setDeleteButtonText('Deleted');
@@ -44,6 +44,13 @@ const ListItem: React.FC<{ song: SongListEntry, userData: UserData  }> = ({ song
             setDeleteButtonText('Sure?');
         }
     };
+
+    function addToQueue(event:  React.MouseEvent<HTMLButtonElement, MouseEvent>){
+        event.stopPropagation();
+        if(userData.is_mod || userData.is_admin){
+            postRequest('queue/addsong', '5100', JSON.stringify({...song, donor_name: '', donate_amount: 0, currency: 'RUB', donor_text: '', tag: '',}));
+        }
+    }
 
     function queueEntryChangeEvent(event: React.ChangeEvent<HTMLInputElement>) {
         setSongData(prevSongData => {
@@ -83,6 +90,7 @@ const ListItem: React.FC<{ song: SongListEntry, userData: UserData  }> = ({ song
             <>
                 <button onClick={(event) => toggleEditFields(event)}>Edit</button>
                 <button onClick={(event) => deleteItem(event)}>{deleteButtonText}</button>
+                <button onClick={(event) => addToQueue(event)}>Add</button>
             </>}
         </div>
     );

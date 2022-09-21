@@ -287,7 +287,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         return (() => {
             socket.disconnect();
         })
-    }, [getCurLikes]);
+    }, [getCurLikes, SERVER_URL]);
 
     useEffect(() => {
         getCurLikes();

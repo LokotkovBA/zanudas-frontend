@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 
 import daIconPath from '../icons/da.svg';
-import { getRequest, postRequest } from '../utils/api-requests';
+import { BACKEND_ADDRESS, getRequest, postRequest } from '../utils/api-requests';
 
-const daLink = "http://localhost:5100/da/auth";
-const daSetup = "http://localhost:5100/da/setup";
-const daStart = "http://localhost:5100/da/start";
-const daStop = "http://localhost:5100/da/stop";
 
-const adminGetTokens = "http://localhost:5100/admin/getToken";
-const adminGetMods = "http://localhost:5100/admin/getMods";
+const daLink = `https://${BACKEND_ADDRESS}:5100/da/auth`;
+const daSetup = `https://${BACKEND_ADDRESS}:5100/da/setup`;
+const daStart = `https://${BACKEND_ADDRESS}:5100/da/start`;
+const daStop = `https://${BACKEND_ADDRESS}:5100/da/stop`;
+
+const adminGetTokens = `https://${BACKEND_ADDRESS}:5100/admin/getToken`;
+const adminGetMods = `https://${BACKEND_ADDRESS}:5100/admin/getMods`;
 
 interface AdminMenuProps {
     is_admin: boolean;

@@ -4,9 +4,10 @@ import { Link, useLocation } from 'react-router-dom';
 import { UserData } from '../utils/interfaces';
 
 import twitchIconPath from '../icons/twitch.svg';
+import { BACKEND_ADDRESS } from '../utils/api-requests';
 
-const loginLink = "http://localhost:5100/auth";
-const logoutLink = "http://localhost:5100/auth/logout";
+const loginLink = `https://${BACKEND_ADDRESS}:5100/auth`;
+const logoutLink = `https://${BACKEND_ADDRESS}:5100/auth/logout`;
 
 const Menu: React.FC<{ userData: UserData }> = ({ userData }) => {
 

@@ -1,7 +1,7 @@
 import { DragDropContext, Draggable, Droppable, DropResult } from "@react-forked/dnd";
 import { useCallback, useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import { getRequest, postRequest } from "../utils/api-requests";
+import { BACKEND_ADDRESS, getRequest, postRequest } from "../utils/api-requests";
 import { DBLikesState, DBQueueEntry, LikesState, QueueEntry, UserData } from "../utils/interfaces";
 
 import pathToThumbsUp from '../icons/thumbs-up.svg';
@@ -254,7 +254,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
     }, [queueData, queueLikes, userData.is_mod, changeQueueEntry, deleteQueueEntry, clickLikeHandler, changeModView]);
 
-    const SERVER_URL = 'http://localhost:5200';
+    const SERVER_URL = `https://${BACKEND_ADDRESS}:5200`;
 
     useEffect(() => {
         getQueue();

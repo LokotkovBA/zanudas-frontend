@@ -1,4 +1,4 @@
-import { DragDropContext, Draggable, Droppable, DropResult } from "@react-forked/dnd";
+import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { useCallback, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { BACKEND_ADDRESS, getRequest, postRequest } from "../utils/api-requests";

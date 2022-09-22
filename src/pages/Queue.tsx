@@ -261,10 +261,12 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     },[getQueue]);
 
     useEffect(() => {
-        getRequest('admin/getFontSize', '5100')
-        .then(response => response.json())
-        .then(data => setCurFontSize(data.fontSize));
-    },[]);
+        if(userData.is_admin){
+            getRequest('admin/getFontSize', '5100')
+            .then(response => response.json())
+            .then(data => setCurFontSize(data.fontSize));
+        }
+    },[userData.is_admin]);
 
     useEffect(() => {
         const socket = io(SERVER_URL);

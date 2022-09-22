@@ -4,7 +4,7 @@ export function getFormatDate() {
     return formatDate(d.toString());
 }
 
-export function formatDate(date: string): string {
+export function formatDate(date: string): string | null {
     if (date) {
         let newDate = Date.parse(date);
         const d = new Date(newDate);
@@ -19,5 +19,5 @@ export function formatDate(date: string): string {
 
         return `${year}-${month}-${day}`;
     }
-    return 'old';
+    return null;
 }

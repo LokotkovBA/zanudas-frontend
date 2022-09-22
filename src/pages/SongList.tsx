@@ -19,6 +19,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [letterButtons, setLetterButtons] = useState<JSX.Element[]>([]);
 
     const [songListData, setSongListData] = useState<SongListEntry[]>([]);
+    const [importedSongListData, setImportedSongListData] = useState<SongListEntry[]>([]);
     const [filteredSongListData, setFilteredSongListData] = useState<SongListEntry[]>([]);
     const [showAddField, setShowAddField] = useState(false);
     const [artistList, setArtistList] = useState<string[]>([]);
@@ -126,6 +127,33 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
             (!filter1 && !filter2 && !filter3 && !filter4));
     };
 
+    function exportAll(){
+        const jsonStringData = `data:text/json;chatset=utf8,${encodeURIComponent(JSON.stringify(songListData))}`;
+        const link = document.createElement("a");
+        link.href = jsonStringData;
+        link.download = "data.json";
+
+        link.click();
+    };
+
+    function importSongList(e: React.ChangeEvent<HTMLInputElement>){
+        const filereader = new FileReader();
+        if(e.target.files){
+            filereader.readAsText(e.target.files[0], "UTF-8");
+            filereader.onload = (event) =>{
+                if(event.target && event.target.result){
+                    setImportedSongListData(JSON.parse(event.target.result as string));
+                }
+            }
+        };
+    };
+
+    function sendFile(){
+        if(userData.is_admin && importedSongListData[0]){
+            postRequest('songlist/addMultiple', 5100, JSON.stringify({songs: importedSongListData}));
+        }
+    }
+
     useEffect(() => {
         getSongList();
     }, [getSongList]);
@@ -203,12 +231,18 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                 </div>
             </div>
             <div className="add-block">
-                {userData.is_admin && <button onClick={addClick}>Add</button>}
+                {userData.is_admin && 
+                <div className="songlist-edits">
+                    <button onClick={addClick}>Add</button>
+                    <button onClick={exportAll}>Export all</button>
+                    <input type='file' onChange={(event) => importSongList(event)}/>
+                    <button onClick={sendFile}>Send file</button>
+                </div>}
                 {showAddField &&
                     <div className="list-item">
                         <input type='text' name='artist' onChange={newSongHandleChangeEvent} placeholder='Artist' value={newSongData.artist} />
                         <input type='text' name='song_name' onChange={newSongHandleChangeEvent} placeholder='Song name' value={newSongData.song_name} />
-                        <input type='text' name='date' onChange={newSongHandleChangeEvent} placeholder='Date' value={newSongData.date} />
+                        <input type='text' name='date' onChange={newSongHandleChangeEvent} placeholder='Date' value={newSongData.date as string} />
                         <input type='text' name='tag' onChange={newSongHandleChangeEvent} placeholder='Tag' value={newSongData.tag} />
                     </div>}
             </div>

@@ -19,7 +19,7 @@ export interface SongListEntry {
     id?: number;
     artist: string;
     song_name: string;
-    date: string;
+    date: string | null;
     tag: string;
     count: number;
     likes: number;

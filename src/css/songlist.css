@@ -30,6 +30,15 @@
     border-color: #D81159;
 }
 
+.songlist-edits{
+    display: flex;
+    align-items: center;
+    color: #FFFFFF;
+    background-color: #33002C;
+    border-radius: 0 0 1em 1em;
+    padding: 1em;
+}
+
 .song-list button {
     margin-top: .2em;
 }
@@ -85,7 +94,7 @@
     color: #FFFFFF;
 }
 
-.list-item:hover{
+.artist-block>.list-item:hover{
     cursor: pointer;
     border-color: #F2AF29;
 }

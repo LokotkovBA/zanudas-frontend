@@ -94,3 +94,8 @@ export interface UserEntry{
     is_cthulhu: boolean;
     is_queen: boolean;
 };
+
+export interface WindowDimensions{
+    width: number;
+    height: number;
+};

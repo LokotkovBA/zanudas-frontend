@@ -137,6 +137,7 @@
     border-bottom-right-radius: 20px;
     padding: 1em;
     padding-top: 0;
+    padding-bottom: 0;
 }
 
 
@@ -170,6 +171,7 @@
     justify-items: center;
     grid-template-columns: repeat(20, 1fr);
     gap: .5em;
+    margin-bottom: 1em;
 
 
 }

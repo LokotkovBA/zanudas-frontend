@@ -6,8 +6,16 @@ import { DBSongListEntry, Filters, SongListEntry, UserData } from "../utils/inte
 import ArtistItem from "../components/ArtistItem";
 import { Link } from "react-scroll";
 import { SearchBar } from "../components/SearchBar";
+import useWindowDimensions from "../utils/useWindowDimensions";
+
+import pathToArrowUp from "../icons/arrow-up.svg";
+import pathToArrowDown from "../icons/arrow-down.svg";
 
 const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
+    const { width } = useWindowDimensions();
+    const [showLetterButtons, setShowLetterButtons] = useState<boolean>(false);
+    const [arrowState, setArrowState] = useState(pathToArrowDown);
+
     const [pressedButtons, setPressedButtons] = useState<Filters>({
         foreign: false,
         russian: false,
@@ -21,7 +29,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [songListData, setSongListData] = useState<SongListEntry[]>([]);
     const [importedSongListData, setImportedSongListData] = useState<SongListEntry[]>([]);
     const [filteredSongListData, setFilteredSongListData] = useState<SongListEntry[]>([]);
-    const [showAddField, setShowAddField] = useState(false);
+    const [showAddField, setShowAddField] = useState<boolean>(false);
     const [artistList, setArtistList] = useState<string[]>([]);
 
     const emptyNewSong: SongListEntry = {
@@ -152,7 +160,16 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         if(userData.is_admin && importedSongListData[0]){
             postRequest('songlist/addMultiple', 5100, JSON.stringify({songs: importedSongListData}));
         }
-    }
+    };
+
+    function changeShowLetterButtons(){
+        if(showLetterButtons){
+            setArrowState(pathToArrowDown);
+        }else{
+            setArrowState(pathToArrowUp);
+        }
+        setShowLetterButtons(prevState => !prevState);
+    };
 
     useEffect(() => {
         getSongList();
@@ -225,10 +242,11 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                     <button className={pressedButtons.russian ? 'pressed' : ''} onClick={russianFilter}>Russian</button>
                     <button className={pressedButtons.ost ? 'pressed' : ''} onClick={ostFilter}>OST</button>
                     <button className={pressedButtons.wide_racks ? 'pressed' : ''} onClick={wideRacksFilter}>Original</button>
+                    { (width <= 728) && <span className="show-more-icon" onClick={changeShowLetterButtons}><img src={arrowState} alt="show more icon"/></span>}
                 </div>
-                <div className='letter-buttons'>
-                    {letterButtons}
-                </div>
+                { (width > 728 || showLetterButtons) && <div className='letter-buttons'>
+                    { letterButtons}
+                </div> }
             </div>
             <div className="add-block">
                 {userData.is_admin && 

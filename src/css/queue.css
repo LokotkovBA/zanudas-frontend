@@ -226,6 +226,10 @@ b {
         grid-column: 3 / 11;
     }
 
+    .dead-queue{
+        grid-column: 3 / 11;
+    }
+
     .chad-view {
         grid-column: 3 / 11;
     }
@@ -233,6 +237,9 @@ b {
 
 @media (width < 30em) {
     .pleb-view {
+        grid-column: 2 / 12;
+    }
+    .dead-queue{
         grid-column: 2 / 12;
     }
 }

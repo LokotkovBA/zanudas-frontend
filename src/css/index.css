@@ -48,12 +48,8 @@ nav p {
 
 }
 
-.show-more-icon{
-    background-color: #D81159;
-    border-radius: 1em;
-    padding: .5em;
-    display: flex;
-    align-items: center;
+.show-more-icon > img{
+    margin: 0;
 }
 
 @media (30em < width <=55em) {

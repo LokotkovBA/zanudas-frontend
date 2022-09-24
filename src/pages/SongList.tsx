@@ -242,7 +242,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                     <button className={pressedButtons.russian ? 'pressed' : ''} onClick={russianFilter}>Russian</button>
                     <button className={pressedButtons.ost ? 'pressed' : ''} onClick={ostFilter}>OST</button>
                     <button className={pressedButtons.wide_racks ? 'pressed' : ''} onClick={wideRacksFilter}>Original</button>
-                    { (width <= 728) && <span className="show-more-icon" onClick={changeShowLetterButtons}><img src={arrowState} alt="show more icon"/></span>}
+                    { (width <= 728) && <button className="show-more-icon" onClick={changeShowLetterButtons}><img src={arrowState} alt="show more icon"/></button>}
                 </div>
                 { (width > 728 || showLetterButtons) && <div className='letter-buttons'>
                     { letterButtons}

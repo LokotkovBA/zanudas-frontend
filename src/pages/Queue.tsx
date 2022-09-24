@@ -318,7 +318,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             }
             {userData.is_admin &&
                 <div className="admin-menu">
-                    <AdminMenu is_admin={userData.is_admin} max_display={maxDisplay} font_size={curFontSize}/>
+                    <AdminMenu is_admin={userData.is_admin} max_display={maxDisplay} font_size={curFontSize} is_live={isLive}/>
                 </div>}
             {!userData.is_mod && !userData.is_admin && !isLive && (
             <div className="dead-queue">

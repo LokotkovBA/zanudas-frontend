@@ -16,9 +16,10 @@ interface AdminMenuProps {
     is_admin: boolean;
     max_display: number;
     font_size: string;
+    is_live: boolean;
 }
 
-export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, font_size }) => {
+export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, font_size, is_live }) => {
     const [newMaxDisplay, setNewMaxDisplay] = useState<number>(max_display);
     const [newFontSize, setNewFontSize] = useState<string>(font_size);
 
@@ -77,8 +78,8 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, fon
                 <button onClick={() => window.location.href = daStop}>Stop<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
                 <button onClick={() => window.location.href = adminGetTokens}>Get Token</button>
                 <button onClick={() => window.location.href = adminGetMods}>Get Mods</button>
-                <button onClick={startQueue}>Start queue</button>
-                <button onClick={stopQueue}>Stop queue</button>
+                {!is_live && <button onClick={startQueue}>Start queue</button>}
+                {is_live && <button className='pressed' onClick={stopQueue}>Stop queue</button>}
                 <button onClick={addQueueSong}>Add song</button>
                 <div>
                     <input type='string' value={newFontSize} onChange={onFontSizeChange} />

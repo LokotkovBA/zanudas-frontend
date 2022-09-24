@@ -48,7 +48,7 @@ const ListItem: React.FC<{ song: SongListEntry, userData: UserData  }> = ({ song
     function addToQueue(event:  React.MouseEvent<HTMLButtonElement, MouseEvent>){
         event.stopPropagation();
         if(userData.is_mod || userData.is_admin){
-            postRequest('queue/addsong', '5100', JSON.stringify({...song, donor_name: '', donate_amount: 0, currency: 'RUB', donor_text: '', tag: '',}));
+            postRequest('queue/addsong', '5100', JSON.stringify({...song, donor_name: '', donate_amount: 0, currency: 'RUB', donor_text: '',}));
         }
     }
 
@@ -62,7 +62,7 @@ const ListItem: React.FC<{ song: SongListEntry, userData: UserData  }> = ({ song
 
     function sendNewSongData(event: React.MouseEvent<HTMLButtonElement, MouseEvent>){
         event.stopPropagation();
-        postRequest('songlist/changeall', '5100', `{"id": ${songData.id}, "artist": "${songData.artist}", "song_name": "${songData.song_name}"}`);
+        postRequest('songlist/changeall', '5100', JSON.stringify(songData));
     };
 
     function inputClick(event: React.MouseEvent){
@@ -80,6 +80,7 @@ const ListItem: React.FC<{ song: SongListEntry, userData: UserData  }> = ({ song
             <>
                 <input type='text' name='artist' placeholder="artist" onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.artist ? songData.artist : ''} />
                 <input type='text' name='song_name' placeholder="song name" className='song-info' onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.song_name ? songData.song_name : ''} />
+                <input type='text' name='tag' placeholder="tag" className='song-info' onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.tag ? songData.tag : ''} />
                 <button onClick={(event) => sendNewSongData(event)}>Change</button>
             </>}
             {(song.likes !== 0) &&

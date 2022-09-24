@@ -5,12 +5,8 @@ import { BACKEND_ADDRESS, getRequest, postRequest } from '../utils/api-requests'
 
 
 const daLink = `https://${BACKEND_ADDRESS}:5100/da/auth`;
-const daSetup = `https://${BACKEND_ADDRESS}:5100/da/setup`;
-const daStart = `https://${BACKEND_ADDRESS}:5100/da/start`;
-const daStop = `https://${BACKEND_ADDRESS}:5100/da/stop`;
 
 const adminGetTokens = `https://${BACKEND_ADDRESS}:5100/admin/getToken`;
-const adminGetMods = `https://${BACKEND_ADDRESS}:5100/admin/getMods`;
 
 interface AdminMenuProps {
     is_admin: boolean;
@@ -38,6 +34,30 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, fon
     function onFontSizeChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNewFontSize(event.target.value);
     };
+
+    function setupDA(){
+        if(is_admin){
+            getRequest('da/setup', '5100');
+        };
+    }
+
+    function startDA(){
+        if(is_admin){
+            getRequest('da/start', '5100');
+        };
+    };
+
+    function stopDA(){
+        if(is_admin){
+            getRequest('da/stop', '5100');
+        };
+    };
+
+    function getTwitchMods(){
+        if(is_admin){
+            getRequest('admin/getTwitchMods', '5100');
+        };
+    }
 
     function sendNewMaxDisplay(){
         if(is_admin){
@@ -73,11 +93,11 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, fon
         <div className='admin-buttons'>
             {is_admin && <>
                 <button onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
-                <button onClick={() => window.location.href = daSetup}>Setup<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
-                <button onClick={() => window.location.href = daStart}>Start<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
-                <button onClick={() => window.location.href = daStop}>Stop<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
-                <button onClick={() => window.location.href = adminGetTokens}>Get Token</button>
-                <button onClick={() => window.location.href = adminGetMods}>Get Mods</button>
+                <button onClick={setupDA}>Setup<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
+                <button onClick={startDA}>Start<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
+                <button onClick={stopDA}>Stop<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
+                <button onClick={() => window.location.href = adminGetTokens}>Twitch Token</button>
+                <button onClick={getTwitchMods}>Twitch Mods</button>
                 {!is_live && <button onClick={startQueue}>Start queue</button>}
                 {is_live && <button className='pressed' onClick={stopQueue}>Stop queue</button>}
                 <button onClick={addQueueSong}>Add song</button>

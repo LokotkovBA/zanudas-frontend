@@ -106,7 +106,11 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                 const lowerSearch = searchTerm.toLowerCase();
                 const lowerArtist = elem.artist.toLowerCase();
                 const lowerSong = elem.song_name.toLowerCase();
-                return lowerArtist.includes(lowerSearch) || lowerSong.includes(lowerSearch) || `${lowerArtist} ${lowerSong}`.includes(lowerSearch);
+                return lowerArtist.includes(lowerSearch) || 
+                    lowerSong.includes(lowerSearch) || 
+                    `${lowerArtist} ${lowerSong}`.includes(lowerSearch) || 
+                    `${lowerArtist} - ${lowerSong}`.includes(lowerSearch) ||
+                    elem.tag.includes(lowerSearch);
             }));
         }
     }, [searchTerm, songListData]);

@@ -91,8 +91,9 @@ const ListItem: React.FC<{ song: SongListEntry, userData: UserData  }> = ({ song
             <>
                 <button onClick={(event) => toggleEditFields(event)}>Edit</button>
                 <button onClick={(event) => deleteItem(event)}>{deleteButtonText}</button>
-                <button onClick={(event) => addToQueue(event)}>Add</button>
             </>}
+            {(userData.is_admin || userData.is_mod) && 
+                <button onClick={(event) => addToQueue(event)}>Add</button>}
         </div>
     );
 }

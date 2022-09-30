@@ -147,11 +147,17 @@ b {
     color: #fff;
 }
 
+.queue-item-info{
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+
 .queue-num {
     color: #F2AF29;
     grid-column: 1/4;
     align-self: center;
-    font-size: 1.1rem;
+    font-size: 1.7rem;
 }
 
 .mod-view>input {

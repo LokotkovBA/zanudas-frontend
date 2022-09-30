@@ -14,6 +14,8 @@ import twitchIconPath from '../icons/twitch.svg';
 
 import { queueDBtoData } from "../utils/conversions";
 import { AdminMenu } from "../components/AdminMenu";
+import { QueueItemInfo } from "../components/QueueItemInfo";
+import { LikeBlock } from "../components/LikeBlock";
 
 
 const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
@@ -161,11 +163,16 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                                 <textarea name='donor_text' className={entry.id.toString()} onChange={queueEntryTextAreaChangeEvent} value={entry.donor_text} />
                                 </>}
                                 {!entry.modView && 
-                                    <div className="queue-item-info">
-                                        <p className="queue-num">{index + 1}</p>
-                                        <p>{entry.artist} - {entry.song_name}</p>
-                                        <p>{entry.donate_amount} {entry.currency} from <b>{entry.donor_name}</b></p>
-                                    </div>
+                                    <QueueItemInfo index={index} 
+                                    artist={entry.artist} 
+                                    song_name={entry.song_name} 
+                                    currency={entry.currency} 
+                                    donate_amount={entry.donate_amount} 
+                                    donor_name={entry.donor_name} 
+                                    current={entry.current} 
+                                    played={entry.played} 
+                                    key={entry.id} 
+                                    />
                                 }
                                 <div className='button-group'>
                                     <button onClick={() => changeQueueEntry(entry.id)}>Change</button>
@@ -173,25 +180,13 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                                     <button onClick={() => changeModView(entry.id)}>{entry.button_text}</button>
                                 </div>
                                 <div className="last-block">
-                                    <div className="reaction">
-                                        <p className="like-count">{entry.like_count}</p>
-                                        <div className="reaction-buttons">
-                                            <img src={curLike} onClick={() => {
-                                                if (curLike === pathToThumbsUpWhite) {
-                                                    clickLikeHandler(entry.id, 1);
-                                                } else {
-                                                    clickLikeHandler(entry.id, 0);
-                                                }
-                                            }} alt='thumbs up' />
-                                            <img src={curDislike} onClick={() => {
-                                                if (curDislike === pathToThumbsDownWhite) {
-                                                    clickLikeHandler(entry.id, -1);
-                                                } else {
-                                                    clickLikeHandler(entry.id, 0);
-                                                }
-                                            }} alt='thumbs down' />
-                                        </div>
-                                    </div>
+                                    <LikeBlock song_id={entry.id} 
+                                    like_src={curLike} 
+                                    dislike_src={curDislike} 
+                                    white_like_src={pathToThumbsUpWhite} 
+                                    white_dislike_src={pathToThumbsDownWhite} 
+                                    like_count={entry.like_count} 
+                                    clickLikeHandler={clickLikeHandler} />
                                     <div className="checkboxes">
                                         <input type='checkbox' className={entry.id.toString()} name='played' checked={entry.played} onChange={queueEntryChangeEvent} />
                                         <label htmlFor='played'>played</label> {/*если сыграно, то нельзя менять порядок */}
@@ -222,31 +217,23 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 <div className="list-item queue" key={entry.id}>
                     <div className="arrow-info-block">
                     {entry.current && <img src={pathToArrowRight} alt="arrow pointing right"/>}
-                        <div className={(entry.played ? "played " : (entry.current ? "current " : "")) +"queue-item-info"}>
-                            <p className="queue-num">{index + 1}</p>
-                            <p>{entry.artist} - {entry.song_name}</p>
-                            {entry.donate_amount > 0 && <p>{entry.donate_amount} {entry.currency} from <b>{entry.donor_name}</b></p>}
-                        </div>
+                        <QueueItemInfo index={index} 
+                        artist={entry.artist} 
+                        song_name={entry.song_name} 
+                        currency={entry.currency} 
+                        donate_amount={entry.donate_amount} 
+                        donor_name={entry.donor_name} 
+                        current={entry.current} 
+                        played={entry.played} 
+                        />
                     </div>
-                    <div className="reaction">
-                        <p className="like-count">{entry.like_count}</p>
-                        <div className="reaction-buttons">
-                            <img src={curLike} onClick={() => {
-                                if (curLike === pathToThumbsUpWhite) {
-                                    clickLikeHandler(entry.id, 1);
-                                } else {
-                                    clickLikeHandler(entry.id, 0);
-                                }
-                            }} alt='thumbs up' />
-                            <img src={curDislike} onClick={() => {
-                                if (curDislike === pathToThumbsDownWhite) {
-                                    clickLikeHandler(entry.id, -1);
-                                } else {
-                                    clickLikeHandler(entry.id, 0);
-                                }
-                            }} alt='thumbs down' />
-                        </div>
-                    </div>
+                    <LikeBlock song_id={entry.id} 
+                    like_src={curLike} 
+                    dislike_src={curDislike} 
+                    white_like_src={pathToThumbsUpWhite} 
+                    white_dislike_src={pathToThumbsDownWhite} 
+                    like_count={entry.like_count} 
+                    clickLikeHandler={clickLikeHandler} />
                 </div>
                 );
             }

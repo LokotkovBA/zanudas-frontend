@@ -8,6 +8,7 @@ import { BACKEND_ADDRESS } from '../utils/api-requests';
 
 const loginLink = `https://${BACKEND_ADDRESS}:5100/auth`;
 const logoutLink = `https://${BACKEND_ADDRESS}:5100/auth/logout`;
+const donateLink = `https://www.donationalerts.com/r/zanuda`;
 
 const Menu: React.FC<{ userData: UserData }> = ({ userData }) => {
 
@@ -26,6 +27,9 @@ const Menu: React.FC<{ userData: UserData }> = ({ userData }) => {
             <Link to="/users" style={{ textDecoration: 'none' }}>
                 <button className={`menu ${url.pathname === '/users' && "pressed"}`}>Users</button>
             </Link>}
+            <a href={donateLink} target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}> 
+                <button>Request</button>
+            </a>
             {userData.display_name && <div className="user-info">
                 <img src={userData.profile_image_url} alt='user avatar' />
                 <p>{userData.display_name}</p>

@@ -62,10 +62,6 @@
     margin-top: .5em;
 }
 
-.queue {
-    justify-content: space-between;
-}
-
 .arrow-info-block{
     display: flex;
 }
@@ -122,8 +118,9 @@ b {
 }
 
 .reaction {
+    margin-left: auto;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     align-items: center;
     justify-items: end;
     justify-self: start;
@@ -193,6 +190,11 @@ b {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     justify-items: end;
+}
+
+.pleb-view>.list-item{
+    padding: .1em .8em;
+    font-size: 1rem;
 }
 
 @media (width < 49em) {

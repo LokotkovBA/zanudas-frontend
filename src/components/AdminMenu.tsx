@@ -13,13 +13,15 @@ interface AdminMenuProps {
     max_display: number;
     font_size: string;
     is_live: boolean;
+    info_text: string;
+    show_info: boolean;
 }
 
-export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, font_size, is_live }) => {
+export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, font_size, is_live, info_text, show_info }) => {
     const [newMaxDisplay, setNewMaxDisplay] = useState<number>(max_display);
     const [newFontSize, setNewFontSize] = useState<string>(font_size);
-    const [infoText, setInfoText] = useState<string>('Разбор новой композиции недоступен D:');
-    const [showInfo, setShowInfo] = useState<boolean>(false);
+    const [infoText, setInfoText] = useState<string>(info_text);
+    const [showInfo, setShowInfo] = useState<boolean>(show_info);
 
     useEffect(() => {   
         setNewMaxDisplay(max_display);
@@ -28,6 +30,14 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, fon
     useEffect(() => {
         setNewFontSize(font_size);
     },[font_size]);
+
+    useEffect(() => {
+        setInfoText(info_text);
+    },[info_text]);
+
+    useEffect(() => {
+        setShowInfo(show_info);
+    },[show_info]);
         
     function onMaxDisplayChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNewMaxDisplay(parseInt(event.target.value));

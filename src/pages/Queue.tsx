@@ -29,6 +29,20 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const [curFontSize, setCurFontSize] = useState<string>('');
 
+    const [infoText, setInfoText] = useState<string>('');
+    const [showInfo, setShowInfo] = useState<boolean>(false);
+
+    useEffect(() => {
+        if(userData.is_admin){
+            getRequest('admin/getShowInfo','5100')
+                .then(response => response.json())
+                .then(data =>{
+                    setInfoText(data.textInfo);
+                    setShowInfo(data.showInfo);
+                });
+        };
+    },[userData.is_admin])
+
     const getQueue = useCallback( () => {
         getRequest('queue/get', '5100')
             .then(response => response.json())
@@ -273,6 +287,12 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         socket.on('font size changed', (data) => {
             setCurFontSize(data);
         });
+        socket.on('show info text', (data) => {
+            setShowInfo(data);
+        });
+        socket.on('change info text', (data) => {
+            setInfoText(data);
+        });
         return (() => {
             socket.disconnect();
         })
@@ -305,7 +325,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             }
             {userData.is_admin &&
                 <div className="admin-menu">
-                    <AdminMenu is_admin={userData.is_admin} max_display={maxDisplay} font_size={curFontSize} is_live={isLive}/>
+                    <AdminMenu is_admin={userData.is_admin} max_display={maxDisplay} font_size={curFontSize} is_live={isLive} show_info={showInfo} info_text={infoText}/>
                 </div>}
             {!userData.is_mod && !userData.is_admin && !isLive && (
             <div className="dead-queue">

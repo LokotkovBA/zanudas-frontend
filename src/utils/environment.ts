@@ -1,6 +1,6 @@
 export function getBackendAddress(): string{
-    if(process.env.BACKEND_ADDRESS){
-        return process.env.BACKEND_ADDRESS;
+    if(process.env.REACT_APP_BACKEND_ADDRESS){
+        return process.env.REACT_APP_BACKEND_ADDRESS;
     }
     return '';
 };

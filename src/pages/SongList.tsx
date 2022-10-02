@@ -110,6 +110,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                     lowerSong.includes(lowerSearch) || 
                     `${lowerArtist} ${lowerSong}`.includes(lowerSearch) || 
                     `${lowerArtist} - ${lowerSong}`.includes(lowerSearch) ||
+                    `${lowerArtist} – ${lowerSong}`.includes(lowerSearch) ||
                     elem.tag.includes(lowerSearch);
             }));
         }

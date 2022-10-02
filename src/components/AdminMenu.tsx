@@ -18,6 +18,8 @@ interface AdminMenuProps {
 export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, font_size, is_live }) => {
     const [newMaxDisplay, setNewMaxDisplay] = useState<number>(max_display);
     const [newFontSize, setNewFontSize] = useState<string>(font_size);
+    const [infoText, setInfoText] = useState<string>('Разбор новой композиции недоступен D:');
+    const [showInfo, setShowInfo] = useState<boolean>(false);
 
     useEffect(() => {   
         setNewMaxDisplay(max_display);
@@ -34,6 +36,19 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, fon
     function onFontSizeChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNewFontSize(event.target.value);
     };
+
+    function onTextInfoAreaChange(event: React.ChangeEvent<HTMLTextAreaElement>){
+        setInfoText(event.target.value);
+    };
+
+    function onShowInfoChange(event: React.ChangeEvent<HTMLInputElement>){
+        if(is_admin && showInfo){
+            getRequest('admin/hideInfoText', '5100');
+        }else if(is_admin){
+            getRequest('admin/showInfoText', '5100');
+        }
+        setShowInfo(event.target.checked);
+    }
 
     function setupDA(){
         if(is_admin){
@@ -89,6 +104,12 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, fon
         };
     };
 
+    function changeInfo(){
+        if(is_admin){
+            postRequest('admin/changeInfoText','5100', JSON.stringify({ infoText: infoText }))
+        }
+    }
+
     return (
         <div className='admin-buttons'>
             {is_admin && <>
@@ -108,6 +129,14 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, fon
                 <div>
                     <input type='number' value={newMaxDisplay} onChange={onMaxDisplayChange} />
                     <button onClick={sendNewMaxDisplay}>Set max overlay display</button>
+                </div>
+                <div className='edit-info'>
+                    <textarea name='text-info' className='text-info' onChange={onTextInfoAreaChange} value={infoText} />
+                    <div className='edit-checkbox'>
+                        <input type='checkbox' className='show-info' name='show-info' checked={showInfo} onChange={onShowInfoChange} />
+                        <label htmlFor='show-info'>show info</label>
+                    </div>
+                    <button onClick={changeInfo}>Change info</button>
                 </div>
             </>}
         </div>

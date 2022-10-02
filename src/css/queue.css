@@ -41,6 +41,14 @@
 
 .admin-menu {
     grid-column: 10 / -1;
+    color: #FFFFFF;
+}
+
+*>input{
+    color: #FFFFFF;
+    padding: .2em;
+    background-color: #33002C;
+    border: none;
 }
 
 .admin-buttons{
@@ -60,6 +68,23 @@
     margin-right: 1em;
     margin-bottom: .5em;
     margin-top: .5em;
+}
+
+.edit-info{
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-checkbox{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-info>textarea{
+    color: #FFFFFF;
+    padding: .2em;
+    background-color: #33002C;
 }
 
 .arrow-info-block{

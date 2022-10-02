@@ -1,6 +1,7 @@
+import { getBackendAddress } from "./environment";
 import headers from "./headers";
 
-export const BACKEND_ADDRESS = `151.248.122.173`
+export const BACKEND_ADDRESS = getBackendAddress();
 
 export function getRequest(address: string, port: string) {
 

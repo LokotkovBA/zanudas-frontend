@@ -10,6 +10,7 @@ import useWindowDimensions from "../utils/useWindowDimensions";
 
 import pathToArrowUp from "../icons/arrow-up.svg";
 import pathToArrowDown from "../icons/arrow-down.svg";
+import { Alert } from "../components/Alert";
 
 const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const { width } = useWindowDimensions();
@@ -31,6 +32,16 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [filteredSongListData, setFilteredSongListData] = useState<SongListEntry[]>([]);
     const [showAddField, setShowAddField] = useState<boolean>(false);
     const [artistList, setArtistList] = useState<string[]>([]);
+
+    const [alertSliding, setAlertSliding] = useState<string>('alert sliding');
+
+    function displayAlert(){
+        setAlertSliding('alert');
+        const timer = setTimeout(() => {
+            setAlertSliding('alert sliding');
+            clearTimeout(timer);
+        }, 3000);
+    };
 
     const emptyNewSong: SongListEntry = {
         artist: '',
@@ -203,7 +214,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                         const copyPrevFL = prevFirstLetter;
                         setArtistBlocks(prevBlocks => [...prevBlocks,
                         <div className='letter-block' key={copyPrevFL} id={copyPrevFL}>
-                            {curBlocksCopy.map(block => <ArtistItem key={block.key} artist={block.artist} songs={block.songs}  userData={userData}/>)}
+                            {curBlocksCopy.map(block => <ArtistItem key={block.key} artist={block.artist} songs={block.songs}  userData={userData} displayAlert={displayAlert}/>)}
                         </div>
                         ]);
                         curBlocks = [];
@@ -272,6 +283,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
             <div className='song-blocks'>
                 {artistBlocks}
             </div>
+            <Alert message='Copied!' class_name={alertSliding}/>
         </div>
     );
 }

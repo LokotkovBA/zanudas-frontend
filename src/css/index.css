@@ -52,24 +52,34 @@ nav p {
     margin: 0;
 }
 
-.cookie-alert{
+.alert{
     background-color: #33002C;
     color: #FFFFFF;
 
     padding: 1em;
     margin: 1em;
 
-    width: 20ch;
-
     border-radius: 1em;
 
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: .5em;
 
     position: fixed;
     bottom: 1em;
+    left: 1em;
+
+    transition: all .5s;
+}
+
+.alert.sliding{
+    bottom: -10em;
+}
+
+.cookie>.alert{
+    align-items: center;
+    width: 20ch;
+    left: auto;
     right: 1em;
 }
 

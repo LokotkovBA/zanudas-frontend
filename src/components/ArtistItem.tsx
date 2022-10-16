@@ -2,7 +2,14 @@ import React from "react";
 import { SongListEntry, UserData } from "../utils/interfaces";
 import ListItem from "./ListItem";
 
-const ArtistItem: React.FC<{ songs: SongListEntry[], artist: string, userData: UserData }> = ({ songs, artist, userData }) => {
+interface ArtistItemProps { 
+    songs: SongListEntry[], 
+    artist: string, 
+    userData: UserData, 
+    displayAlert: () => void 
+};
+
+const ArtistItem: React.FC<ArtistItemProps> = ({ songs, artist, userData, displayAlert }) => {
 
     const [songElems, setSongElems] = React.useState<any>();
 
@@ -12,9 +19,10 @@ const ArtistItem: React.FC<{ songs: SongListEntry[], artist: string, userData: U
                 key={entry.id}
                 song={entry}
                 userData={userData}
+                displayAlert={displayAlert}
             />));
         }
-    }, [songs, userData])
+    }, [songs, userData, displayAlert])
 
 
     return (
@@ -23,6 +31,6 @@ const ArtistItem: React.FC<{ songs: SongListEntry[], artist: string, userData: U
             {songElems}
         </div>
     );
-}
+};
 
 export default ArtistItem;

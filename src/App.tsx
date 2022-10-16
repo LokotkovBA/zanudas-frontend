@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { CookieAlert } from './components/CookieAlert';
+import { Alert } from './components/Alert';
 import Menu from './components/Menu';
 import Queue from './pages/Queue';
 import SongList from './pages/SongList';
@@ -62,7 +62,11 @@ export default function App() {
                     <Route path="/users" element={<Users userData={userData} />} />
                 </Routes>
             </div>
-            {!userData.is_cookie_alert_shown && <CookieAlert cookieAlertClick={cookieAlertClick}/>}
+            {!userData.is_cookie_alert_shown && 
+            <div className='cookie'>
+                <Alert cookieAlertClick={cookieAlertClick} show_button={true} class_name={'alert'} message={`This website uses cookies to keep you logged in!`}/>
+            </div>
+            }
         </div>
     );
 }

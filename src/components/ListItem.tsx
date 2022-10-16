@@ -6,7 +6,13 @@ import { postRequest } from "../utils/api-requests";
 import pathToThumbsUp from '../icons/thumbs-up-green.svg';
 import pathToThumbsDown from '../icons/thumbs-down-red.svg';
 
-const ListItem: React.FC<{ song: SongListEntry, userData: UserData  }> = ({ song, userData }) => {
+export interface ListItemProps {
+    song: SongListEntry, 
+    userData: UserData, 
+    displayAlert: () => void  
+};
+
+const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => {
 
     const [showEditFields, setShowEditFields] = useState<boolean>(false);
     const [songData, setSongData] = useState<SongListEntry>(song);
@@ -18,6 +24,7 @@ const ListItem: React.FC<{ song: SongListEntry, userData: UserData  }> = ({ song
 
     function copyClick(){
         navigator.clipboard.writeText(`${song.artist} - ${song.song_name}`);
+        displayAlert();
     };
 
     function mouseDown(){

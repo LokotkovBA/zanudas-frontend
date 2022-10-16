@@ -189,7 +189,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                                     />
                                 }
                                 <div className='button-group'>
-                                    <button onClick={() => changeQueueEntry(entry.id)}>Change</button>
+                                    <button onClick={() => changeQueueEntry(entry.id)}>Apply</button>
                                     <button onClick={() => deleteQueueEntry(entry.id)}>{entry.delete_button_text}</button>
                                     <button onClick={() => changeModView(entry.id)}>{entry.button_text}</button>
                                 </div>

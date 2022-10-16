@@ -6,6 +6,8 @@ import { UserData } from '../utils/interfaces';
 import twitchIconPath from '../icons/twitch.svg';
 import { BACKEND_ADDRESS } from '../utils/api-requests';
 
+import daIconPath from '../icons/da.svg';
+
 const loginLink = `https://${BACKEND_ADDRESS}:5100/auth`;
 const logoutLink = `https://${BACKEND_ADDRESS}:5100/auth/logout`;
 const donateLink = `https://www.donationalerts.com/r/zanuda`;
@@ -27,8 +29,8 @@ const Menu: React.FC<{ userData: UserData }> = ({ userData }) => {
             <Link to="/users" style={{ textDecoration: 'none' }}>
                 <button className={`menu ${url.pathname === '/users' && "pressed"}`}>Users</button>
             </Link>}
-            <a href={donateLink} target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}> 
-                <button>Request</button>
+            <a href={donateLink} className='request-link' target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}> 
+                <button className='request-button'>Request<img src={daIconPath} alt="donation alerts icon" width={"18em"}/></button>
             </a>
             {userData.display_name && <div className="user-info">
                 <img src={userData.profile_image_url} alt='user avatar' />

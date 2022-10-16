@@ -21,6 +21,16 @@ button {
     display: flex;
     align-items: center;
     cursor: pointer;
+    gap: .3em;
+}
+
+.request-button{
+    background-color: #DE0D92;
+    border-color: #DE0D92;
+}
+
+.request-link{
+    margin-left: auto;
 }
 
 nav button{
@@ -50,19 +60,15 @@ button:hover {
 .login-btn {
     background-color: #DE0D92;
     border-color: #DE0D92;
-    margin-left: auto;
-
 }
 
 button img {
     padding: 0;
-    margin-left: .3em;
 }
 
 .user-info {
     display: flex;
     align-items: center;
-    margin-left: auto;
 }
 
 .user-info img {

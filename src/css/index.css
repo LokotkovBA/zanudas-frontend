@@ -55,10 +55,12 @@ nav p {
 .alert{
     background-color: #33002C;
     color: #FFFFFF;
-
-    padding: 1em;
-    margin: 1em;
-
+    
+    padding: .8em;
+    
+    border: solid;
+    border-color: #F2AF29;
+    border-width: .2em;
     border-radius: 1em;
 
     display: flex;
@@ -78,9 +80,14 @@ nav p {
 
 .cookie>.alert{
     align-items: center;
+
     width: 20ch;
+    padding: 1em;
+
     left: auto;
     right: 1em;
+
+    border: none;
 }
 
 @media (30em < width <=55em) {
@@ -92,17 +99,11 @@ nav p {
 
 @media (width <=30em) {
     nav {
-        padding: .5em 0;
+        padding: .5em .1em;
     }
 
     nav p {
         display: none;
-    }
-
-    nav button {
-        margin: 0;
-        margin-right: .2em;
-
     }
 
     .user-info {
@@ -117,6 +118,10 @@ nav p {
         width: 1.1em;
         border-radius: .7em;
         margin-right: .1em;
+    }
+
+    .request-link{
+        margin: 0;
     }
 
 }

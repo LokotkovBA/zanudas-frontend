@@ -6,6 +6,7 @@ nav {
     flex-wrap: wrap;
     align-items: center;
     font-size: 30px;
+    gap: .2em;
 }
 
 button {
@@ -31,10 +32,6 @@ button {
 
 .request-link{
     margin-left: auto;
-}
-
-nav button{
-    margin: 1em .7em 1em 0;
 }
 
 .pressed {

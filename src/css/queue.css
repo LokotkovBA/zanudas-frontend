@@ -32,7 +32,8 @@
 
 .list-item.queue{
     display: grid;
-    grid-template-columns: 1fr 10ch;
+    grid-template-columns: 1fr .1fr;
+    gap: .3em
 }
 .order-button {
     margin: .5em 0;
@@ -275,5 +276,14 @@ b {
     }
     .dead-queue{
         grid-column: 2 / 12;
+    }
+
+    .list-item.queue{
+        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 1fr;
+    }
+    .reaction{
+        grid-row: 2;
+        grid-column: 0;
     }
 }

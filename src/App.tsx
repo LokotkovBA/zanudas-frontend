@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { CookieAlert } from './components/CookieAlert';
 import Menu from './components/Menu';
 import Queue from './pages/Queue';
 import SongList from './pages/SongList';
@@ -8,7 +9,16 @@ import { getRequest } from './utils/api-requests';
 import { UserData } from './utils/interfaces';
 
 export default function App() {
-    const [userData, setUserData] = useState<UserData>({ id: 0, display_name: '', profile_image_url: '', is_mod: false, is_admin: false });
+    const [userData, setUserData] = useState<UserData>({
+        id: 0,
+        display_name: ``,
+        profile_image_url: ``,
+        is_mod: false,
+        is_admin: false,
+        is_cthulhu: false,
+        is_queen: false,
+        is_cookie_alert_shown: true
+    });
 
     const getUser = () => {
         getRequest("auth/success", "5100")
@@ -21,15 +31,25 @@ export default function App() {
                     display_name: data.display_name,
                     profile_image_url: data.profile_image_url,
                     is_mod: data.is_mod,
-                    is_admin: data.is_admin
+                    is_admin: data.is_admin,
+                    is_cthulhu: data.is_cthulhu,
+                    is_queen: data.is_queen,
+                    is_cookie_alert_shown: data.is_cookie_alert_shown
                 });
             })
             .catch((err) => { });
-    }
+    };
 
     useEffect(() => {
         getUser();
-    }, [])
+    }, []);
+
+    function cookieAlertClick(){
+        getRequest('auth/cookiealert','5100');
+        setUserData(prevUserData => {
+            return {...prevUserData, is_cookie_alert_shown: true};
+        });
+    };
 
     return (
         <div>
@@ -42,6 +62,7 @@ export default function App() {
                     <Route path="/users" element={<Users userData={userData} />} />
                 </Routes>
             </div>
+            {!userData.is_cookie_alert_shown && <CookieAlert cookieAlertClick={cookieAlertClick}/>}
         </div>
     );
 }

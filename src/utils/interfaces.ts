@@ -6,6 +6,9 @@ export interface UserData {
     profile_image_url: string;
     is_mod: boolean;
     is_admin: boolean;
+    is_cthulhu: boolean;
+    is_queen: boolean;
+    is_cookie_alert_shown: boolean;
 };
 
 export interface Filters {
@@ -93,6 +96,7 @@ export interface UserEntry{
     is_admin: boolean;
     is_cthulhu: boolean;
     is_queen: boolean;
+    is_cookie_alert_shown: boolean;
 };
 
 export interface WindowDimensions{

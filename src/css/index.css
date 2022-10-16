@@ -52,6 +52,27 @@ nav p {
     margin: 0;
 }
 
+.cookie-alert{
+    background-color: #33002C;
+    color: #FFFFFF;
+
+    padding: 1em;
+    margin: 1em;
+
+    width: 20ch;
+
+    border-radius: 1em;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5em;
+
+    position: fixed;
+    bottom: 1em;
+    right: 1em;
+}
+
 @media (30em < width <=55em) {
     nav p {
         margin-right: .5em;

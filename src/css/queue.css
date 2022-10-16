@@ -30,6 +30,10 @@
     grid-column: 5 / 9;
 }
 
+.list-item.queue{
+    display: grid;
+    grid-template-columns: 1fr 10ch;
+}
 .order-button {
     margin: .5em 0;
 }
@@ -143,12 +147,9 @@ b {
 }
 
 .reaction {
-    margin-left: auto;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    justify-content: flex-end;
     align-items: center;
-    justify-items: end;
-    justify-self: start;
     gap: .7em;
 }
 

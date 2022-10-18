@@ -47,23 +47,27 @@ export const LikeBlock: React.FC<LikeBlockProps> = ({ user_id, song_id, like_cou
                 <p className="like-count">{like_count}</p>
                 <div className="reaction-buttons">
                     <div className={`${thumbsUpClicked} ${clickable} thumbs-up`} onClick={() => {
-                        if (thumbsUpClicked) {
-                            clickLikeHandler(song_id, 0);
-                            setThumbUpClicked('');
-                        } else {
-                            clickLikeHandler(song_id, 1);
-                            setThumbDownClicked('');
-                            setThumbUpClicked('thumbs-clicked');
+                        if(user_id){
+                            if (thumbsUpClicked) {
+                                clickLikeHandler(song_id, 0);
+                                setThumbUpClicked('');
+                            } else {
+                                clickLikeHandler(song_id, 1);
+                                setThumbDownClicked('');
+                                setThumbUpClicked('thumbs-clicked');
+                            }
                         }
                     }}/>
                     <div className={`${thumbsDownClicked} ${clickable} thumbs-down`} onClick={() => {
-                        if (thumbsDownClicked) {
-                            clickLikeHandler(song_id, 0);
-                            setThumbDownClicked('');
-                        } else {
-                            clickLikeHandler(song_id, -1);
-                            setThumbUpClicked('');
-                            setThumbDownClicked('thumbs-clicked');
+                        if(user_id){
+                            if (thumbsDownClicked) {
+                                clickLikeHandler(song_id, 0);
+                                setThumbDownClicked('');
+                            } else {
+                                clickLikeHandler(song_id, -1);
+                                setThumbUpClicked('');
+                                setThumbDownClicked('thumbs-clicked');
+                            }
                         }
                     }}/>
                 </div>

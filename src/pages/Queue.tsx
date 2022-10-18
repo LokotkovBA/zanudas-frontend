@@ -4,10 +4,6 @@ import { io } from "socket.io-client";
 import { BACKEND_ADDRESS, getRequest, postRequest } from "../utils/api-requests";
 import { DBLikesState, DBQueueEntry, LikesState, QueueEntry, UserData } from "../utils/interfaces";
 
-import pathToThumbsUp from '../icons/thumbs-up.svg';
-import pathToThumbsUpWhite from '../icons/thumbs-up-white.svg';
-import pathToThumbsDown from '../icons/thumbs-down.svg';
-import pathToThumbsDownWhite from '../icons/thumbs-down-white.svg';
 import pathToArrowRight from '../icons/arrow-right.svg';
 import telegramIconPath from "../icons/telegram.svg";
 import twitchIconPath from '../icons/twitch.svg';
@@ -158,12 +154,6 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 <Draggable key={entry.id} draggableId={entry.id.toString()} index={index}>
                     {(provided) => {
                         const curIndex = queueLikes.findIndex(like => like.song_id === entry.id);
-                        let curLike = pathToThumbsUpWhite;
-                        let curDislike = pathToThumbsDownWhite;
-                        if (curIndex !== -1) {
-                            curLike = queueLikes[curIndex].is_positive === 1 ? pathToThumbsUp : pathToThumbsUpWhite;
-                            curDislike = queueLikes[curIndex].is_positive === -1 ? pathToThumbsDown : pathToThumbsDownWhite;
-                        }
                         return (
                             <div className={`${entry.style} ${entry.classN}`} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
                                 {entry.modView && <>
@@ -194,11 +184,9 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                                     <button onClick={() => changeModView(entry.id)}>{entry.button_text}</button>
                                 </div>
                                 <div className="last-block">
-                                    <LikeBlock song_id={entry.id} 
-                                    like_src={curLike} 
-                                    dislike_src={curDislike} 
-                                    white_like_src={pathToThumbsUpWhite} 
-                                    white_dislike_src={pathToThumbsDownWhite} 
+                                    <LikeBlock like_state={queueLikes[curIndex]}
+                                    user_id={userData.id}
+                                    song_id={entry.id} 
                                     like_count={entry.like_count} 
                                     clickLikeHandler={clickLikeHandler} />
                                     <div className="checkboxes">
@@ -221,12 +209,6 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             setQueueComponents(queueData.filter(entry => entry.artist && 
                 entry.visible).map((entry, index) => {
                 const curIndex = queueLikes.findIndex(like => like.song_id === entry.id);
-                let curLike = pathToThumbsUpWhite;
-                let curDislike = pathToThumbsDownWhite;
-                if (curIndex !== -1) {
-                    curLike = queueLikes[curIndex].is_positive === 1 ? pathToThumbsUp : pathToThumbsUpWhite;
-                    curDislike = queueLikes[curIndex].is_positive === -1 ? pathToThumbsDown : pathToThumbsDownWhite;
-                }
                 return (
                 <div className="list-item queue" key={entry.id}>
                     <div className="arrow-info-block">
@@ -241,11 +223,9 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                         played={entry.played} 
                         />
                     </div>
-                    <LikeBlock song_id={entry.id} 
-                    like_src={curLike} 
-                    dislike_src={curDislike} 
-                    white_like_src={pathToThumbsUpWhite} 
-                    white_dislike_src={pathToThumbsDownWhite} 
+                    <LikeBlock like_state={queueLikes[curIndex]}
+                    user_id={userData.id}
+                    song_id={entry.id} 
                     like_count={entry.like_count} 
                     clickLikeHandler={clickLikeHandler} />
                 </div>
@@ -253,7 +233,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             }
             ))
         }
-    }, [queueData, queueLikes, userData.is_mod, changeQueueEntry, deleteQueueEntry, clickLikeHandler, changeModView]);
+    }, [queueData, queueLikes, userData.id, userData.is_mod, changeQueueEntry, deleteQueueEntry, clickLikeHandler, changeModView]);
 
     const SERVER_URL = `https://${BACKEND_ADDRESS}:5200`;
 

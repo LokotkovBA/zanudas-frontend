@@ -154,17 +154,30 @@ b {
     gap: .7em;
 }
 
+.thumbs-up{
+    background-image: url(../icons/thumbs-up-white.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.thumbs-down{
+    background-image: url(../icons/thumbs-down-white.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 1.5em;
+    height: 1.5em;
+}
+
+
 .reaction>p {
     font-size: 1.5rem;
 }
 
 .reaction-buttons {
     display: grid;
-    gap: .1em;
-}
-
-.reaction-buttons>img {
-    cursor: pointer;
+    gap: .25em;
 }
 
 .mod-view>* {

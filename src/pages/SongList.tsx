@@ -11,6 +11,7 @@ import useWindowDimensions from "../utils/useWindowDimensions";
 import pathToArrowUp from "../icons/arrow-up.svg";
 import pathToArrowDown from "../icons/arrow-down.svg";
 import { Alert } from "../components/Alert";
+import { UpButton } from "../components/UpButton";
 
 const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const { width } = useWindowDimensions();
@@ -282,6 +283,9 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
             </div>
             <div className='song-blocks'>
                 {artistBlocks}
+            </div>
+            <div className="up-zone">
+                <UpButton/>
             </div>
             <Alert message='Copied!' class_name={alertSliding}/>
         </div>

@@ -9,10 +9,8 @@
 }
 
 .top-bar {
-    display: grid;
     justify-content: center;
-    grid-template-columns: repeat(10, 1fr);
-    padding-bottom: .5em;
+
 }
 .search-bar {
     border-radius: 1em;
@@ -53,6 +51,16 @@
 
 .add-block>.list-item {
     flex-wrap: wrap;
+}
+
+.up-zone{
+    position: fixed;
+    bottom: 10em;
+    right: 26%;
+}
+
+.up-zone button{
+    margin: 0;
 }
 
 .top-bar input {
@@ -206,6 +214,10 @@
     .letter-buttons {
         grid-template-columns: repeat(20, 1fr);
     }
+
+    .up-zone{
+        right: 10%;
+    }
 }
 
 @media (width < 60em) {
@@ -233,5 +245,9 @@
 
     .song-list {
         grid-column: 1 / -1;
+    }
+
+    .up-zone{
+        right: 1%;
     }
 }

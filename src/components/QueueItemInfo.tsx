@@ -17,7 +17,8 @@ export const QueueItemInfo: React.FC<QueueItemInfoProps> = ({ index, artist, son
             <p className="queue-num">{index + 1}</p>
             <div>
                 <p>{artist} - {song_name}</p>
-                {donate_amount > 0 && <p>{donate_amount} {currency} from <b>{donor_name}</b></p>}
+                {donate_amount > 0 && <>{donate_amount} {currency} </>}
+                {donor_name && <>from <b>{donor_name}</b></>}
             </div>
         </div>);
 }

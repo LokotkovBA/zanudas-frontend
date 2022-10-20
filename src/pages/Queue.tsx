@@ -28,6 +28,10 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [infoText, setInfoText] = useState<string>('');
     const [showInfo, setShowInfo] = useState<boolean>(false);
 
+    const [isSetupDA, setIsSetupDA] = useState<boolean>(false);
+    const [isListeningToDA, setIsListeningToDA] = useState<boolean>(false);
+    const [hidTokenButtons, setHidTokenButtons] = useState<boolean>(false);
+
     useEffect(() => {
         if(userData.is_admin){
             getRequest('admin/getShowInfo','5100')
@@ -246,6 +250,19 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             getRequest('admin/getFontSize', '5100')
             .then(response => response.json())
             .then(data => setCurFontSize(data.fontSize));
+
+            getRequest('da/DAstatus', '5100')
+            .then(response => response.json())
+            .then(data => {
+                setIsSetupDA(data.centrifuge_is_setup);
+                setIsListeningToDA(data.is_listening_da);
+            });
+
+            getRequest('admin/tokenButtonsVisibility', '5100')
+            .then(response => response.json())
+            .then(data => {
+                setHidTokenButtons(data.hid_token_buttons);
+            });
         }
     },[userData.is_admin]);
 
@@ -277,6 +294,15 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         socket.on('change info text', (data) => {
             setInfoText(data);
         });
+        socket.on('changed da listening status', (data) =>{
+            setIsListeningToDA(data);
+        });
+        socket.on('changed da setup status', (data) =>{
+            setIsSetupDA(data);
+        });
+        socket.on('change hid token buttons', (data) =>{
+            setHidTokenButtons(data);
+        });
         return (() => {
             socket.disconnect();
         });
@@ -284,7 +310,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     useEffect(() => {
         getCurLikes();
-    }, [getCurLikes])
+    }, [getCurLikes]);
 
     return (
         <div className="queue-list">
@@ -309,7 +335,17 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             }
             {userData.is_admin &&
                 <div className="admin-menu">
-                    <AdminMenu is_admin={userData.is_admin} max_display={maxDisplay} font_size={curFontSize} is_live={isLive} show_info={showInfo} info_text={infoText}/>
+                    <AdminMenu 
+                    is_admin={userData.is_admin} 
+                    max_display={maxDisplay} 
+                    font_size={curFontSize} 
+                    is_live={isLive} 
+                    show_info={showInfo} 
+                    info_text={infoText} 
+                    is_listening_da={isListeningToDA}
+                    is_setup_da={isSetupDA}
+                    hid_token_buttons={hidTokenButtons}
+                    />
                 </div>}
             {!userData.is_mod && !userData.is_admin && !isLive && (
             <div className="dead-queue">

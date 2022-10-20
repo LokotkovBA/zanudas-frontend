@@ -15,9 +15,12 @@ interface AdminMenuProps {
     is_live: boolean;
     info_text: string;
     show_info: boolean;
+    is_setup_da: boolean;
+    is_listening_da: boolean;
+    hid_token_buttons: boolean;
 }
 
-export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, font_size, is_live, info_text, show_info }) => {
+export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, font_size, is_live, info_text, show_info, is_setup_da, is_listening_da, hid_token_buttons }) => {
     const [newMaxDisplay, setNewMaxDisplay] = useState<number>(max_display);
     const [newFontSize, setNewFontSize] = useState<string>(font_size);
     const [infoText, setInfoText] = useState<string>(info_text);
@@ -118,16 +121,26 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, fon
         if(is_admin){
             postRequest('admin/changeInfoText','5100', JSON.stringify({ infoText: infoText }))
         }
-    }
+    };
+
+    function changeTokenButtonsVisibility(){
+        if(is_admin){
+            postRequest('admin/changeTokenButtonsVisibility','5100', JSON.stringify({ hid_token_buttons: !hid_token_buttons }))
+        }
+    };
 
     return (
         <div className='admin-buttons'>
             {is_admin && <>
-                <button onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
-                <button onClick={setupDA}>Setup<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
-                <button onClick={startDA}>Start<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
-                <button onClick={stopDA}>Stop<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
-                <button onClick={() => window.location.href = adminGetTokens}>Twitch Token</button>
+                <button className={hid_token_buttons ? '' : 'pressed'} onClick={changeTokenButtonsVisibility}>{hid_token_buttons ? 'Show' : 'Hide'}</button>
+                {!hid_token_buttons && <button onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
+                {!is_setup_da && <button onClick={setupDA}>Setup<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
+                {is_setup_da && (is_listening_da ? 
+                    <button className='pressed' onClick={stopDA}>Stop<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
+                    : 
+                    <button onClick={startDA}>Start<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>)
+                }
+                {!hid_token_buttons && <button onClick={() => window.location.href = adminGetTokens}>Twitch Token</button>}
                 <button onClick={getTwitchMods}>Twitch Mods</button>
                 {!is_live && <button onClick={startQueue}>Start queue</button>}
                 {is_live && <button className='pressed' onClick={stopQueue}>Stop queue</button>}

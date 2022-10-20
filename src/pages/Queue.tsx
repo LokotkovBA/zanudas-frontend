@@ -251,6 +251,10 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     useEffect(() => {
         const socket = io(SERVER_URL);
+
+        if(userData.is_admin){
+            socket.emit('sub admin', userData.display_name);
+        }
         socket.on('connected', (data) => {
             setIsLive(data);
         });
@@ -275,8 +279,8 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         });
         return (() => {
             socket.disconnect();
-        })
-    }, [getCurLikes, SERVER_URL]);
+        });
+    }, [getCurLikes, SERVER_URL, userData.display_name, userData.is_admin]);
 
     useEffect(() => {
         getCurLikes();

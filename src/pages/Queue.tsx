@@ -294,10 +294,10 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         socket.on('change info text', (data) => {
             setInfoText(data);
         });
-        socket.on('changed da listening status', (data) =>{
+        socket.on('change da listening status', (data) =>{
             setIsListeningToDA(data);
         });
-        socket.on('changed da setup status', (data) =>{
+        socket.on('change da setup status', (data) =>{
             setIsSetupDA(data);
         });
         socket.on('change hid token buttons', (data) =>{

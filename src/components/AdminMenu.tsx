@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import daIconPath from '../icons/da.svg';
-import { BACKEND_ADDRESS, getRequest, postRequest } from '../utils/api-requests';
+import { BACKEND_ADDRESS, postRequest } from '../utils/api-requests';
 
 
 const daLink = `https://${BACKEND_ADDRESS}:5100/da/auth`;
@@ -55,35 +55,33 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, fon
     };
 
     function onShowInfoChange(event: React.ChangeEvent<HTMLInputElement>){
-        if(is_admin && showInfo){
-            getRequest('admin/hideInfoText', '5100');
-        }else if(is_admin){
-            getRequest('admin/showInfoText', '5100');
+        if(is_admin){
+            postRequest('admin/hideInfoText', '5100', JSON.stringify({show_info: event.target.checked}));
         }
         setShowInfo(event.target.checked);
     }
 
     function setupDA(){
         if(is_admin){
-            getRequest('da/setup', '5100');
+            postRequest('da/setup', '5100', '{}');
         };
     }
 
     function startDA(){
         if(is_admin){
-            getRequest('da/start', '5100');
+            postRequest('da/start', '5100', '{}');
         };
     };
 
     function stopDA(){
         if(is_admin){
-            getRequest('da/stop', '5100');
+            postRequest('da/stop', '5100', '{}');
         };
     };
 
     function getTwitchMods(){
         if(is_admin){
-            getRequest('admin/getTwitchMods', '5100');
+            postRequest('admin/getTwitchMods', '5100', '{}');
         };
     }
 
@@ -101,19 +99,19 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, fon
 
     function startQueue() {
         if(is_admin){
-            getRequest('queue/start', '5100');
+            postRequest('queue/start', '5100', '{}');
         };
     };
 
     function stopQueue() {
         if(is_admin){
-            getRequest('queue/stop', '5100');
+            postRequest('queue/stop', '5100', '{}');
         };
     };
 
     function addQueueSong(){
         if(is_admin){
-            getRequest('queue/add', '5100');
+            postRequest('queue/add', '5100', '{}');
         };
     };
 

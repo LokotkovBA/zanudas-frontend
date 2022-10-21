@@ -33,23 +33,41 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [hidTokenButtons, setHidTokenButtons] = useState<boolean>(false);
 
     useEffect(() => {
+        const controller = new AbortController();
         if(userData.is_admin){
-            getRequest('admin/getShowInfo','5100')
+            getRequest('admin/getShowInfo','5100',controller.signal)
                 .then(response => response.json())
                 .then(data =>{
                     setInfoText(data.textInfo);
                     setShowInfo(data.showInfo);
+                })
+                .catch(error =>{
+                    if(error.name !== 'AbortError'){
+                        console.error(error);
+                    }
                 });
+        };
+        return () => {
+            controller.abort();
         };
     },[userData.is_admin])
 
     const getQueue = useCallback( () => {
-        getRequest('queue/get', '5100')
+        const controller = new AbortController();
+        getRequest('queue/get', '5100', controller.signal)
             .then(response => response.json())
             .then(data =>{
                 setQueueData(data.songs.map((song: DBQueueEntry) => queueDBtoData(song)));
                 setMaxDisplay(data.max_display);
+            })
+            .catch(error =>{
+                if(error.name !== 'AbortError'){
+                    console.error(error);
+                }
             });
+        return () => {
+            controller.abort();
+        };
     },[]);
 
     const changeQueueEntry = useCallback((entryId: number) => {
@@ -88,8 +106,9 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     }, [queueData]);
 
     const getCurLikes = useCallback(() => {
+        const controller = new AbortController();
         if (userData.display_name) {
-            getRequest('queue/getAllLikes', '5100')
+            getRequest('queue/getAllLikes', '5100', controller.signal)
                 .then(response => response.json())
                 .then(data => {
                     if (data.is_empty) {
@@ -97,8 +116,17 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                     } else {
                         setQueueLikes(data.map((like: DBLikesState) => ({ ...like, song_id: parseInt(like.song_id) })));
                     }
+                })
+                .catch(error =>{
+                    if(error.name !== 'AbortError'){
+                        console.error(error);
+                    }
                 });
         }
+
+        return () => {
+            controller.abort();
+        };
     }, [userData.display_name]);
 
     const clickLikeHandler = useCallback((song_id: number, is_positive: number) => {
@@ -246,23 +274,42 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     },[getQueue]);
 
     useEffect(() => {
+        const controller = new AbortController();
         if(userData.is_admin){
-            getRequest('admin/getFontSize', '5100')
+            getRequest('admin/getFontSize', '5100', controller.signal)
             .then(response => response.json())
-            .then(data => setCurFontSize(data.fontSize));
+            .then(data => setCurFontSize(data.fontSize))
+            .catch(error =>{
+                if(error.name !== 'AbortError'){
+                    console.error(error);
+                }
+            });
 
-            getRequest('da/DAstatus', '5100')
+            getRequest('da/DAstatus', '5100', controller.signal)
             .then(response => response.json())
             .then(data => {
                 setIsSetupDA(data.centrifuge_is_setup);
                 setIsListeningToDA(data.is_listening_da);
+            })
+            .catch(error =>{
+                if(error.name !== 'AbortError'){
+                    console.error(error);
+                }
             });
 
-            getRequest('admin/tokenButtonsVisibility', '5100')
+            getRequest('admin/tokenButtonsVisibility', '5100', controller.signal)
             .then(response => response.json())
             .then(data => {
                 setHidTokenButtons(data.hid_token_buttons);
+            })
+            .catch(error =>{
+                if(error.name !== 'AbortError'){
+                    console.error(error);
+                }
             });
+        }
+        return () => {
+            controller.abort();
         }
     },[userData.is_admin]);
 

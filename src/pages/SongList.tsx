@@ -38,11 +38,16 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     function displayAlert(){
         setAlertSliding('alert');
-        const timer = setTimeout(() => {
-            setAlertSliding('alert sliding');
-            clearTimeout(timer);
-        }, 3000);
     };
+
+    useEffect(() =>{
+        const interval = setInterval(() => {
+            setAlertSliding('alert sliding');
+        }, 3000);
+        return () => {
+            clearInterval(interval);
+        };
+    },[alertSliding])
 
     const emptyNewSong: SongListEntry = {
         artist: '',
@@ -66,8 +71,8 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const getSongList = useCallback(() => {
         let artistL: string[] = [];
-
-        getRequest('songlist/get', '5100')
+        const controller = new AbortController();
+        getRequest('songlist/get', '5100', controller.signal)
             .then(response => response.json())
             .then(data => {
                 setSongListData(() => {
@@ -81,6 +86,10 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                 });
                 setArtistList(artistL);
             });
+        
+        return () =>{
+            controller.abort();
+        }
     }, []);
 
     useEffect(() => {

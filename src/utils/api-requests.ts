@@ -3,12 +3,12 @@ import headers from "./headers";
 
 export const BACKEND_ADDRESS = getBackendAddress();
 
-export function getRequest(address: string, port: string) {
-
+export function getRequest(address: string, port: string, abort_signal: AbortSignal) {
     return fetch(`https://${BACKEND_ADDRESS}:${port}/${address}`, {
         method: "GET",
         credentials: "include",
-        headers: headers
+        headers: headers,
+        signal: abort_signal
     });
 }
 

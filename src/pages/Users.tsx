@@ -19,12 +19,21 @@ export const Users: React.FC<UsersProps> = ({userData}) => {
     const [onlyModsButtonText, setOnlyModsButtonText] = useState<string>('Only mods');
 
     useEffect(() => {
+        const controller = new AbortController();
         if(userData.is_admin){
-            getRequest('admin/getUsers', '5100')
+            getRequest('admin/getUsers', '5100', controller.signal)
             .then(response => response.json())
             .then(data => {
                 setUserListData(data);
+            })
+            .catch(error =>{
+                if(error.name !== 'AbortError'){
+                    console.error(error);
+                }
             });
+        }
+        return () => {
+            controller.abort();
         }
     },[userData.is_admin]);
 

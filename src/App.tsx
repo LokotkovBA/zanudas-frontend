@@ -5,7 +5,7 @@ import Menu from './components/Menu';
 import Queue from './pages/Queue';
 import SongList from './pages/SongList';
 import { Users } from './pages/Users';
-import { getRequest } from './utils/api-requests';
+import { getRequest, postRequest } from './utils/api-requests';
 import { UserData } from './utils/interfaces';
 
 export default function App() {
@@ -20,8 +20,8 @@ export default function App() {
         is_cookie_alert_shown: true
     });
 
-    const getUser = () => {
-        getRequest("auth/success", "5100")
+    const getUser = (abortSignal: AbortSignal) => {
+        getRequest("auth/success", "5100", abortSignal)
             .then((response) => {
                 if (response.status === 200) return response.json();
             })
@@ -41,11 +41,15 @@ export default function App() {
     };
 
     useEffect(() => {
-        getUser();
+        const controller = new AbortController();
+        getUser(controller.signal);
+        return () => {
+            controller.abort();
+        }
     }, []);
 
     function cookieAlertClick(){
-        getRequest('auth/cookiealert','5100');
+        postRequest('auth/cookiealert','5100', '{}');
         setUserData(prevUserData => {
             return {...prevUserData, is_cookie_alert_shown: true};
         });

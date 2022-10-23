@@ -85,6 +85,11 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                     return data.songs;
                 });
                 setArtistList(artistL);
+            })
+            .catch(error =>{
+                if(error.name !== 'AbortError'){
+                    console.error(error);
+                }
             });
         
         return () =>{

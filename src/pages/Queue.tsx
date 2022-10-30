@@ -107,6 +107,12 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         refetchOnWindowFocus: false
     });
 
+    useEffect(() => {
+        if(getLikes.data){
+            setQueueLikes(getLikes.data.data.map((like: DBLikesState) => ({ ...like, song_id: parseInt(like.song_id) })));
+        }
+    },[getLikes.data]);
+
     const addLikeRequest = useMutation((likeData: {song_id : number, is_positive: number}) => postRequest('queue/addLike', '5100',{ song_id: likeData.song_id, is_positive: likeData.is_positive }));
 
     function clickLikeHandler(song_id: number, is_positive: number){

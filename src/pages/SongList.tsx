@@ -98,12 +98,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
             setArtistList(artistL);
     };
 
-    const { data, isError, isLoading } = useQuery(['songlist-data'], () => getRequest('songlist/get', '5100'), {
-        refetchOnWindowFocus: false,
-        onSuccess:(response) => {
-            updateSonglistData(response);
-        },
-    });
+    const { data, isError, isLoading } = useQuery(['songlist-data'], () => getRequest('songlist/get', '5100'));
 
     useEffect(() => {
         if(data){

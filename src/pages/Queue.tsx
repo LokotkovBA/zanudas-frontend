@@ -24,15 +24,12 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const [isLive, setIsLive] = useState<boolean>(false);
 
-    function updateQueueData(data: AxiosResponse<any, any>){
-        setQueueData(data.data.songs.map((song: DBQueueEntry) => queueDBtoData(song)));
-        setIsLive(data.data.is_live);
+    function updateQueueData(response: AxiosResponse<any, any>){
+        setQueueData(response.data.songs.map((song: DBQueueEntry) => queueDBtoData(song)));
+        setIsLive(response.data.is_live);
     }
 
     const { data, isLoading, isError, isSuccess } = useQuery(['queue-data'], () => getRequest('queue/get', '5100'), {
-        onSuccess: (response) => {
-            updateQueueData(response);
-        },
         refetchOnWindowFocus: false
     });
 

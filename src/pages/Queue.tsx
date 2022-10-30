@@ -13,7 +13,7 @@ import { LoaderBox } from "../components/LoaderBox";
 import { socket } from "../utils/socket-client";
 import { QueueModElement } from "../components/QueueModElement";
 import { QueueElement } from "../components/QueueElement";
-import { AxiosError } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { Alert } from "../components/Alert";
 
 const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
@@ -24,13 +24,23 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const [isLive, setIsLive] = useState<boolean>(false);
 
-    const { isLoading, isError, isSuccess } = useQuery(['queue-data'], () => getRequest('queue/get', '5100'), {
-        onSuccess: (data) => {
-            setQueueData(data.data.songs.map((song: DBQueueEntry) => queueDBtoData(song)));
-            setIsLive(data.data.is_live);
+    function updateQueueData(data: AxiosResponse<any, any>){
+        setQueueData(data.data.songs.map((song: DBQueueEntry) => queueDBtoData(song)));
+        setIsLive(data.data.is_live);
+    }
+
+    const { data, isLoading, isError, isSuccess } = useQuery(['queue-data'], () => getRequest('queue/get', '5100'), {
+        onSuccess: (response) => {
+            updateQueueData(response);
         },
         refetchOnWindowFocus: false
     });
+
+    useEffect(() =>{
+        if(data){
+            updateQueueData(data);
+        }
+    },[data]);
 
     const options = {
         onError: (error: AxiosError) => {

@@ -15,7 +15,7 @@ import { UpButton } from "../components/UpButton";
 
 import { useMutation, useQuery } from "react-query";
 import { LoaderBox } from "../components/LoaderBox";
-import { AxiosError } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 
 const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const { width } = useWindowDimensions();
@@ -70,25 +70,23 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
     }, []);
 
-     const filteredSongListData = useMemo(() => {
-        return songListData.filter(elem => {
-            if (!searchTerm) return true;
-            const lowerSearch = searchTerm.toLowerCase();
-            const lowerArtist = elem.artist.toLowerCase();
-            const lowerSong = elem.song_name.toLowerCase();
-            return lowerArtist.includes(lowerSearch) || 
-                lowerSong.includes(lowerSearch) || 
-                `${lowerArtist} ${lowerSong}`.includes(lowerSearch) || 
-                `${lowerArtist} - ${lowerSong}`.includes(lowerSearch) ||
-                `${lowerArtist} – ${lowerSong}`.includes(lowerSearch) ||
-                elem.tag.includes(lowerSearch);
-        });
-     },[searchTerm, songListData]) 
+    const filteredSongListData = useMemo(() => {
+       return songListData.filter(elem => {
+           if (!searchTerm) return true;
+           const lowerSearch = searchTerm.toLowerCase();
+           const lowerArtist = elem.artist.toLowerCase();
+           const lowerSong = elem.song_name.toLowerCase();
+           return lowerArtist.includes(lowerSearch) || 
+               lowerSong.includes(lowerSearch) || 
+               `${lowerArtist} ${lowerSong}`.includes(lowerSearch) || 
+               `${lowerArtist} - ${lowerSong}`.includes(lowerSearch) ||
+               `${lowerArtist} – ${lowerSong}`.includes(lowerSearch) ||
+               elem.tag.includes(lowerSearch);
+       });
+    },[searchTerm, songListData]);
 
-    const { isError, isLoading } = useQuery(['songlist-data'], () => getRequest('songlist/get', '5100'), {
-        refetchOnWindowFocus: false,
-        onSuccess:(response) => {
-            let artistL: string[] = [];
+    function updateSonglistData(response: AxiosResponse){
+        let artistL: string[] = [];
             setSongListData(() => {
                 return response.data.songs.map((entry: DBSongListEntry) => {
                     if (!(artistL.includes(entry.artist))) {
@@ -98,8 +96,20 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                 }); //format date
             });
             setArtistList(artistL);
+    };
+
+    const { data, isError, isLoading } = useQuery(['songlist-data'], () => getRequest('songlist/get', '5100'), {
+        refetchOnWindowFocus: false,
+        onSuccess:(response) => {
+            updateSonglistData(response);
         },
     });
+
+    useEffect(() => {
+        if(data){
+            updateSonglistData(data);
+        }
+    },[data]);
 
     const songlistAddRequest = useMutation((songData: SongListEntry) => postRequest('songlist/add', '5100', songData),{
         onError: (error: AxiosError) => {
@@ -212,7 +222,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         setShowLetterButtons(prevState => !prevState);
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         function generateArtistBlocks() {
             let songNumber = 0;
             let artistNumber = 0;

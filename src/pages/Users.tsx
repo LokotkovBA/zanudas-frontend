@@ -21,14 +21,18 @@ export const Users: React.FC<UsersProps> = ({userData}) => {
     const [onlyModsToggle, setOnlyModsToggle] = useState<boolean>(false);
     const [onlyModsButtonText, setOnlyModsButtonText] = useState<string>('Only mods');
 
-    const { data, isSuccess, isLoading } = useQuery(['users-data'], () => getRequest('admin/getUsers', '5100'));
+    const { data, isLoading } = useQuery(['users-data'], () => getRequest('admin/getUsers', '5100'),{
+        onSuccess: (response) =>{
+            setUserListData(response.data);
+        }
+    });
 
 
     useEffect(() => {
-        if(isSuccess){
+        if(data){
             setUserListData(data.data);
         }
-    },[data, isSuccess]);
+    },[data]);
 
     useEffect(() =>{
         if(userListData){

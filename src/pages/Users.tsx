@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
+import { useQuery } from 'react-query';
+import { LoaderBox } from '../components/LoaderBox';
 import { SearchBar } from '../components/SearchBar';
+import { UpButton } from '../components/UpButton';
 
 import { UserListItem } from '../components/UserListItem';
 import { getRequest } from '../utils/api-requests';
@@ -18,24 +21,14 @@ export const Users: React.FC<UsersProps> = ({userData}) => {
     const [onlyModsToggle, setOnlyModsToggle] = useState<boolean>(false);
     const [onlyModsButtonText, setOnlyModsButtonText] = useState<string>('Only mods');
 
+    const { data, isSuccess, isLoading } = useQuery(['users-data'], () => getRequest('admin/getUsers', '5100'));
+
+
     useEffect(() => {
-        const controller = new AbortController();
-        if(userData.is_admin){
-            getRequest('admin/getUsers', '5100', controller.signal)
-            .then(response => response.json())
-            .then(data => {
-                setUserListData(data);
-            })
-            .catch(error =>{
-                if(error.name !== 'AbortError'){
-                    console.error(error);
-                }
-            });
+        if(isSuccess){
+            setUserListData(data.data);
         }
-        return () => {
-            controller.abort();
-        }
-    },[userData.is_admin]);
+    },[data, isSuccess]);
 
     useEffect(() =>{
         if(userListData){
@@ -54,7 +47,13 @@ export const Users: React.FC<UsersProps> = ({userData}) => {
         let prevOnlyMods = !onlyModsToggle;
         setOnlyModsToggle(prevOnlyMods);
         setOnlyModsButtonText(prevOnlyMods ? 'All users' : 'Only mods')
-    }
+    };
+
+    if(isLoading){
+        return  <div className="song-list">
+                    <LoaderBox/>
+                </div>
+    };
 
     return (
         <div className='user-list'>
@@ -64,6 +63,7 @@ export const Users: React.FC<UsersProps> = ({userData}) => {
                 <button onClick={toggleOnlyMods}>{onlyModsButtonText}</button>
             </div>}
             {userList}
+            <UpButton/>
         </div>
     );
 }

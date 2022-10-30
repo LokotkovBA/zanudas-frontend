@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { getRequest, postRequest } from "../utils/api-requests";
 import { formatDate, getFormatDate } from "../utils/date";
 import { DBSongListEntry, Filters, SongListEntry, UserData } from "../utils/interfaces";
@@ -12,6 +12,10 @@ import pathToArrowUp from "../icons/arrow-up.svg";
 import pathToArrowDown from "../icons/arrow-down.svg";
 import { Alert } from "../components/Alert";
 import { UpButton } from "../components/UpButton";
+
+import { useMutation, useQuery } from "react-query";
+import { LoaderBox } from "../components/LoaderBox";
+import { AxiosError } from "axios";
 
 const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const { width } = useWindowDimensions();
@@ -30,24 +34,21 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const [songListData, setSongListData] = useState<SongListEntry[]>([]);
     const [importedSongListData, setImportedSongListData] = useState<SongListEntry[]>([]);
-    const [filteredSongListData, setFilteredSongListData] = useState<SongListEntry[]>([]);
+
     const [showAddField, setShowAddField] = useState<boolean>(false);
     const [artistList, setArtistList] = useState<string[]>([]);
 
-    const [alertSliding, setAlertSliding] = useState<string>('alert sliding');
+    const [copyAlertSliding, setCopyAlertSliding] = useState<string>('alert sliding');
+
+    const [alertMessage, setAlertMessage] = useState<string>('');
+    const [sliding, setSliding] = useState<string>('sliding');
 
     function displayAlert(){
-        setAlertSliding('alert');
-    };
-
-    useEffect(() =>{
-        const interval = setInterval(() => {
-            setAlertSliding('alert sliding');
+        setCopyAlertSliding('alert');
+        setTimeout(() => {
+            setCopyAlertSliding('alert sliding');
         }, 3000);
-        return () => {
-            clearInterval(interval);
-        };
-    },[alertSliding])
+    };
 
     const emptyNewSong: SongListEntry = {
         artist: '',
@@ -67,46 +68,58 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         if (savedSearchTerm) {
             setSearchTerm(savedSearchTerm);
         }
-    }, [])
-
-    const getSongList = useCallback(() => {
-        let artistL: string[] = [];
-        const controller = new AbortController();
-        getRequest('songlist/get', '5100', controller.signal)
-            .then(response => response.json())
-            .then(data => {
-                setSongListData(() => {
-                    data.songs = data.songs.map((entry: DBSongListEntry) => {
-                        if (!(artistL.includes(entry.artist))) {
-                            artistL.push(entry.artist);
-                        }
-                        return { ...entry, date: formatDate(entry.date), id: parseInt(entry.id), likes: parseInt(entry.likes) };
-                    }); //format date
-                    return data.songs;
-                });
-                setArtistList(artistL);
-            })
-            .catch(error =>{
-                if(error.name !== 'AbortError'){
-                    console.error(error);
-                }
-            });
-        
-        return () =>{
-            controller.abort();
-        }
     }, []);
 
-    useEffect(() => {
-        setFilteredSongListData(songListData);
-    }, [songListData]);
+     const filteredSongListData = useMemo(() => {
+        return songListData.filter(elem => {
+            if (!searchTerm) return true;
+            const lowerSearch = searchTerm.toLowerCase();
+            const lowerArtist = elem.artist.toLowerCase();
+            const lowerSong = elem.song_name.toLowerCase();
+            return lowerArtist.includes(lowerSearch) || 
+                lowerSong.includes(lowerSearch) || 
+                `${lowerArtist} ${lowerSong}`.includes(lowerSearch) || 
+                `${lowerArtist} - ${lowerSong}`.includes(lowerSearch) ||
+                `${lowerArtist} – ${lowerSong}`.includes(lowerSearch) ||
+                elem.tag.includes(lowerSearch);
+        });
+     },[searchTerm, songListData]) 
+
+    const { isError, isLoading } = useQuery(['songlist-data'], () => getRequest('songlist/get', '5100'), {
+        refetchOnWindowFocus: false,
+        onSuccess:(response) => {
+            let artistL: string[] = [];
+            setSongListData(() => {
+                return response.data.songs.map((entry: DBSongListEntry) => {
+                    if (!(artistL.includes(entry.artist))) {
+                        artistL.push(entry.artist);
+                    }
+                    return { ...entry, date: formatDate(entry.date), id: parseInt(entry.id), likes: parseInt(entry.likes) };
+                }); //format date
+            });
+            setArtistList(artistL);
+        },
+    });
+
+    const songlistAddRequest = useMutation((songData: SongListEntry) => postRequest('songlist/add', '5100', songData),{
+        onError: (error: AxiosError) => {
+            setAlertMessage(error.message);
+            setSliding('');
+        },
+        onSuccess: () => {
+            setNewSongData(emptyNewSong);
+            setSliding('');
+            setAlertMessage('Success!');
+            setTimeout(() => {
+                setSliding('sliding');
+            }, 3000);
+        }
+    });
 
     function addClick() {
         if (showAddField && newSongData.artist && newSongData.song_name && newSongData.tag) {
-            postRequest('songlist/add', '5100', JSON.stringify(newSongData));
-            setNewSongData(emptyNewSong);
+            songlistAddRequest.mutate(newSongData);
         } else {
-
             setShowAddField(prevShowAddField => !prevShowAddField);
         }
     }
@@ -124,23 +137,6 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         setSearchTerm(event.target.value);
         localStorage.setItem('searchTerm', event.target.value);
     };
-
-    useEffect(() => {
-        if (songListData) {
-            setFilteredSongListData(() => songListData.filter(elem => {
-                if (!searchTerm) return true;
-                const lowerSearch = searchTerm.toLowerCase();
-                const lowerArtist = elem.artist.toLowerCase();
-                const lowerSong = elem.song_name.toLowerCase();
-                return lowerArtist.includes(lowerSearch) || 
-                    lowerSong.includes(lowerSearch) || 
-                    `${lowerArtist} ${lowerSong}`.includes(lowerSearch) || 
-                    `${lowerArtist} - ${lowerSong}`.includes(lowerSearch) ||
-                    `${lowerArtist} – ${lowerSong}`.includes(lowerSearch) ||
-                    elem.tag.includes(lowerSearch);
-            }));
-        }
-    }, [searchTerm, songListData]);
 
     function foreignFilter() {
         setPressedButtons(prevPressedButons => { return { ...prevPressedButons, foreign: !prevPressedButons.foreign } });
@@ -187,9 +183,23 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         };
     };
 
+    const addMultipleRequest = useMutation((songs: SongListEntry[]) => postRequest('songlist/addMultiple', 5100, {songs: songs}), {
+        onError: (error: AxiosError) => {
+            setAlertMessage(error.message);
+            setSliding('');
+        },
+        onSuccess: () => {
+            setSliding('');
+            setAlertMessage('Success!');
+            setTimeout(() => {
+                setSliding('sliding');
+            }, 3000);
+        }
+    });
+
     function sendFile(){
         if(userData.is_admin && importedSongListData[0]){
-            postRequest('songlist/addMultiple', 5100, JSON.stringify({songs: importedSongListData}));
+            addMultipleRequest.mutate(importedSongListData);
         }
     };
 
@@ -201,10 +211,6 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
         setShowLetterButtons(prevState => !prevState);
     };
-
-    useEffect(() => {
-        getSongList();
-    }, [getSongList]);
 
     React.useEffect(() => {
         function generateArtistBlocks() {
@@ -264,6 +270,12 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         if (filteredSongListData && artistList[0]) generateArtistBlocks();
     }, [pressedButtons, filteredSongListData, artistList, userData]);
 
+    if(isLoading){
+        return  <div className="song-list">
+                    <LoaderBox/>
+                </div>
+    };
+
     return (
         <div className="song-list">
             <div className='background-menu set-sticky'>
@@ -298,10 +310,10 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
             <div className='song-blocks'>
                 {artistBlocks}
             </div>
-            <div className="up-zone">
-                <UpButton/>
-            </div>
-            <Alert message='Copied!' class_name={alertSliding}/>
+            <UpButton/>
+            <Alert message='Copied!' class_name={copyAlertSliding}/>
+            {isError && <Alert message="Couldn't load song list!" class_name='alert loading-error'/>}
+            <Alert message={alertMessage} class_name={`alert fetch ${sliding}`}/>
         </div>
     );
 }

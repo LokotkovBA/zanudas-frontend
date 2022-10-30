@@ -1,101 +1,81 @@
-import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
-import { useCallback, useEffect, useState } from "react";
-import { io } from "socket.io-client";
-import { BACKEND_ADDRESS, getRequest, postRequest } from "../utils/api-requests";
+import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
+import { useEffect, useState } from "react";
+import { getRequest, postRequest } from "../utils/api-requests";
 import { DBLikesState, DBQueueEntry, LikesState, QueueEntry, UserData } from "../utils/interfaces";
 
-import pathToArrowRight from '../icons/arrow-right.svg';
 import telegramIconPath from "../icons/telegram.svg";
 import twitchIconPath from '../icons/twitch.svg';
 
 import { queueDBtoData } from "../utils/conversions";
 import { AdminMenu } from "../components/AdminMenu";
-import { QueueItemInfo } from "../components/QueueItemInfo";
-import { LikeBlock } from "../components/LikeBlock";
-
+import { useMutation, useQuery } from "react-query";
+import { LoaderBox } from "../components/LoaderBox";
+import { socket } from "../utils/socket-client";
+import { QueueModElement } from "../components/QueueModElement";
+import { QueueElement } from "../components/QueueElement";
+import { AxiosError } from "axios";
+import { Alert } from "../components/Alert";
 
 const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [queueData, setQueueData] = useState<QueueEntry[]>([]);
-    const [queueComponents, setQueueComponents] = useState<JSX.Element[]>([]);
     const [queueLikes, setQueueLikes] = useState<LikesState[]>([]);
+    const [alertMessage, setAlertMessage] = useState<string>('');
+    const [sliding, setSliding] = useState<string>('sliding');
 
     const [isLive, setIsLive] = useState<boolean>(false);
 
-    const [maxDisplay, setMaxDisplay] = useState<number>(0);
+    const { isLoading, isError, isSuccess } = useQuery(['queue-data'], () => getRequest('queue/get', '5100'), {
+        onSuccess: (data) => {
+            setQueueData(data.data.songs.map((song: DBQueueEntry) => queueDBtoData(song)));
+            setIsLive(data.data.is_live);
+        },
+        refetchOnWindowFocus: false
+    });
 
-    const [curFontSize, setCurFontSize] = useState<string>('');
+    const options = {
+        onError: (error: AxiosError) => {
+            setAlertMessage(error.message);
+            setSliding('');
+        },
+        onSuccess: () => {
+            setSliding('');
+            setAlertMessage('Success!');
+            setTimeout(() => {
+                setSliding('sliding');
+            }, 3000);
+        }
+    };
 
-    const [infoText, setInfoText] = useState<string>('');
-    const [showInfo, setShowInfo] = useState<boolean>(false);
+    const queueChangeRequest = useMutation((newQueueData: QueueEntry) => postRequest('queue/change', '5100', newQueueData), options);
 
-    const [isSetupDA, setIsSetupDA] = useState<boolean>(false);
-    const [isListeningToDA, setIsListeningToDA] = useState<boolean>(false);
-    const [hidTokenButtons, setHidTokenButtons] = useState<boolean>(false);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        if(userData.is_admin){
-            getRequest('admin/getShowInfo','5100',controller.signal)
-                .then(response => response.json())
-                .then(data =>{
-                    setInfoText(data.textInfo);
-                    setShowInfo(data.showInfo);
-                })
-                .catch(error =>{
-                    if(error.name !== 'AbortError'){
-                        console.error(error);
-                    }
-                });
-        };
-        return () => {
-            controller.abort();
-        };
-    },[userData.is_admin])
-
-    const getQueue = useCallback( () => {
-        const controller = new AbortController();
-        getRequest('queue/get', '5100', controller.signal)
-            .then(response => response.json())
-            .then(data =>{
-                setQueueData(data.songs.map((song: DBQueueEntry) => queueDBtoData(song)));
-                setMaxDisplay(data.max_display);
-            })
-            .catch(error =>{
-                if(error.name !== 'AbortError'){
-                    console.error(error);
-                }
-            });
-        return () => {
-            controller.abort();
-        };
-    },[]);
-
-    const changeQueueEntry = useCallback((entryId: number) => {
-        const curIndex = queueData.findIndex(entry => entry.id === entryId);
-        postRequest('queue/change', '5100', JSON.stringify(queueData[curIndex]));
-    }, [queueData]);
-
-    const deleteQueueEntry = useCallback((entryId: number) => {
-        const delIndex = queueData.findIndex(entry => entry.id === entryId);
-        if(queueData[delIndex].delete_intention){
+    const deleteQueueEntryRequest = useMutation((delEntry :{ id: number; index: number}) => postRequest('queue/delete', '5100', { id: delEntry.id }), {
+        onSuccess: (response, delEntry) => {
             setQueueData(prevQueueData => {
                 let newQueueData = [...prevQueueData];
-                newQueueData.splice(delIndex, 1);
+                newQueueData.splice(delEntry.index, 1);
                 return newQueueData;
             });
-            postRequest('queue/delete', '5100', JSON.stringify({ id: entryId }));
-        }else{
+        },
+        onError: (error, delEntry) => {
             setQueueData(prevQueueData => {
                 let newQueueData = [...prevQueueData];
-                newQueueData[delIndex].delete_button_text = 'Sure?';
-                newQueueData[delIndex].delete_intention = true;
+                newQueueData[delEntry.index].delete_button_text = 'Error!';
+                newQueueData[delEntry.index].delete_intention = true;
                 return newQueueData;
             });
         }
-    }, [queueData]);
+    });
 
-    const changeModView = useCallback((enrtyId: number) =>{
-        const index = queueData.findIndex(enrty => enrty.id === enrtyId);
+    function changeDeleteIntention(del_index: number, text: string, delete_intention: boolean){
+        setQueueData(prevQueueData => {
+            let newQueueData = [...prevQueueData];
+            newQueueData[del_index].delete_button_text = text;
+            newQueueData[del_index].delete_intention = delete_intention;
+            return newQueueData;
+        });
+    }
+
+    function changeModView(index: number){
         setQueueData(prevQueueData =>{
             let newQueuedata = [...prevQueueData];
             newQueuedata[index].modView = !prevQueueData[index].modView;
@@ -103,43 +83,31 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             newQueuedata[index].button_text = newQueuedata[index].modView ? 'Hide' : 'More';
             return newQueuedata;
         });
-    }, [queueData]);
+    };
 
-    const getCurLikes = useCallback(() => {
-        const controller = new AbortController();
+    const getLikes = useQuery(['likes-data'], () => getRequest('queue/getAllLikes', '5100'),{
+        enabled: userData.display_name !== '',
+        onSuccess: (response) => {
+            if (response.data.is_empty) {
+                setQueueLikes([]);
+            } else {
+                setQueueLikes(response.data.map((like: DBLikesState) => ({ ...like, song_id: parseInt(like.song_id) })));
+            }
+        },
+        refetchOnWindowFocus: false
+    });
+
+    const addLikeRequest = useMutation((likeData: {song_id : number, is_positive: number}) => postRequest('queue/addLike', '5100',{ song_id: likeData.song_id, is_positive: likeData.is_positive }));
+
+    function clickLikeHandler(song_id: number, is_positive: number){
         if (userData.display_name) {
-            getRequest('queue/getAllLikes', '5100', controller.signal)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.is_empty) {
-                        setQueueLikes([]);
-                    } else {
-                        setQueueLikes(data.map((like: DBLikesState) => ({ ...like, song_id: parseInt(like.song_id) })));
-                    }
-                })
-                .catch(error =>{
-                    if(error.name !== 'AbortError'){
-                        console.error(error);
-                    }
-                });
+            addLikeRequest.mutate({ song_id: song_id, is_positive: is_positive});
         }
+    };
 
-        return () => {
-            controller.abort();
-        };
-    }, [userData.display_name]);
-
-    const clickLikeHandler = useCallback((song_id: number, is_positive: number) => {
-        if (userData.display_name) {
-            postRequest('queue/addLike', '5100', JSON.stringify({ song_id: song_id, is_positive: is_positive }))
-        }
-    }, [userData.display_name]);
-
-
-    function queueEntryChangeEvent(event: React.ChangeEvent<HTMLInputElement>) {
+    function queueEntryChangeEvent(event: React.ChangeEvent<HTMLInputElement>, curIndex: number) {
         setQueueData(prevQueueData => {
-            const { name, value, className, type, checked } = event.target;
-            const curIndex = prevQueueData.findIndex(entry => entry.id === parseInt(className));
+            const { name, value, type, checked } = event.target;
             return prevQueueData.map((entry, index) => {
                 return index === curIndex ? {
                     ...entry,
@@ -149,10 +117,9 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         });
     };
 
-    function queueEntryTextAreaChangeEvent(event: React.ChangeEvent<HTMLTextAreaElement>) {
+    function queueEntryTextAreaChangeEvent(event: React.ChangeEvent<HTMLTextAreaElement>, curIndex: number) {
         setQueueData(prevQueueData => {
-            const { name, value, className } = event.target;
-            const curIndex = prevQueueData.findIndex(entry => entry.id === parseInt(className));
+            const { name, value } = event.target;
             return prevQueueData.map((entry, index) => {
                 return index === curIndex ? {
                     ...entry,
@@ -160,7 +127,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 } : entry;
             });
         });
-    }
+    };
 
     function queueHandleOnDragEnd(result: DropResult) {
         if (result.destination) {
@@ -174,190 +141,54 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
     };
 
+    const queueOrderRequest = useMutation((newOrder: { id: number, queue_number: number}[]) => postRequest('queue/order', '5100', newOrder), options);
+
     function changeQueueOrder() {
         const newOrder = queueData.map((elem, index) => ({ id: elem.id, queue_number: index }));
         setQueueData(prevQueueData => prevQueueData.map((elem, index) => ({ ...elem, queue_number: index, classN: '' })));
-        postRequest('queue/order', '5100', JSON.stringify(newOrder));
+        queueOrderRequest.mutate(newOrder);
     };
 
     useEffect(() => {
-        if (userData.is_mod) {
-            setQueueComponents(queueData.map((entry, index) =>
-                <Draggable key={entry.id} draggableId={entry.id.toString()} index={index}>
-                    {(provided) => {
-                        const curIndex = queueLikes.findIndex(like => like.song_id === entry.id);
-                        return (
-                            <div className={`${entry.style} ${entry.classN}`} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-                                {entry.modView && <>
-                                <p className="queue-num">{index + 1}</p>
-                                <input type='text' name='artist' placeholder="artist" className={entry.id.toString()} onChange={queueEntryChangeEvent} value={entry.artist ? entry.artist : ''} />
-                                <input type='text' name='song_name' placeholder="song name" className={entry.id.toString()} onChange={queueEntryChangeEvent} value={entry.song_name ? entry.song_name : ''} />
-                                <input type='text' name='donor_name' placeholder="donor name" className={entry.id.toString()} onChange={queueEntryChangeEvent} value={entry.donor_name} />
-                                <input type='text' name='donate_amount' placeholder="amount" className={entry.id.toString()} onChange={queueEntryChangeEvent} value={entry.donate_amount} />
-                                <input type='text' name='currency' placeholder="currency" className={entry.id.toString()} onChange={queueEntryChangeEvent} value={entry.currency} />
-                                <input type='text' name='tag' placeholder="tag" className={entry.id.toString()} onChange={queueEntryChangeEvent} value={entry.tag ? entry.tag : ''} />
-                                <textarea name='donor_text' className={entry.id.toString()} onChange={queueEntryTextAreaChangeEvent} value={entry.donor_text} />
-                                </>}
-                                {!entry.modView && 
-                                    <QueueItemInfo index={index} 
-                                    artist={entry.artist} 
-                                    song_name={entry.song_name} 
-                                    currency={entry.currency} 
-                                    donate_amount={entry.donate_amount} 
-                                    donor_name={entry.donor_name} 
-                                    current={entry.current} 
-                                    played={entry.played} 
-                                    key={entry.id} 
-                                    />
-                                }
-                                <div className='button-group'>
-                                    <button onClick={() => changeQueueEntry(entry.id)}>Apply</button>
-                                    <button onClick={() => deleteQueueEntry(entry.id)}>{entry.delete_button_text}</button>
-                                    <button onClick={() => changeModView(entry.id)}>{entry.button_text}</button>
-                                </div>
-                                <div className="last-block">
-                                    <LikeBlock like_state={queueLikes[curIndex]}
-                                    user_id={userData.id}
-                                    song_id={entry.id} 
-                                    like_count={entry.like_count} 
-                                    clickLikeHandler={clickLikeHandler} />
-                                    <div className="checkboxes">
-                                        <input type='checkbox' className={entry.id.toString()} name='played' checked={entry.played} onChange={queueEntryChangeEvent} />
-                                        <label htmlFor='played'>played</label> {/*если сыграно, то нельзя менять порядок */}
-                                        <input type='checkbox' className={entry.id.toString()} name='will_add' checked={entry.will_add} onChange={queueEntryChangeEvent} />
-                                        <label htmlFor='will_add'>will add</label>
-                                        <input type='checkbox' className={entry.id.toString()} name='visible' checked={entry.visible} onChange={queueEntryChangeEvent} />
-                                        <label htmlFor='visible'>visible</label>
-                                        <input type='checkbox' className={entry.id.toString()} name='current' checked={entry.current} onChange={queueEntryChangeEvent} />
-                                        <label htmlFor='current'>current</label>
-                                    </div>
-                                </div>
-                            </div>);
-                    }
-                    }
-                </Draggable>
-            ));
-        } else {
-            setQueueComponents(queueData.filter(entry => entry.artist && 
-                entry.visible).map((entry, index) => {
-                const curIndex = queueLikes.findIndex(like => like.song_id === entry.id);
-                return (
-                <div className="list-item queue" key={entry.id}>
-                    <div className="arrow-info-block">
-                    {entry.current && <img src={pathToArrowRight} alt="arrow pointing right"/>}
-                        <QueueItemInfo index={index} 
-                        artist={entry.artist} 
-                        song_name={entry.song_name} 
-                        currency={entry.currency} 
-                        donate_amount={entry.donate_amount} 
-                        donor_name={entry.donor_name} 
-                        current={entry.current} 
-                        played={entry.played} 
-                        />
-                    </div>
-                    <LikeBlock like_state={queueLikes[curIndex]}
-                    user_id={userData.id}
-                    song_id={entry.id} 
-                    like_count={entry.like_count} 
-                    clickLikeHandler={clickLikeHandler} />
-                </div>
-                );
-            }
-            ))
-        }
-    }, [queueData, queueLikes, userData.id, userData.is_mod, changeQueueEntry, deleteQueueEntry, clickLikeHandler, changeModView]);
-
-    const SERVER_URL = `https://${BACKEND_ADDRESS}:5200`;
-
-    useEffect(() => {
-        getQueue();
-    },[getQueue]);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        if(userData.is_admin){
-            getRequest('admin/getFontSize', '5100', controller.signal)
-            .then(response => response.json())
-            .then(data => setCurFontSize(data.fontSize))
-            .catch(error =>{
-                if(error.name !== 'AbortError'){
-                    console.error(error);
-                }
-            });
-
-            getRequest('da/DAstatus', '5100', controller.signal)
-            .then(response => response.json())
-            .then(data => {
-                setIsSetupDA(data.centrifuge_is_setup);
-                setIsListeningToDA(data.is_listening_da);
-            })
-            .catch(error =>{
-                if(error.name !== 'AbortError'){
-                    console.error(error);
-                }
-            });
-
-            getRequest('admin/tokenButtonsVisibility', '5100', controller.signal)
-            .then(response => response.json())
-            .then(data => {
-                setHidTokenButtons(data.hid_token_buttons);
-            })
-            .catch(error =>{
-                if(error.name !== 'AbortError'){
-                    console.error(error);
-                }
-            });
-        }
-        return () => {
-            controller.abort();
-        }
-    },[userData.is_admin]);
-
-    useEffect(() => {
-        const socket = io(SERVER_URL);
-
-        if(userData.is_admin){
-            socket.emit('sub admin', userData.display_name);
-        }
-        socket.on('connected', (data) => {
-            setIsLive(data);
-        });
         socket.on('queue change', (data) => {
             setQueueData(data.songs.map((song: DBQueueEntry) => (queueDBtoData(song))));
-            getCurLikes();
         });
+        return (() => {
+            socket.off('queue change');
+        });
+    },[getLikes]);
+
+    useEffect(() =>{
+        if(userData.display_name){
+            socket.on('likes change',(likes: DBLikesState[]) => {
+                setQueueLikes(likes.map(like => { return {...like, song_id: parseInt(like.song_id)} }));
+            })
+            socket.on('connect',() =>{
+                socket.emit('sub likes', userData.display_name);
+            });
+            socket.emit('sub likes', userData.display_name);
+        };
+        return (() =>  {
+            socket.emit('unsub likes', userData.display_name);
+            socket.off('likes change');
+            socket.off('connect');
+        });
+    },[userData.display_name])
+
+    useEffect(() => {
         socket.on('queue status', (data) => {
             setIsLive(data);
         });
-        socket.on('max display changed', (data) => {
-            setMaxDisplay(data);
-        });
-        socket.on('font size changed', (data) => {
-            setCurFontSize(data);
-        });
-        socket.on('show info text', (data) => {
-            setShowInfo(data);
-        });
-        socket.on('change info text', (data) => {
-            setInfoText(data);
-        });
-        socket.on('change da listening status', (data) =>{
-            setIsListeningToDA(data);
-        });
-        socket.on('change da setup status', (data) =>{
-            setIsSetupDA(data);
-        });
-        socket.on('change hid token buttons', (data) =>{
-            setHidTokenButtons(data);
-        });
         return (() => {
-            socket.disconnect();
+            socket.off('queue status');
         });
-    }, [getCurLikes, SERVER_URL, userData.display_name, userData.is_admin]);
+    }, []);
 
-    useEffect(() => {
-        getCurLikes();
-    }, [getCurLikes]);
+    if(isLoading){
+        return  <div className="song-list">
+                    <LoaderBox/>
+                </div>
+    };
 
     return (
         <div className="queue-list">
@@ -366,35 +197,49 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                     <DragDropContext onDragEnd={queueHandleOnDragEnd}>
                         <Droppable droppableId="queue">
                             {provided => (
-                                <div {...provided.droppableProps} ref={provided.innerRef}>
+                                <ul {...provided.droppableProps} ref={provided.innerRef}>
                                     <button className="order-button" onClick={changeQueueOrder}>Order</button>
-                                    {queueComponents}
+                                    {  queueData.map((entry, index) => <QueueModElement 
+                                            entry={entry}
+                                            index={index}
+                                            user_likes={queueLikes}
+                                            user_id={userData.id}
+                                            change_mod_view={changeModView}
+                                            queue_entry_change_event={queueEntryChangeEvent}
+                                            queue_entry_text_area_change_event={queueEntryTextAreaChangeEvent}
+                                            queue_change_request={queueChangeRequest}
+                                            delete_queue_entry_request={deleteQueueEntryRequest}
+                                            change_delete_intention={changeDeleteIntention}
+                                            click_like_handler={clickLikeHandler}
+                                            key={entry.id}
+                                            />    )}
                                     {provided.placeholder}
-                                </div>
+                                </ul>
                             )}
                         </Droppable>
                     </DragDropContext>
                 </div>
                 :
                 (isLive && <div className="pleb-view">
-                    {queueComponents}
+                    {queueData.map((entry, index) => <QueueElement
+                                        entry={entry}
+                                        index={index}
+                                        user_id={userData.id}
+                                        user_likes={queueLikes}
+                                        click_like_handler={clickLikeHandler}
+                                        key={entry.id}
+                                        />)}
                 </div>)
             }
             {userData.is_admin &&
-                <div className="admin-menu">
+                <ul className="admin-menu">
                     <AdminMenu 
+                    display_name={userData.display_name}
                     is_admin={userData.is_admin} 
-                    max_display={maxDisplay} 
-                    font_size={curFontSize} 
                     is_live={isLive} 
-                    show_info={showInfo} 
-                    info_text={infoText} 
-                    is_listening_da={isListeningToDA}
-                    is_setup_da={isSetupDA}
-                    hid_token_buttons={hidTokenButtons}
                     />
-                </div>}
-            {!userData.is_mod && !userData.is_admin && !isLive && (
+                </ul>}
+            {isSuccess && !userData.is_mod && !userData.is_admin && !isLive && (
             <div className="dead-queue">
                 Queue is not live!
                 <div>
@@ -403,6 +248,8 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                     <a rel="noreferrer" target='_blank' href="https://t.me/etzalert"><img src={telegramIconPath} alt='telegram icon'/></a>
                 </div>
             </div>)}
+            {isError && <Alert message="Couldn't load queue!" class_name='alert loading-error'/>}
+            <Alert class_name={`alert fetch ${sliding}`} message={alertMessage}/>
         </div>
     );
 }

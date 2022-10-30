@@ -1,22 +1,19 @@
+import axios from "axios";
 import { getBackendAddress } from "./environment";
 import headers from "./headers";
 
 export const BACKEND_ADDRESS = getBackendAddress();
 
-export function getRequest(address: string, port: string, abort_signal: AbortSignal) {
-    return fetch(`https://${BACKEND_ADDRESS}:${port}/${address}`, {
-        method: "GET",
-        credentials: "include",
-        headers: headers,
-        signal: abort_signal
-    });
-}
+export function getRequest(address: string, port: number | string) {
+    return axios.get(`https://${BACKEND_ADDRESS}:${port}/${address}`, {
+        withCredentials: true,
+        headers: headers
+    })
+};
 
-export function postRequest(address: string, port: number | string, body: string) {
-    return fetch(`https://${BACKEND_ADDRESS}:${port}/${address}`, {
-        method: "POST",
-        credentials: "include",
-        headers: headers,
-        body: body,
+export function postRequest(address: string, port: number | string, body: any) {
+    return axios.post(`https://${BACKEND_ADDRESS}:${port}/${address}`, body, {
+        withCredentials: true,
+        headers: headers
     });
-}
+};

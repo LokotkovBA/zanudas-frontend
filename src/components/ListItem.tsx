@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 
-import { SongListEntry, UserData } from "../utils/interfaces";
-import { postRequest } from "../utils/api-requests";
+import { DBQueueEntry, SongListEntry, UserData } from "../utils/interfaces";
 
 import pathToThumbsUp from '../icons/thumbs-up-green.svg';
 import pathToThumbsDown from '../icons/thumbs-down-red.svg';
+import { useMutation } from "react-query";
+import { postRequest } from "../utils/api-requests";
+import { AxiosError } from "axios";
+import { Alert } from "./Alert";
 
 export interface ListItemProps {
     song: SongListEntry, 
@@ -21,6 +24,27 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
     const [clickedState, setClickedState] = useState<string>('');
 
     const [curLike, setCurLike] = useState<string>(pathToThumbsUp);
+
+    const [alertMessage, setAlertMessage] = useState<string>('');
+    const [sliding, setSliding] = useState<string>('sliding');
+
+    const options = {
+        onError: (error: AxiosError) => {
+            setAlertMessage(error.message);
+            setSliding('');
+        },
+        onSuccess: () => {
+            setSliding('');
+            setAlertMessage('Success!');
+            setTimeout(() => {
+                setSliding('sliding');
+            }, 3000);
+        }
+    };
+
+    const deleteRequest = useMutation((songId: number) => postRequest('songlist/delete', '5100', {id: songId}), options);
+    const addQueueRequest = useMutation((newSong: DBQueueEntry) => postRequest('queue/addsong', '5100', newSong), options);
+    const changeSongRequest = useMutation((songData: SongListEntry) => postRequest('songlist/changeall', '5100', songData), options);
 
     function copyClick(){
         navigator.clipboard.writeText(`${song.artist} - ${song.song_name}`);
@@ -43,21 +67,41 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
     function deleteItem(event: React.MouseEvent<HTMLButtonElement, MouseEvent>){
         event.stopPropagation();
         if(deleteIntention && userData.is_admin){
-            postRequest('songlist/delete', '5100', `{"id": ${songData.id}}`);
-            setDeleteIntention(false);
-            setDeleteButtonText('Deleted');
+            deleteRequest.mutate(songData.id!);
         }else{
             setDeleteIntention(true);
             setDeleteButtonText('Sure?');
         }
     };
 
+    useEffect(() =>{
+        if(deleteRequest.isSuccess){
+            setDeleteIntention(false);
+            setDeleteButtonText('Deleted');
+        }
+    },[deleteRequest.isSuccess]);
+
+    useEffect(() =>{
+        if(deleteRequest.isError){
+            setDeleteButtonText('Error!');
+        }
+    },[deleteRequest.isError]);
+
     function addToQueue(event:  React.MouseEvent<HTMLButtonElement, MouseEvent>){
         event.stopPropagation();
         if(userData.is_mod || userData.is_admin){
-            postRequest('queue/addsong', '5100', JSON.stringify({...song, donor_name: '', donate_amount: 0, currency: 'RUB', donor_text: '',}));
-        }
-    }
+            addQueueRequest.mutate({
+                artist: song.artist, 
+                song_name: song.song_name, 
+                donor_name: '', 
+                donate_amount: '0', 
+                currency: 'RUB', 
+                donor_text: '',
+                tag: song.tag, 
+                queue_number: '0'
+            });
+        };
+    };
 
     function queueEntryChangeEvent(event: React.ChangeEvent<HTMLInputElement>) {
         setSongData(prevSongData => {
@@ -69,7 +113,9 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
 
     function sendNewSongData(event: React.MouseEvent<HTMLButtonElement, MouseEvent>){
         event.stopPropagation();
-        postRequest('songlist/changeall', '5100', JSON.stringify(songData));
+        if(userData.is_mod || userData.is_admin){
+            changeSongRequest.mutate(songData);
+        };
     };
 
     function inputClick(event: React.MouseEvent){
@@ -101,6 +147,7 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
             </>}
             {(userData.is_admin || userData.is_mod) && 
                 <button onClick={(event) => addToQueue(event)}>Add</button>}
+            <Alert message={alertMessage} class_name={`alert fetch ${sliding}`}/>
         </div>
     );
 }

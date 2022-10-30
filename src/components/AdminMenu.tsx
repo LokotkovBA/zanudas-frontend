@@ -1,7 +1,12 @@
+import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
 
 import daIconPath from '../icons/da.svg';
-import { BACKEND_ADDRESS, postRequest } from '../utils/api-requests';
+import { BACKEND_ADDRESS, getRequest, postRequest } from '../utils/api-requests';
+import { socket } from '../utils/socket-client';
+import { Alert } from './Alert';
+import { LoaderBox } from './LoaderBox';
 
 
 const daLink = `https://${BACKEND_ADDRESS}:5100/da/auth`;
@@ -9,38 +14,21 @@ const daLink = `https://${BACKEND_ADDRESS}:5100/da/auth`;
 const adminGetTokens = `https://${BACKEND_ADDRESS}:5100/admin/getToken`;
 
 interface AdminMenuProps {
+    display_name: string;
     is_admin: boolean;
-    max_display: number;
-    font_size: string;
     is_live: boolean;
-    info_text: string;
-    show_info: boolean;
-    is_setup_da: boolean;
-    is_listening_da: boolean;
-    hid_token_buttons: boolean;
 }
 
-export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, font_size, is_live, info_text, show_info, is_setup_da, is_listening_da, hid_token_buttons }) => {
-    const [newMaxDisplay, setNewMaxDisplay] = useState<number>(max_display);
-    const [newFontSize, setNewFontSize] = useState<string>(font_size);
-    const [infoText, setInfoText] = useState<string>(info_text);
-    const [showInfo, setShowInfo] = useState<boolean>(show_info);
-
-    useEffect(() => {   
-        setNewMaxDisplay(max_display);
-    },[max_display]);
-
-    useEffect(() => {
-        setNewFontSize(font_size);
-    },[font_size]);
-
-    useEffect(() => {
-        setInfoText(info_text);
-    },[info_text]);
-
-    useEffect(() => {
-        setShowInfo(show_info);
-    },[show_info]);
+export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display_name }) => {
+    const [newMaxDisplay, setNewMaxDisplay] = useState<number>(0);
+    const [newFontSize, setNewFontSize] = useState<string>('');
+    const [infoText, setInfoText] = useState<string>('');
+    const [showInfo, setShowInfo] = useState<boolean>(false);
+    const [isSetupDA, setIsSetupDA] = useState<boolean>(false);
+    const [isListeningToDA, setIsListeningToDA] = useState<boolean>(false);
+    const [HidTokenButtons, setHidTokenButtons] = useState<boolean>(false);
+    const [alertMessage, setAlertMessage] = useState<string>('');
+    const [sliding, setSliding] = useState<string>('sliding');
         
     function onMaxDisplayChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNewMaxDisplay(parseInt(event.target.value));
@@ -56,89 +44,183 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, fon
 
     function onShowInfoChange(event: React.ChangeEvent<HTMLInputElement>){
         if(is_admin){
-            postRequest('admin/hideInfoText', '5100', JSON.stringify({show_info: event.target.checked}));
+            hideInfoText.mutate(event.target.checked);
         }
         setShowInfo(event.target.checked);
+    };
+
+    const getAdminData = useQuery(['admin-data'], () => getRequest('admin/get','5100'), {
+        enabled: is_admin,
+        refetchOnWindowFocus: false,
+        onSuccess: (data) => {
+            setInfoText(data.data.textInfo);
+            setShowInfo(data.data.showInfo);
+            setNewFontSize(data.data.fontSize);
+            setIsSetupDA(data.data.centrifuge_is_setup);
+            setIsListeningToDA(data.data.is_listening_da);
+            setHidTokenButtons(data.data.hid_token_buttons);
+            setNewMaxDisplay(data.data.max_display)
+        }
+    });
+
+    useEffect(() => {
+        if(is_admin){
+            socket.emit('sub admin', display_name);
+            socket.on('connect',() =>{
+                socket.emit('sub admin', display_name);
+            });
+        };
+        return () => {
+            socket.emit('unsub admin', display_name);
+            socket.off('connect');
+        }
+    },[display_name, is_admin]);
+
+    useEffect(() => {
+        socket.on('max display changed', (data) => {
+            setNewMaxDisplay(data);
+        });
+        socket.on('font size changed', (data) => {
+            setNewFontSize(data);
+        });
+        socket.on('show info text', (data) => {
+            setShowInfo(data);
+        });
+        socket.on('change info text', (data) => {
+            setInfoText(data);
+        });
+        socket.on('change da listening status', (data) =>{
+            setIsListeningToDA(data);
+        });
+        socket.on('change da setup status', (data) =>{
+            setIsSetupDA(data);
+        });
+        socket.on('change hid token buttons', (data) =>{
+            setHidTokenButtons(data);
+        });
+        return () =>{
+            socket.off('max display changed');
+            socket.off('font size changed');
+            socket.off('show info text');
+            socket.off('change info text');
+            socket.off('change da listening status');
+            socket.off('change da setup status');
+            socket.off('change hid token buttons');
+        }
+    },[]);
+
+    const options = {
+        onError: (error: AxiosError) => {
+            setAlertMessage(error.message);
+            setSliding('');
+        },
+        onSuccess: () => {
+            setSliding('');
+            setAlertMessage('Success!');
+            setTimeout(() => {
+                setSliding('sliding');
+            }, 3000);
+        }
+    };
+
+
+    const hideInfoText = useMutation((newData: boolean) => postRequest('admin/hideInfoText', '5100', {show_info: newData}), options);
+    const setupDaRequest = useMutation(() => postRequest('da/setup', '5100', {}), options);
+    const startDaRequest = useMutation(() => postRequest('da/start', '5100', {}), options);
+    const stopDARequest = useMutation(() => postRequest('da/stop', '5100', {}), options);
+    const getTwitchModsRequest = useMutation(() => postRequest('admin/getTwitchMods', '5100', {}), options);
+    const sendNewMaxDisplayRequest = useMutation((newData: number) => postRequest('da/setMaxDisplay', '5100', {new_max_display: newData}), options);
+    const sendNewFontSizeRequest = useMutation((newData: string) => postRequest('admin/changeFontSize', '5100', {fontSize: newData}), options);
+    const startQueueRequest = useMutation(() => postRequest('queue/start', '5100', {}), options);
+    const stopQueueRequest = useMutation(() => postRequest('queue/stop', '5100', {}), options);
+    const addQueueSongRequest = useMutation(() => postRequest('queue/add', '5100', {}), options);
+    const changeInfoRequest = useMutation((newData: string) => postRequest('admin/changeInfoText', '5100', {infoText: newData}), options);
+    const tokenButtonsVisibilityRequest = useMutation((newData: boolean) => postRequest('admin/changeTokenButtonsVisibility', '5100', {hid_token_buttons: !newData}), options);
+
+    if(getAdminData.isLoading){
+        return (<div className='admin-buttons'>
+                    <LoaderBox/>
+                </div>)
     }
 
     function setupDA(){
         if(is_admin){
-            postRequest('da/setup', '5100', '{}');
+            setupDaRequest.mutate();
         };
-    }
+    };
 
     function startDA(){
         if(is_admin){
-            postRequest('da/start', '5100', '{}');
+            startDaRequest.mutate();
         };
     };
 
     function stopDA(){
         if(is_admin){
-            postRequest('da/stop', '5100', '{}');
+            stopDARequest.mutate();
         };
     };
 
     function getTwitchMods(){
         if(is_admin){
-            postRequest('admin/getTwitchMods', '5100', '{}');
-        };
-    }
-
-    function sendNewMaxDisplay(){
-        if(is_admin){
-            postRequest('da/setMaxDisplay', 5100, JSON.stringify({ new_max_display: newMaxDisplay}));
-        };
-    };
-
-    function sendNewFontSize(){
-        if(is_admin){
-            postRequest('admin/changeFontSize', 5100, JSON.stringify({ fontSize: newFontSize}));
+            getTwitchModsRequest.mutate();
         };
     };
 
     function startQueue() {
         if(is_admin){
-            postRequest('queue/start', '5100', '{}');
+            startQueueRequest.mutate();
         };
     };
 
     function stopQueue() {
         if(is_admin){
-            postRequest('queue/stop', '5100', '{}');
+            stopQueueRequest.mutate();
         };
     };
 
     function addQueueSong(){
         if(is_admin){
-            postRequest('queue/add', '5100', '{}');
+            addQueueSongRequest.mutate();
         };
     };
 
     function changeInfo(){
         if(is_admin){
-            postRequest('admin/changeInfoText','5100', JSON.stringify({ infoText: infoText }))
+            changeInfoRequest.mutate(infoText);
         }
+    };
+
+    function sendNewMaxDisplay(){
+        if(is_admin){
+            sendNewMaxDisplayRequest.mutate(newMaxDisplay);
+        };
+    };
+
+    function sendNewFontSize(){
+        if(is_admin){
+            sendNewFontSizeRequest.mutate(newFontSize);
+        };
     };
 
     function changeTokenButtonsVisibility(){
         if(is_admin){
-            postRequest('admin/changeTokenButtonsVisibility','5100', JSON.stringify({ hid_token_buttons: !hid_token_buttons }))
-        }
+            tokenButtonsVisibilityRequest.mutate(HidTokenButtons);
+        };
     };
 
     return (
         <div className='admin-buttons'>
             {is_admin && <>
-                <button className={hid_token_buttons ? '' : 'pressed'} onClick={changeTokenButtonsVisibility}>{hid_token_buttons ? 'Show' : 'Hide'}</button>
-                {!hid_token_buttons && <button onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
-                {!is_setup_da && <button onClick={setupDA}>Setup<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
-                {is_setup_da && (is_listening_da ? 
+                <button className={HidTokenButtons ? '' : 'pressed'} onClick={changeTokenButtonsVisibility}>{HidTokenButtons ? 'Show' : 'Hide'}</button>
+                {!HidTokenButtons && <button onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
+                {!isSetupDA && <button onClick={setupDA}>Setup<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
+                {isSetupDA && (isListeningToDA ? 
                     <button className='pressed' onClick={stopDA}>Stop<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
                     : 
                     <button onClick={startDA}>Start<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>)
                 }
-                {!hid_token_buttons && <button onClick={() => window.location.href = adminGetTokens}>Twitch Token</button>}
+                {!HidTokenButtons && <button onClick={() => window.location.href = adminGetTokens}>Twitch Token</button>}
                 <button onClick={getTwitchMods}>Twitch Mods</button>
                 {!is_live && <button onClick={startQueue}>Start queue</button>}
                 {is_live && <button className='pressed' onClick={stopQueue}>Stop queue</button>}
@@ -159,6 +241,7 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, max_display, fon
                     </div>
                     <button onClick={changeInfo}>Change info</button>
                 </div>
+                {<Alert class_name={`alert admin ${sliding}`} message={alertMessage}/>}
             </>}
         </div>
     );

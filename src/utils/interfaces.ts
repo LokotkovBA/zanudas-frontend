@@ -1,5 +1,3 @@
-import { StringLiteral } from "typescript";
-
 export interface UserData {
     id: number;
     display_name: string;
@@ -39,7 +37,7 @@ export interface DBSongListEntry {
 };
 
 export interface DBQueueEntry {
-    id: string;
+    id?: string;
     artist: string;
     song_name: string;
     donor_name: string;
@@ -48,11 +46,11 @@ export interface DBQueueEntry {
     donor_text: string;
     tag: string;
     queue_number: string;
-    like_count: string;
-    played: boolean;
-    will_add: boolean;
-    visible: boolean;
-    current: boolean;
+    like_count?: string;
+    played?: boolean;
+    will_add?: boolean;
+    visible?: boolean;
+    current?: boolean;
     classN?: string;
 };
 

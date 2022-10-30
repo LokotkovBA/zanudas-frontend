@@ -74,8 +74,22 @@ nav p {
     transition: all .5s;
 }
 
+.alert.admin{
+    left: 80%;
+    bottom: 10em;
+}
+.alert.fetch{
+    bottom: 5em;
+}
 .alert.sliding{
     bottom: -10em;
+}
+
+.alert.loading-error{
+    border: none;
+    bottom: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .cookie>.alert{
@@ -104,6 +118,28 @@ div.clickable:hover{
 
 .thumbs-down.thumbs-clicked{
     filter: invert(47%) sepia(46%) saturate(7463%) hue-rotate(337deg) brightness(80%) contrast(162%);
+}
+
+.loader-box{
+    display: flex;
+    justify-content: center;
+
+    padding: 1em;
+}
+
+.loader {
+    border: 1rem solid #F2AF29;
+    border-top: 1rem solid #D81159;
+    border-radius: 50%;
+    width: 5rem;
+    height: 5rem;
+    animation: spin 2s linear infinite;
+  }
+  
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 @media (30em < width <=55em) {

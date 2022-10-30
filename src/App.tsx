@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useMutation, useQuery } from 'react-query';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Alert } from './components/Alert';
 import Menu from './components/Menu';
@@ -9,6 +10,7 @@ import { getRequest, postRequest } from './utils/api-requests';
 import { UserData } from './utils/interfaces';
 
 export default function App() {
+    
     const [userData, setUserData] = useState<UserData>({
         id: 0,
         display_name: ``,
@@ -20,40 +22,39 @@ export default function App() {
         is_cookie_alert_shown: true
     });
 
-    const getUser = (abortSignal: AbortSignal) => {
-        getRequest("auth/success", "5100", abortSignal)
-            .then((response) => {
-                if (response.status === 200) return response.json();
-            })
-            .then((data) => {
-                setUserData({
-                    id: parseInt(data.id),
-                    display_name: data.display_name,
-                    profile_image_url: data.profile_image_url,
-                    is_mod: data.is_mod,
-                    is_admin: data.is_admin,
-                    is_cthulhu: data.is_cthulhu,
-                    is_queen: data.is_queen,
-                    is_cookie_alert_shown: data.is_cookie_alert_shown
-                });
-            })
-            .catch((err) => { });
-    };
+    const {data, isSuccess } = useQuery(['user-data'],() => getRequest('auth/success','5100'),{
+        retry: false,
+        refetchOnWindowFocus: false
+    });
 
     useEffect(() => {
-        const controller = new AbortController();
-        getUser(controller.signal);
-        return () => {
-            controller.abort();
+        if(isSuccess){
+            setUserData({
+                id: parseInt(data.data.id),
+                display_name: data.data.display_name,
+                profile_image_url: data.data.profile_image_url,
+                is_mod: data.data.is_mod,
+                is_admin: data.data.is_admin,
+                is_cthulhu: data.data.is_cthulhu,
+                is_queen: data.data.is_queen,
+                is_cookie_alert_shown: data.data.is_cookie_alert_shown
+            });
         }
-    }, []);
+    },[data, isSuccess]);
+
+    const cookieAccepted = useMutation(() => postRequest('auth/cookiealert','5100',{ }));
 
     function cookieAlertClick(){
-        postRequest('auth/cookiealert','5100', '{}');
-        setUserData(prevUserData => {
-            return {...prevUserData, is_cookie_alert_shown: true};
-        });
+        cookieAccepted.mutate();
     };
+
+    useEffect(() =>{
+        if(cookieAccepted.isSuccess){
+            setUserData(prevUserData => {
+                return {...prevUserData, is_cookie_alert_shown: true};
+            });
+        }
+    },[cookieAccepted.isSuccess]);
 
     return (
         <div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useMutation } from 'react-query';
 import { postRequest } from '../utils/api-requests';
 import { UserEntry } from '../utils/interfaces';
 
@@ -23,24 +24,38 @@ export const UserListItem: React.FC<UserListItemProps> = ({userEntry, is_admin})
         });
     };
 
+    const changeUserRequest = useMutation((newUserData: UserEntry) => postRequest('admin/changeUser', '5100', newUserData));
+    const deleteUserRequest = useMutation((userId: number) => postRequest('admin/deleteUser', '5100', { id: userId }));
+
     function changeUser(){
         if(is_admin){
-            postRequest('admin/changeUser', '5100', JSON.stringify(userEntryData));
+            changeUserRequest.mutate(userEntryData);
         }
     };
 
     function deleteUser(){
         if(is_admin){
             if(deleteIntention){
-                postRequest('admin/deleteUser', '5100', JSON.stringify({id: userEntryData.id}));
-                setDeleteButtonText('Deleted');
-                setDeleteIntention(false);
+                deleteUserRequest.mutate(userEntryData.id);
             }else{
                 setDeleteButtonText('Sure?');
                 setDeleteIntention(true);
             }
         }
-    }
+    };
+
+    useEffect(() => {
+        if(deleteUserRequest.isSuccess){
+            setDeleteButtonText('Deleted');
+            setDeleteIntention(false);
+        }
+    },[deleteUserRequest.isSuccess]);
+
+    useEffect(() => {
+        if(deleteUserRequest.isError){
+            setDeleteButtonText('Error!');
+        }
+    },[deleteUserRequest.isError]);
 
     return (
         <div className='user-entry'>

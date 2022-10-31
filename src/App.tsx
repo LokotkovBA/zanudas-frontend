@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Alert } from './components/Alert';
+import { LoaderBox } from './components/LoaderBox';
 import Menu from './components/Menu';
-import Queue from './pages/Queue';
-import SongList from './pages/SongList';
-import { Users } from './pages/Users';
 import { getRequest, postRequest } from './utils/api-requests';
 import { UserData } from './utils/interfaces';
+
+const Queue = lazy(() => import('./pages/Queue'));
+const SongList = lazy(() => import('./pages/SongList'));
+const Users = lazy(() => import('./pages/Users'));
 
 export default function App() {
     
@@ -60,12 +62,14 @@ export default function App() {
         <div>
             <Menu userData={userData} />
             <div className="content">
-                <Routes>
-                    <Route path='/' element={<Navigate to='/queue' />} />
-                    <Route path="/queue" element={<Queue userData={userData} />} />
-                    <Route path="/songlist" element={<SongList userData={userData} />} />
-                    <Route path="/users" element={<Users userData={userData} />} />
-                </Routes>
+                <Suspense fallback={<LoaderBox/>}>
+                    <Routes>
+                        <Route path='/' element={<Navigate to='/queue' />} />
+                        <Route path="/queue" element={<Queue userData={userData} />} />
+                        <Route path="/songlist" element={<SongList userData={userData} />} />
+                        <Route path="/users" element={<Users userData={userData} />} />
+                    </Routes>
+                </Suspense>
             </div>
             {!userData.is_cookie_alert_shown && 
             <div className='cookie'>

@@ -12,7 +12,7 @@ interface UsersProps {
     userData: UserData
 }
 
-export const Users: React.FC<UsersProps> = ({userData}) => {
+const Users: React.FC<UsersProps> = ({userData}) => {
     const [userListData, setUserListData] = useState<UserEntry[]>();
     const [userList, setUserList] = useState<JSX.Element[]>();
 
@@ -65,4 +65,6 @@ export const Users: React.FC<UsersProps> = ({userData}) => {
             <UpButton/>
         </div>
     );
-}
+};
+
+export default Users;

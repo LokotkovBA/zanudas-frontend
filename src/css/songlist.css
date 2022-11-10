@@ -173,25 +173,25 @@
 }
 
 .letter-buttons {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: .7em;
 
-    display: grid;
-    justify-items: center;
-    grid-template-columns: repeat(20, 1fr);
-    gap: .5em;
     margin-bottom: 1em;
-
-
 }
 
 .letter-buttons a {
     background-color: #D81159;
     color: #fff;
     cursor: pointer;
-    width: 2.5ch;
-    height: 2ch;
+
     text-align: center;
     font-size: 1.1rem;
     border-radius: .5ch;
+
+    padding: .1em .2em;
+    min-width: 1.5ch;
 }
 
 .letter-buttons a:hover {
@@ -200,19 +200,10 @@
 
 }
 
-@media (width < 90em) {
-    .letter-buttons {
-        grid-template-columns: repeat(15, 1fr);
-    }
-}
 
 @media (width < 70em) {
     .song-list {
         grid-column: 2 / 12;
-    }
-
-    .letter-buttons {
-        grid-template-columns: repeat(20, 1fr);
     }
 
     .up-zone{
@@ -220,29 +211,8 @@
     }
 }
 
-@media (width < 60em) {
-    .letter-buttons {
-        grid-template-columns: repeat(15, 1fr);
-    }
-}
-
-@media (width < 45em) {
-    .letter-buttons {
-        grid-template-columns: repeat(10, 1fr);
-    }
-}
-
-@media (width < 30em) {
-    .letter-buttons {
-        grid-template-columns: repeat(8, 1fr);
-    }
-}
 
 @media (width < 25em) {
-    .letter-buttons {
-        grid-template-columns: repeat(5, 1fr);
-    }
-
     .song-list {
         grid-column: 1 / -1;
     }

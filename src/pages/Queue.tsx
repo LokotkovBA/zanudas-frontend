@@ -238,7 +238,6 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                         if(entry.visible){
                             return (<QueueElement
                             entry={entry}
-                            like_count={likesData.get(entry.id)!}
                             index={index}
                             user_id={userData.id}
                             user_likes={queueLikes}

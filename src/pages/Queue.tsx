@@ -234,14 +234,20 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 </div>
                 :
                 (isLive && <div className="pleb-view">
-                    {queueData.map((entry, index) => <QueueElement
-                                        entry={entry}
-                                        index={index}
-                                        user_id={userData.id}
-                                        user_likes={queueLikes}
-                                        click_like_handler={clickLikeHandler}
-                                        key={entry.id}
-                                        />)}
+                    {queueData.map((entry, index) => {
+                        if(entry.visible){
+                            return (<QueueElement
+                            entry={entry}
+                            like_count={likesData.get(entry.id)!}
+                            index={index}
+                            user_id={userData.id}
+                            user_likes={queueLikes}
+                            click_like_handler={clickLikeHandler}
+                            key={entry.id}
+                            />)
+                        }
+                        return '';
+                    })}
                 </div>)
             }
             {userData.is_admin &&

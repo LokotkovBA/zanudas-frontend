@@ -6,10 +6,11 @@ interface LikeBlockProps {
     song_id: number;
     like_count: number;
     like_state: LikesState;
-    clickLikeHandler: (song_id: number, is_positive: number) => void;
+    clickLikeHandler: (song_id: number, is_positive: number, index: number) => void;
+    index: number;
 }
 
-export const LikeBlock: React.FC<LikeBlockProps> = ({ user_id, song_id, like_count, like_state, clickLikeHandler}) => {
+export const LikeBlock: React.FC<LikeBlockProps> = ({ user_id, song_id, like_count, like_state, clickLikeHandler, index}) => {
     const [clickable, setClickable] = useState<string>('');
     const [thumbsUpClicked, setThumbUpClicked] = useState<string>('');
     const [thumbsDownClicked, setThumbDownClicked] = useState<string>('');
@@ -49,10 +50,10 @@ export const LikeBlock: React.FC<LikeBlockProps> = ({ user_id, song_id, like_cou
                     <div className={`${thumbsUpClicked} ${clickable} thumbs-up`} onClick={() => {
                         if(user_id){
                             if (thumbsUpClicked) {
-                                clickLikeHandler(song_id, 0);
+                                clickLikeHandler(song_id, 0, index);
                                 setThumbUpClicked('');
                             } else {
-                                clickLikeHandler(song_id, 1);
+                                clickLikeHandler(song_id, 1, index);
                                 setThumbDownClicked('');
                                 setThumbUpClicked('thumbs-clicked');
                             }
@@ -61,10 +62,10 @@ export const LikeBlock: React.FC<LikeBlockProps> = ({ user_id, song_id, like_cou
                     <div className={`${thumbsDownClicked} ${clickable} thumbs-down`} onClick={() => {
                         if(user_id){
                             if (thumbsDownClicked) {
-                                clickLikeHandler(song_id, 0);
+                                clickLikeHandler(song_id, 0, index);
                                 setThumbDownClicked('');
                             } else {
-                                clickLikeHandler(song_id, -1);
+                                clickLikeHandler(song_id, -1, index);
                                 setThumbUpClicked('');
                                 setThumbDownClicked('thumbs-clicked');
                             }

@@ -8,6 +8,7 @@ import { QueueItemInfo } from './QueueItemInfo';
 
 interface QueueModElementProps {
     user_id: number;
+    like_count: number;
     index: number;
     entry: QueueEntry;
     user_likes: LikesState[];
@@ -20,11 +21,12 @@ interface QueueModElementProps {
     queue_entry_text_area_change_event: (event: React.ChangeEvent<HTMLTextAreaElement>, index: number) => void;
     change_delete_intention: (index: number, text: string, delete_intention: boolean) => void;
     change_mod_view: (index: number) => void;
-    click_like_handler: (song_id: number, is_positive: number) => void;
+    click_like_handler: (song_id: number, is_positive: number, index: number) => void;
 }
 
 export const QueueModElement: React.FC<QueueModElementProps> = ({ 
     user_id, 
+    like_count,
     index, 
     entry, 
     user_likes,
@@ -86,8 +88,10 @@ export const QueueModElement: React.FC<QueueModElementProps> = ({
                                 <LikeBlock like_state={user_likes[curLikeIndex]}
                                 user_id={user_id}
                                 song_id={entry.id} 
-                                like_count={entry.like_count} 
-                                clickLikeHandler={click_like_handler} />
+                                like_count={like_count} 
+                                clickLikeHandler={click_like_handler} 
+                                index={index}
+                                />
                                 <div className="checkboxes">
                                     <input type='checkbox' className={entry.id.toString()} name='played' checked={entry.played} onChange={(event) => queue_entry_change_event(event, index)} />
                                     <label htmlFor='played'>played</label> {/*если сыграно, то нельзя менять порядок */}

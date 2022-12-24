@@ -29,15 +29,12 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         setIsLive(response.data.is_live);
     }
 
-    const { data, isLoading, isError, isSuccess } = useQuery(['queue-data'], () => getRequest('queue/get', '5100'), {
-        refetchOnWindowFocus: false
-    });
-
-    useEffect(() =>{
-        if(data){
+    const { isLoading, isError, isSuccess } = useQuery(['queue-data'], () => getRequest('queue/get', '5100'), {
+        refetchOnWindowFocus: false,
+        onSuccess: (data) => {
             updateQueueData(data);
         }
-    },[data]);
+    });
 
     const options = {
         onError: (error: AxiosError) => {
@@ -110,11 +107,11 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
     },[getLikes.data]);
 
-    const addLikeRequest = useMutation((likeData: {song_id : number, is_positive: number}) => postRequest('queue/addLike', '5100',{ song_id: likeData.song_id, is_positive: likeData.is_positive }));
+    const addLikeRequest = useMutation((likeData: {song_id : number, is_positive: number, song_index: number}) => postRequest('queue/addLike', '5100',{ song_id: likeData.song_id, is_positive: likeData.is_positive, song_index: likeData.song_index}));
 
-    function clickLikeHandler(song_id: number, is_positive: number){
+    function clickLikeHandler(song_id: number, is_positive: number, index: number){
         if (userData.display_name) {
-            addLikeRequest.mutate({ song_id: song_id, is_positive: is_positive});
+            addLikeRequest.mutate({ song_id: song_id, is_positive: is_positive, song_index: index});
         }
     };
 
@@ -166,8 +163,16 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         socket.on('queue change', (data) => {
             setQueueData(data.songs.map((song: DBQueueEntry) => (queueDBtoData(song))));
         });
+        socket.on('song likes change', ({count, song_index}) => {
+            setQueueData(oldQueueData => {
+                let newQueueData = [...oldQueueData]
+                newQueueData[song_index].like_count = count;
+                return newQueueData;
+            })
+        })
         return (() => {
             socket.off('queue change');
+            socket.off('song likes change');
         });
     },[getLikes]);
 
@@ -214,6 +219,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                                     <button className="order-button" onClick={changeQueueOrder}>Order</button>
                                     {  queueData.map((entry, index) => <QueueModElement 
                                             entry={entry}
+                                            like_count={entry.like_count}
                                             index={index}
                                             user_likes={queueLikes}
                                             user_id={userData.id}
@@ -238,6 +244,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                         if(entry.visible){
                             return (<QueueElement
                             entry={entry}
+                            like_count={entry.like_count}
                             index={index}
                             user_id={userData.id}
                             user_likes={queueLikes}

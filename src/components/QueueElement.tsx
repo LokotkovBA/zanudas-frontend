@@ -6,14 +6,16 @@ import pathToArrowRight from '../icons/arrow-right.svg';
 
 interface QueueElementProps {
     user_id: number;
+    like_count: number;
     index: number;
     entry: QueueEntry;
     user_likes: LikesState[];
-    click_like_handler: (song_id: number, is_positive: number) => void;
+    click_like_handler: (song_id: number, is_positive: number, index: number) => void;
 }
 
 export const QueueElement: React.FC<QueueElementProps> = ({
     user_id,
+    like_count,
     index,
     entry,
     user_likes,
@@ -37,8 +39,9 @@ export const QueueElement: React.FC<QueueElementProps> = ({
             <LikeBlock like_state={user_likes[curLikeIndex]}
             user_id={user_id}
             song_id={entry.id} 
-            like_count={entry.like_count} 
+            like_count={like_count} 
             clickLikeHandler={click_like_handler} 
+            index={index}
             />
         </li>
         );

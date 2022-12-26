@@ -16,10 +16,10 @@ interface QueueModElementProps {
         id: number;
         index: number;
     }, unknown>;
-    queue_change_request: UseMutationResult<AxiosResponse<any, any>, unknown, QueueEntry, unknown>;
+    queue_change_request: UseMutationResult<AxiosResponse<any, any>, unknown, {queueEntry: QueueEntry, index: number}, unknown>;
     queue_entry_change_event: (event: React.ChangeEvent<HTMLInputElement>, index: number) => void;
     queue_entry_text_area_change_event: (event: React.ChangeEvent<HTMLTextAreaElement>, index: number) => void;
-    change_delete_intention: (index: number, text: string, delete_intention: boolean) => void;
+    change_delete_intention: (index: number, text: 'Delete'|'Sure?'|'Error!', delete_intention: boolean) => void;
     change_mod_view: (index: number) => void;
     click_like_handler: (song_id: number, is_positive: number, index: number) => void;
 }
@@ -48,7 +48,7 @@ export const QueueModElement: React.FC<QueueModElementProps> = ({
     };
 
     function changeQueueEntry(){
-        queue_change_request.mutate(entry);
+        queue_change_request.mutate({ queueEntry: entry, index: index});
     }
     const curLikeIndex = user_likes.findIndex(like => like.song_id === entry.id);
 
@@ -57,7 +57,7 @@ export const QueueModElement: React.FC<QueueModElementProps> = ({
                 {(provided) => {
                     return (
                         <li className={`${entry.style} ${entry.classN}`} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-                            {entry.modView && <>
+                            {entry.mod_view && <>
                             <p className="queue-num">{index + 1}</p>
                             <input type='text' name='artist' placeholder="artist" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.artist ? entry.artist : ''} />
                             <input type='text' name='song_name' placeholder="song name" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.song_name ? entry.song_name : ''} />
@@ -67,7 +67,7 @@ export const QueueModElement: React.FC<QueueModElementProps> = ({
                             <input type='text' name='tag' placeholder="tag" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.tag ? entry.tag : ''} />
                             <textarea name='donor_text' className={entry.id.toString()} onChange={(event) => queue_entry_text_area_change_event(event, index)} value={entry.donor_text} />
                             </>}
-                            {!entry.modView && 
+                            {!entry.mod_view && 
                                 <QueueItemInfo index={index} 
                                 artist={entry.artist} 
                                 song_name={entry.song_name} 

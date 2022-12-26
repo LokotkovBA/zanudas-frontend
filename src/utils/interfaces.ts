@@ -69,12 +69,12 @@ export interface QueueEntry {
     will_add: boolean;
     visible: boolean;
     current: boolean;
-    modView: boolean;
-    style: string;
-    button_text: string;
+    mod_view: boolean;
+    style: 'simple-view'|'mod-view';
+    button_text: 'More'|'Hide';
     classN?: string;
     delete_intention: boolean;
-    delete_button_text: string;
+    delete_button_text: 'Delete'|'Sure?'|'Error!';
 };
 
 export interface DBLikesState {
@@ -100,4 +100,9 @@ export interface UserEntry{
 export interface WindowDimensions{
     width: number;
     height: number;
+};
+
+export interface QueueOrderEntry {
+    id: number;
+    queue_number: number;
 };

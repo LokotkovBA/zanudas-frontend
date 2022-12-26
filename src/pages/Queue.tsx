@@ -1,7 +1,7 @@
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
 import { useEffect, useState } from "react";
 import { getRequest, postRequest } from "../utils/api-requests";
-import { DBLikesState, DBQueueEntry, LikesState, QueueEntry, UserData } from "../utils/interfaces";
+import { DBLikesState, DBQueueEntry, LikesState, QueueEntry, QueueOrderEntry, UserData } from "../utils/interfaces";
 
 import telegramIconPath from "../icons/telegram.svg";
 import twitchIconPath from '../icons/twitch.svg';
@@ -50,16 +50,9 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
     };
 
-    const queueChangeRequest = useMutation((newQueueData: QueueEntry) => postRequest('queue/change', '5100', newQueueData), options);
+    const queueChangeRequest = useMutation((newQueueData: {queueEntry: QueueEntry, index: number}) => postRequest('queue/change', '5100', newQueueData), options);
 
-    const deleteQueueEntryRequest = useMutation((delEntry :{ id: number; index: number}) => postRequest('queue/delete', '5100', { id: delEntry.id }), {
-        onSuccess: (response, delEntry) => {
-            setQueueData(prevQueueData => {
-                let newQueueData = [...prevQueueData];
-                newQueueData.splice(delEntry.index, 1);
-                return newQueueData;
-            });
-        },
+    const deleteQueueEntryRequest = useMutation((delEntry :{ id: number; index: number}) => postRequest('queue/delete', '5100', { id: delEntry.id, index: delEntry.index }), {
         onError: (error, delEntry) => {
             setQueueData(prevQueueData => {
                 let newQueueData = [...prevQueueData];
@@ -70,7 +63,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
     });
 
-    function changeDeleteIntention(del_index: number, text: string, delete_intention: boolean){
+    function changeDeleteIntention(del_index: number, text: 'Delete'|'Sure?'|'Error!', delete_intention: boolean){
         setQueueData(prevQueueData => {
             let newQueueData = [...prevQueueData];
             newQueueData[del_index].delete_button_text = text;
@@ -82,9 +75,9 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     function changeModView(index: number){
         setQueueData(prevQueueData =>{
             let newQueuedata = [...prevQueueData];
-            newQueuedata[index].modView = !prevQueueData[index].modView;
-            newQueuedata[index].style = newQueuedata[index].modView ? 'mod-view' : 'simple-view';
-            newQueuedata[index].button_text = newQueuedata[index].modView ? 'Hide' : 'More';
+            newQueuedata[index].mod_view = !prevQueueData[index].mod_view;
+            newQueuedata[index].style = newQueuedata[index].mod_view ? 'mod-view' : 'simple-view';
+            newQueuedata[index].button_text = newQueuedata[index].mod_view ? 'Hide' : 'More';
             return newQueuedata;
         });
     };
@@ -169,10 +162,82 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 newQueueData[song_index].like_count = count;
                 return newQueueData;
             })
-        })
+        });
+        socket.on('queue entry change', ({ index, entry }) => {
+            setQueueData(oldQueueData => {
+                let newQueueData = [...oldQueueData];
+                entry = {
+                    ...entry,
+                    button_text: 'More',
+                    mod_view: false,
+                    style: 'simple-view',
+                }
+                newQueueData[index] = entry;
+                return newQueueData;
+            });
+        });
+        socket.on('new current', ({ index }) => {
+            setQueueData(oldQueueData => {
+                let newQueueData = [...oldQueueData];
+                for(let i = 0; i < newQueueData.length; i++){
+                    if(i !== index){
+                        newQueueData[i].current = false;
+                    }
+                }
+                return newQueueData;
+            })
+        });
+        socket.on('queue entry add', ({ entry }) => {
+            let newEntry: QueueEntry = {
+                like_count: 0,
+                played: false,
+                will_add: false,
+                visible: false,
+                current: false,
+                mod_view: false,
+                style: 'simple-view',
+                button_text: 'More',
+                delete_intention: false,
+                delete_button_text: 'Delete',
+                ...entry
+            }
+            setQueueData(oldQueueData => {
+                let newQueueData = [...oldQueueData];
+                newQueueData.push(newEntry);
+                return newQueueData;
+            });
+        });
+        socket.on('queue entry delete', ({ index }) => {
+            setQueueData(oldQueueData => {
+                let newQueueData = [...oldQueueData];
+                newQueueData.splice(index, 1);
+                return newQueueData;
+            });
+        });
+        socket.on('queue order update', ({ order }: { order: QueueOrderEntry[]}) => {
+            setQueueData(oldQueueData => {
+                let newQueueData = [...oldQueueData];
+                let bufferQueueData = [...oldQueueData];
+                for(const song of order){
+                    for(let i = 0; i < bufferQueueData.length; i++){
+                        if(bufferQueueData[i].id === song.id){
+                            newQueueData[song.queue_number] = bufferQueueData[i];
+                            bufferQueueData.splice(i, 1);
+                            continue;
+                        }
+                    }
+                }
+                return newQueueData;
+            });
+        });
         return (() => {
             socket.off('queue change');
             socket.off('song likes change');
+            socket.off('queue entry change');
+            socket.off('new current');
+            socket.off('queue entry add');
+            socket.off('queue entry delete');
+            socket.off('queue order update');
         });
     },[getLikes]);
 

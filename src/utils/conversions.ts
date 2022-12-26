@@ -12,7 +12,7 @@ export function queueDBtoData(input: DBQueueEntry): QueueEntry {
         played: input.played!,
         will_add: input.will_add!,
         visible: input.visible!,
-        modView: false,
+        mod_view: false,
         style: 'simple-view',
         button_text: 'More',
         delete_button_text: 'Delete',

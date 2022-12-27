@@ -137,8 +137,8 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             setQueueData(prevQueueData => {
                 const newOrder = [...prevQueueData];
                 const [reorderedEntry] = newOrder.splice(result.source.index, 1);
-                reorderedEntry.classN = 'moved';
                 newOrder.splice(result.destination!.index, 0, reorderedEntry);
+                changeQueueOrder(newOrder);
                 return newOrder;
             });
         }
@@ -146,8 +146,8 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const queueOrderRequest = useMutation((newOrder: { id: number, queue_number: number}[]) => postRequest('queue/order', '5100', newOrder), options);
 
-    function changeQueueOrder() {
-        const newOrder = queueData.map((elem, index) => ({ id: elem.id, queue_number: index }));
+    function changeQueueOrder(queue_data: QueueEntry[]) {
+        const newOrder = queue_data.map((elem, index) => ({ id: elem.id, queue_number: index }));
         setQueueData(prevQueueData => prevQueueData.map((elem, index) => ({ ...elem, queue_number: index, classN: '' })));
         queueOrderRequest.mutate(newOrder);
     };
@@ -168,6 +168,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 let newQueueData = [...oldQueueData];
                 entry = {
                     ...entry,
+                    classN: '',
                     button_text: 'More',
                     mod_view: false,
                     style: 'simple-view',
@@ -281,7 +282,6 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                         <Droppable droppableId="queue">
                             {provided => (
                                 <ul {...provided.droppableProps} ref={provided.innerRef}>
-                                    <button className="order-button" onClick={changeQueueOrder}>Order</button>
                                     {  queueData.map((entry, index) => <QueueModElement 
                                             entry={entry}
                                             like_count={entry.like_count}

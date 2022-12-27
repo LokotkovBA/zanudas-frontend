@@ -16,6 +16,8 @@ import { QueueElement } from "../components/QueueElement";
 import { AxiosError, AxiosResponse } from "axios";
 import { Alert } from "../components/Alert";
 
+let timeoutCount = 0;
+
 const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [queueData, setQueueData] = useState<QueueEntry[]>([]);
     const [queueLikes, setQueueLikes] = useState<LikesState[]>([]);
@@ -44,8 +46,12 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         onSuccess: () => {
             setSliding('');
             setAlertMessage('Success!');
+            timeoutCount++;
             setTimeout(() => {
-                setSliding('sliding');
+                timeoutCount--;
+                if(!timeoutCount){
+                    setSliding('sliding');
+                }
             }, 3000);
         }
     };

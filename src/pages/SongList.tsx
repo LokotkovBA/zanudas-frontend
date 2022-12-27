@@ -17,6 +17,9 @@ import { useMutation, useQuery } from "react-query";
 import { LoaderBox } from "../components/LoaderBox";
 import { AxiosError, AxiosResponse } from "axios";
 
+let copyTimeoutCount = 0;
+let successTimeoutCount = 0;
+
 const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const { width } = useWindowDimensions();
     const [showLetterButtons, setShowLetterButtons] = useState<boolean>(false);
@@ -45,8 +48,12 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     function displayAlert(){
         setCopyAlertSliding('alert');
+        copyTimeoutCount++;
         setTimeout(() => {
-            setCopyAlertSliding('alert sliding');
+            copyTimeoutCount--;
+            if(!copyTimeoutCount){
+                setCopyAlertSliding('alert sliding');
+            }
         }, 3000);
     };
 
@@ -115,8 +122,12 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
             setNewSongData(emptyNewSong);
             setSliding('');
             setAlertMessage('Success!');
+            successTimeoutCount++;
             setTimeout(() => {
-                setSliding('sliding');
+                successTimeoutCount--;
+                if(!successTimeoutCount){
+                    setSliding('sliding');
+                }
             }, 3000);
         }
     });

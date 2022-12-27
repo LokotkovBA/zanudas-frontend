@@ -16,6 +16,16 @@ const Menu: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const url = useLocation();
 
+    function loginClick(){
+        localStorage.setItem('login_clicked', 'yep');
+        window.location.href = loginLink;
+    }
+
+    function logoutClick(){
+        localStorage.setItem('login_clicked', 'nop');
+        window.location.href = logoutLink;
+    }
+
     return (
         <nav id='menu'>
             <p className="label">&gt;3</p>
@@ -35,9 +45,9 @@ const Menu: React.FC<{ userData: UserData }> = ({ userData }) => {
             {userData.display_name && <div className="user-info">
                 <img src={userData.profile_image_url} alt='user avatar' />
                 <p>{userData.display_name}</p>
-                <button className="login-btn" onClick={() => window.location.href = logoutLink}>Log out</button>
+                <button className="login-btn" onClick={logoutClick}>Log out</button>
             </div>}
-            {!userData.display_name && <button className="login-btn" onClick={() => window.location.href = loginLink}>Login<img src={twitchIconPath} alt="twitch icon" width="20px" /></button>}
+            {!userData.display_name && <button className="login-btn" onClick={loginClick}>Login<img src={twitchIconPath} alt="twitch icon" width="20px" /></button>}
         </nav>
     );
 }

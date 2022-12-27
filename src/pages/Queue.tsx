@@ -17,6 +17,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { Alert } from "../components/Alert";
 
 let timeoutCount = 0;
+let visibleQueueCount = -1;
 
 const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [queueData, setQueueData] = useState<QueueEntry[]>([]);
@@ -99,6 +100,10 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         },
         refetchOnWindowFocus: false
     });
+
+    useEffect(() => {
+        visibleQueueCount = -1;
+    })
 
     useEffect(() => {
         if(getLikes.data){
@@ -313,10 +318,11 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 (isLive && <div className="pleb-view">
                     {queueData.map((entry, index) => {
                         if(entry.visible){
+                            visibleQueueCount++;
                             return (<QueueElement
                             entry={entry}
                             like_count={entry.like_count}
-                            index={index}
+                            index={visibleQueueCount}
                             user_id={userData.id}
                             user_likes={queueLikes}
                             click_like_handler={clickLikeHandler}

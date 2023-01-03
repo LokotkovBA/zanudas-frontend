@@ -1,5 +1,5 @@
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getRequest, postRequest } from "../utils/api-requests";
 import { DBLikesState, DBQueueEntry, LikesState, QueueEntry, QueueOrderEntry, UserData } from "../utils/interfaces";
 
@@ -157,11 +157,11 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const queueOrderRequest = useMutation((newOrder: { id: number, queue_number: number}[]) => postRequest('queue/order', '5100', newOrder), options);
 
-    function changeQueueOrder(queue_data: QueueEntry[]) {
+    const changeQueueOrder = useCallback((queue_data: QueueEntry[]) => {
         const newOrder = queue_data.map((elem, index) => ({ id: elem.id, queue_number: index }));
         setQueueData(prevQueueData => prevQueueData.map((elem, index) => ({ ...elem, queue_number: index, classN: '' })));
         queueOrderRequest.mutate(newOrder);
-    };
+    },[queueOrderRequest]);
 
     useEffect(() => {
         socket.on('queue change', (data) => {
@@ -223,6 +223,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             setQueueData(oldQueueData => {
                 let newQueueData = [...oldQueueData];
                 newQueueData.splice(index, 1);
+                changeQueueOrder(newQueueData);
                 return newQueueData;
             });
         });
@@ -235,7 +236,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                         if(bufferQueueData[i].id === song.id){
                             newQueueData[song.queue_number] = bufferQueueData[i];
                             bufferQueueData.splice(i, 1);
-                            continue;
+                            break;
                         }
                     }
                 }
@@ -251,7 +252,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             socket.off('queue entry delete');
             socket.off('queue order update');
         });
-    },[getLikes]);
+    },[getLikes, changeQueueOrder]);
 
     useEffect(() =>{
         if(userData.display_name){

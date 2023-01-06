@@ -3,6 +3,7 @@
 @import "songlist.css";
 @import "queue.css";
 @import "users.css";
+@import "editloading.css";
 
 * {
     margin: 0;

@@ -39,6 +39,10 @@ const Menu: React.FC<{ userData: UserData }> = ({ userData }) => {
             <Link to="/users" style={{ textDecoration: 'none' }}>
                 <button className={`menu ${url.pathname === '/users' && "pressed"}`}>Users</button>
             </Link>}
+            {userData.is_admin && 
+            <Link to="/loading" style={{ textDecoration: 'none' }}>
+                <button className={`menu ${url.pathname === '/loading' && "pressed"}`}>Edit Loading Screen</button>
+            </Link>}
             <a href={donateLink} className='request-link' target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}> 
                 <button className='request-button'>Request<img src={daIconPath} alt="donation alerts icon" width={"18em"}/></button>
             </a>

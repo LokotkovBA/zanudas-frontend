@@ -10,6 +10,7 @@ import { UserData } from './utils/interfaces';
 const Queue = lazy(() => import('./pages/Queue'));
 const SongList = lazy(() => import('./pages/SongList'));
 const Users = lazy(() => import('./pages/Users'));
+const EditLoading = lazy(() => import('./pages/EditLoading'));
 
 export default function App() {
     
@@ -69,6 +70,7 @@ export default function App() {
                         <Route path="/queue" element={<Queue userData={userData} />} />
                         <Route path="/songlist" element={<SongList userData={userData} />} />
                         <Route path="/users" element={<Users userData={userData} />} />
+                        <Route path="/loading" element={<EditLoading is_admin={userData.is_admin} />} />
                     </Routes>
                 </Suspense>
             </div>

@@ -1,0 +1,48 @@
+.loading-messages{
+    grid-column: 6;
+}
+.loading-message{
+    background-color: #38023B;
+    padding: 1em;
+    margin: 1em;
+
+    color: #FFF;
+
+    border-radius: 8px;
+
+    display: grid;
+    gap: .5em;
+}
+
+.loading-message label{
+    color: #F2AF29;
+}
+.loading-message input{
+    font-size: 1rem;
+}
+
+form>button{
+    display: flex;
+    justify-content: center;
+    grid-column: 1;
+}
+
+.loading-message-delete-button{
+    grid-column: 4;
+}
+
+.loading-message>div{
+    display: grid;
+    gap: .2em;
+    text-align: center;
+}
+
+@media (width < 57em) {
+    .loading-message{
+        grid-template-rows: repeat(6, 1fr);
+    }
+    .loading-message-delete-button{
+        grid-column: 1;
+    }
+    
+}

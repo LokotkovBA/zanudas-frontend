@@ -16,7 +16,7 @@ const Users: React.FC<UsersProps> = ({userData}) => {
     const [userListData, setUserListData] = useState<UserEntry[]>();
     const [userList, setUserList] = useState<JSX.Element[]>();
 
-    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [searchTerm, setSearchTerm] = useState<string>(localStorage.getItem('usersSearchTerm') ? localStorage.getItem('usersSearchTerm')! : '');
 
     const [onlyModsToggle, setOnlyModsToggle] = useState<boolean>(false);
     const [onlyModsButtonText, setOnlyModsButtonText] = useState<string>('Only mods');
@@ -39,7 +39,7 @@ const Users: React.FC<UsersProps> = ({userData}) => {
 
     function searchHandleChange(event: React.ChangeEvent<HTMLInputElement>) {
         setSearchTerm(event.target.value);
-        localStorage.setItem('searchTerm', event.target.value);
+        localStorage.setItem('usersSearchTerm', event.target.value);
     };
 
     function toggleOnlyMods(){

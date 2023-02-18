@@ -25,7 +25,7 @@ export const QueueElement: React.FC<QueueElementProps> = ({
         return (
         <li className="list-item queue">
             <div className="arrow-info-block">
-            {entry.current && <img src={pathToArrowRight} alt="arrow pointing right"/>}
+            {entry.current && <img src={pathToArrowRight} alt="arrow pointing right" height={40} width={24}/>}
                 <QueueItemInfo index={index} 
                 artist={entry.artist} 
                 song_name={entry.song_name} 

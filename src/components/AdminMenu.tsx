@@ -220,12 +220,12 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
         <div className='admin-buttons'>
             {is_admin && <>
                 <button className={HidTokenButtons ? '' : 'pressed'} onClick={changeTokenButtonsVisibility}>{HidTokenButtons ? 'Show' : 'Hide'}</button>
-                {!HidTokenButtons && <button onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
-                {!isSetupDA && <button onClick={setupDA}>Setup<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>}
+                {!HidTokenButtons && <button onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>}
+                {!isSetupDA && <button onClick={setupDA}>Setup<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>}
                 {isSetupDA && (isListeningToDA ? 
-                    <button className='pressed' onClick={stopDA}>Stop<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>
+                    <button className='pressed' onClick={stopDA}>Stop<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>
                     : 
-                    <button onClick={startDA}>Start<img src={daIconPath} alt="donation alerts icon" width="18em"></img></button>)
+                    <button onClick={startDA}>Start<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>)
                 }
                 {!HidTokenButtons && <button onClick={() => window.location.href = adminGetTokens}>Twitch Token</button>}
                 <button onClick={getTwitchMods}>Twitch Mods</button>

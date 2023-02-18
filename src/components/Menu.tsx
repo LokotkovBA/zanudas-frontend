@@ -44,14 +44,14 @@ const Menu: React.FC<{ userData: UserData }> = ({ userData }) => {
                 <button className={`menu ${url.pathname === '/loading' && "pressed"}`}>Edit Loading Screen</button>
             </Link>}
             <a href={donateLink} className='request-link' target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}> 
-                <button className='request-button'>Request<img src={daIconPath} alt="donation alerts icon" width={"18em"}/></button>
+                <button className='request-button'>Request<img src={daIconPath} alt="donation alerts icon" height={20} width={18}/></button>
             </a>
             {userData.display_name && <div className="user-info">
-                <img src={userData.profile_image_url} alt='user avatar' />
+                <img width={45} height={45} src={userData.profile_image_url} alt='user avatar' />
                 <p>{userData.display_name}</p>
                 <button className="login-btn" onClick={logoutClick}>Log out</button>
             </div>}
-            {!userData.display_name && <button className="login-btn" onClick={loginClick}>Login<img src={twitchIconPath} alt="twitch icon" width="20px" /></button>}
+            {!userData.display_name && <button className="login-btn" onClick={loginClick}>Login<img src={twitchIconPath} alt="twitch icon" height={20} width={20} /></button>}
         </nav>
     );
 }

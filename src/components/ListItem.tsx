@@ -16,7 +16,6 @@ export interface ListItemProps {
 };
 
 const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => {
-
     const [showEditFields, setShowEditFields] = useState<boolean>(false);
     const [songData, setSongData] = useState<SongListEntry>(song);
     const [deleteIntention, setDeleteIntention] = useState<boolean>(false);
@@ -27,6 +26,11 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
 
     const [alertMessage, setAlertMessage] = useState<string>('');
     const [sliding, setSliding] = useState<string>('sliding');
+
+    const [changeButtonState, setChangeButtonState] = useState<''|'pressed'>('');
+    const [addButtonState, setAddButtonState] = useState<''|'pressed'>('');
+    const [editButtonState, setEditButtonState] = useState<''|'pressed'>('');
+    const [deleteButtonState, setDeleteButtonState] = useState<''|'pressed'>('');
 
     const options = {
         onError: (error: AxiosError) => {
@@ -134,19 +138,59 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
                 <input type='text' name='artist' placeholder="artist" onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.artist ? songData.artist : ''} />
                 <input type='text' name='song_name' placeholder="song name" className='song-info' onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.song_name ? songData.song_name : ''} />
                 <input type='text' name='tag' placeholder="tag" className='song-info' onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.tag ? songData.tag : ''} />
-                <button onClick={(event) => sendNewSongData(event)}>Change</button>
+                <button 
+                className={changeButtonState}
+                onMouseDown={(event) => {
+                    event.stopPropagation();
+                    setChangeButtonState('pressed');
+                }} 
+                onMouseUp={(event) => {
+                    event.stopPropagation();
+                    setChangeButtonState('');
+                }} 
+                onClick={(event) => sendNewSongData(event)}>Change</button>
             </>}
             {(song.likes !== 0) &&
             <div className='like-text'>
-                <img src={curLike} alt='Like'/> {song.likes}
+                <img src={curLike} alt='Like' width={18} height={18}/> {song.likes}
             </div>}
             {userData.is_admin &&
             <>
-                <button onClick={(event) => toggleEditFields(event)}>Edit</button>
-                <button onClick={(event) => deleteItem(event)}>{deleteButtonText}</button>
+                <button
+                className={editButtonState}
+                onMouseDown={(event) => {
+                    event.stopPropagation();
+                    setEditButtonState('pressed');
+                }}
+                onMouseUp={(event) => {
+                    event.stopPropagation();
+                    setEditButtonState('');
+                }}
+                onClick={(event) => toggleEditFields(event)}>Edit</button>
+                <button
+                className={deleteButtonState}
+                onMouseDown={(event) => {
+                    event.stopPropagation();
+                    setDeleteButtonState('pressed');
+                }}
+                onMouseUp={(event) => {
+                    event.stopPropagation();
+                    setDeleteButtonState('');
+                }}
+                onClick={(event) => deleteItem(event)}>{deleteButtonText}</button>
             </>}
             {(userData.is_admin || userData.is_mod) && 
-                <button onClick={(event) => addToQueue(event)}>Add</button>}
+                <button
+                className={addButtonState}
+                onMouseDown={(event) => {
+                    event.stopPropagation();
+                    setAddButtonState('pressed');
+                }}
+                onMouseUp={(event) =>{
+                    event.stopPropagation();
+                    setAddButtonState('');
+                }}
+                onClick={(event) => addToQueue(event)}>Add</button>}
             <Alert message={alertMessage} class_name={`alert fetch ${sliding}`}/>
         </div>
     );

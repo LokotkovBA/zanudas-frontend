@@ -191,11 +191,11 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         socket.on('new current', ({ index }) => {
             setQueueData(oldQueueData => {
                 let newQueueData = [...oldQueueData];
-                for(let i = 0; i < newQueueData.length; i++){
-                    if(i !== index){
-                        newQueueData[i].current = false;
+                newQueueData.forEach((entry, entryIndex) => {
+                    if(index !== entryIndex){
+                        entry.current = false;
                     }
-                }
+                });
                 return newQueueData;
             })
         });
@@ -316,7 +316,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                     </DragDropContext>
                 </div>
                 :
-                (isLive && <div className="pleb-view">
+                (isLive && <ul className="pleb-view">
                     {queueData.map((entry, index) => {
                         if(entry.visible){
                             visibleQueueCount++;
@@ -332,7 +332,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                         }
                         return '';
                     })}
-                </div>)
+                </ul>)
             }
             {userData.is_admin &&
                 <ul className="admin-menu">

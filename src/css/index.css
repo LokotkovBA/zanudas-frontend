@@ -128,6 +128,12 @@ div.clickable:hover{
     padding: 1em;
 }
 
+.content > .loader-box{
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
 .loader {
     border: 1rem solid #F2AF29;
     border-top: 1rem solid #D81159;

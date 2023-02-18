@@ -347,8 +347,8 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 Queue is not live!
                 <div>
                     Check out
-                    <a rel="noreferrer" target='_blank' href="https://www.twitch.tv/zanuda"><img src={twitchIconPath} alt='twitch icon'/></a>
-                    <a rel="noreferrer" target='_blank' href="https://t.me/etzalert"><img src={telegramIconPath} alt='telegram icon'/></a>
+                    <a rel="noreferrer" target='_blank' href="https://www.twitch.tv/zanuda"><img src={twitchIconPath} alt='twitch icon' width={30} height={30}/></a>
+                    <a rel="noreferrer" target='_blank' href="https://t.me/etzalert"><img src={telegramIconPath} alt='telegram icon'width={30} height={30}/></a>
                 </div>
             </div>)}
             {isError && <Alert message="Couldn't load queue!" class_name='alert loading-error'/>}

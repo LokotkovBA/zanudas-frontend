@@ -5,7 +5,7 @@ import { DBQueueEntry, SongListEntry, UserData } from "../utils/interfaces";
 import pathToThumbsUp from '../icons/thumbs-up-green.svg';
 import pathToThumbsDown from '../icons/thumbs-down-red.svg';
 import { useMutation } from "react-query";
-import { postRequest } from "../utils/api-requests";
+import { deleteRequest, patchRequest, postRequest } from "../utils/api-requests";
 import { AxiosError } from "axios";
 import { Alert } from "./Alert";
 
@@ -46,9 +46,9 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
         }
     };
 
-    const deleteRequest = useMutation((songId: number) => postRequest('songlist/delete', '5100', {id: songId}), options);
-    const addQueueRequest = useMutation((newSong: DBQueueEntry) => postRequest('queue/addsong', '5100', newSong), options);
-    const changeSongRequest = useMutation((songData: SongListEntry) => postRequest('songlist/changeall', '5100', songData), options);
+    const deleteSongRequest = useMutation((songId: number) => deleteRequest('songlist', '5100', {id: songId}), options);
+    const addQueueRequest = useMutation((newSong: DBQueueEntry) => postRequest('queue', '5100', newSong), options);
+    const changeSongRequest = useMutation((songData: SongListEntry) => patchRequest(`songlist?id=${songData.id}`, '5100', songData), options);
 
     function copyClick(){
         navigator.clipboard.writeText(`${song.artist} - ${song.song_name}`);
@@ -71,7 +71,7 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
     function deleteItem(event: React.MouseEvent<HTMLButtonElement, MouseEvent>){
         event.stopPropagation();
         if(deleteIntention && userData.is_admin){
-            deleteRequest.mutate(songData.id!);
+            deleteSongRequest.mutate(songData.id!);
         }else{
             setDeleteIntention(true);
             setDeleteButtonText('Sure?');
@@ -79,17 +79,17 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
     };
 
     useEffect(() =>{
-        if(deleteRequest.isSuccess){
+        if(deleteSongRequest.isSuccess){
             setDeleteIntention(false);
             setDeleteButtonText('Deleted');
         }
-    },[deleteRequest.isSuccess]);
+    },[deleteSongRequest.isSuccess]);
 
     useEffect(() =>{
-        if(deleteRequest.isError){
+        if(deleteSongRequest.isError){
             setDeleteButtonText('Error!');
         }
-    },[deleteRequest.isError]);
+    },[deleteSongRequest.isError]);
 
     function addToQueue(event:  React.MouseEvent<HTMLButtonElement, MouseEvent>){
         event.stopPropagation();

@@ -105,7 +105,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
             setArtistList(artistL);
     };
 
-    const { data, isError, isLoading } = useQuery(['songlist-data'], () => getRequest('songlist/get', '5100'));
+    const { data, isError, isLoading } = useQuery(['songlist-data'], () => getRequest('songlist', '5100'));
 
     useEffect(() => {
         if(data){
@@ -113,7 +113,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
     },[data]);
 
-    const songlistAddRequest = useMutation((songData: SongListEntry) => postRequest('songlist/add', '5100', songData),{
+    const songlistAddRequest = useMutation((songData: SongListEntry) => postRequest(`songlist`, '5100', songData),{
         onError: (error: AxiosError) => {
             setAlertMessage(error.message);
             setSliding('');
@@ -199,7 +199,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         };
     };
 
-    const addMultipleRequest = useMutation((songs: SongListEntry[]) => postRequest('songlist/addMultiple', 5100, {songs: songs}), {
+    const addMultipleRequest = useMutation((songs: SongListEntry[]) => postRequest('songlist/many', 5100, {songs: songs}), {
         onError: (error: AxiosError) => {
             setAlertMessage(error.message);
             setSliding('');

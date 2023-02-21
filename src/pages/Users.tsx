@@ -21,7 +21,7 @@ const Users: React.FC<UsersProps> = ({userData}) => {
     const [onlyModsToggle, setOnlyModsToggle] = useState<boolean>(false);
     const [onlyModsButtonText, setOnlyModsButtonText] = useState<string>('Only mods');
 
-    const { data, isLoading } = useQuery(['users-data'], () => getRequest('admin/getUsers', '5100'));
+    const { data, isLoading } = useQuery(['users-data'], () => getRequest('admin/users', '5100'));
     
     useEffect(() => {
         if(data){

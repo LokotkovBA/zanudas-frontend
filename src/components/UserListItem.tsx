@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMutation } from 'react-query';
-import { postRequest } from '../utils/api-requests';
+import { deleteRequest, patchRequest } from '../utils/api-requests';
 import { UserEntry } from '../utils/interfaces';
 
 interface UserListItemProps {
@@ -24,8 +24,8 @@ export const UserListItem: React.FC<UserListItemProps> = ({userEntry, is_admin})
         });
     };
 
-    const changeUserRequest = useMutation((newUserData: UserEntry) => postRequest('admin/changeUser', '5100', newUserData));
-    const deleteUserRequest = useMutation((userId: number) => postRequest('admin/deleteUser', '5100', { id: userId }));
+    const changeUserRequest = useMutation((newUserData: UserEntry) => patchRequest('admin/user', '5100', newUserData));
+    const deleteUserRequest = useMutation((userId: number) => deleteRequest('admin/user', '5100', { id: userId }));
 
     function changeUser(){
         if(is_admin){

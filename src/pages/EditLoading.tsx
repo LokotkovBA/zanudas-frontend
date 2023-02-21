@@ -21,7 +21,7 @@ const loadingMessageValidator = z.object({
 export type LoadingMessageData = z.infer<typeof loadingMessageValidator>; 
 
 async function getMessages(){
-    return z.array(loadingMessageValidator).parse((await (await getRequest('loading/info', 5100)).data));
+    return z.array(loadingMessageValidator).parse((await (await getRequest('loading', 5100)).data));
 }
 
 const EditLoading: React.FC<EditLoadingProps> = ({is_admin}) => {
@@ -41,7 +41,7 @@ const EditLoading: React.FC<EditLoadingProps> = ({is_admin}) => {
         }
     });
 
-    const sendNewMessage = useMutation(() => postRequest('loading/add', 5100, {}), {
+    const sendNewMessage = useMutation(() => postRequest('loading', 5100, {}), {
         onSuccess: () => {
             refetchMessages();
             setButtonText('Success!');

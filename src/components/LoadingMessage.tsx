@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { QueryObserverResult, RefetchOptions, RefetchQueryFilters, useMutation } from 'react-query';
 import { LoadingMessageData } from '../pages/EditLoading';
-import { postRequest } from '../utils/api-requests';
+import { deleteRequest, patchRequest } from '../utils/api-requests';
 
 interface LoadingMessageProps {
     message_data: LoadingMessageData;
@@ -37,12 +37,12 @@ const LoadingMessage: React.FC<LoadingMessageProps> = ({message_data, refetch_da
         sendMessageData.mutate(messageData)
     }
 
-    const sendMessageData = useMutation((newMessageData: LoadingMessageData) => postRequest('loading/change', 5100, newMessageData), {
+    const sendMessageData = useMutation((newMessageData: LoadingMessageData) => patchRequest('loading', 5100, newMessageData), {
         onSuccess: () => setButtonText('Success!'),
         onError: () => setButtonText('Error!')
     });
 
-    const deleteLoadingMessage = useMutation((id: number) => postRequest('loading/delete', 5100, {id: id}), {
+    const deleteLoadingMessage = useMutation((id: number) => deleteRequest('loading', 5100, {id: id}), {
         onSuccess: () => {
             setDeleteButtonText('Success!');
             refetch_data();

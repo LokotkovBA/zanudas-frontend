@@ -1,6 +1,6 @@
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
 import { useCallback, useEffect, useState } from "react";
-import { getRequest, postRequest } from "../utils/api-requests";
+import { deleteRequest, getRequest, patchRequest, postRequest } from "../utils/api-requests";
 import { DBLikesState, DBQueueEntry, LikesState, QueueEntry, QueueOrderEntry, UserData } from "../utils/interfaces";
 
 import telegramIconPath from "../icons/telegram.svg";
@@ -17,7 +17,6 @@ import { AxiosError, AxiosResponse } from "axios";
 import { Alert } from "../components/Alert";
 
 let timeoutCount = 0;
-let visibleQueueCount = -1;
 
 const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [queueData, setQueueData] = useState<QueueEntry[]>([]);
@@ -32,7 +31,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         setIsLive(response.data.is_live);
     }
 
-    const { isLoading, isError, isSuccess } = useQuery(['queue-data'], () => getRequest('queue/get', '5100'), {
+    const { isLoading, isError, isSuccess } = useQuery(['queue-data'], () => getRequest('queue', '5100'), {
         refetchOnWindowFocus: false,
         onSuccess: (data) => {
             updateQueueData(data);
@@ -57,9 +56,9 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
     };
 
-    const queueChangeRequest = useMutation((newQueueData: {queueEntry: QueueEntry, index: number}) => postRequest('queue/change', '5100', newQueueData), options);
+    const queueChangeRequest = useMutation((newQueueData: {queueEntry: QueueEntry, index: number}) => patchRequest(`queue?index=${newQueueData.index}`, '5100', newQueueData.queueEntry), options);
 
-    const deleteQueueEntryRequest = useMutation((delEntry :{ id: number; index: number}) => postRequest('queue/delete', '5100', { id: delEntry.id, index: delEntry.index }), {
+    const deleteQueueEntryRequest = useMutation((delEntry :{ id: number; index: number}) => deleteRequest('queue', '5100', { id: delEntry.id, index: delEntry.index }), {
         onError: (error, delEntry) => {
             setQueueData(prevQueueData => {
                 let newQueueData = [...prevQueueData];
@@ -89,7 +88,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         });
     };
 
-    const getLikes = useQuery(['likes-data'], () => getRequest('queue/getAllLikes', '5100'),{
+    const getLikes = useQuery(['likes-data'], () => getRequest('queue/likes', '5100'),{
         enabled: userData.display_name !== '',
         onSuccess: (response) => {
             if (response.data.is_empty) {
@@ -102,16 +101,12 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     });
 
     useEffect(() => {
-        visibleQueueCount = -1;
-    })
-
-    useEffect(() => {
         if(getLikes.data){
             setQueueLikes(getLikes.data.data.map((like: DBLikesState) => ({ ...like, song_id: parseInt(like.song_id) })));
         }
     },[getLikes.data]);
 
-    const addLikeRequest = useMutation((likeData: {song_id : number, is_positive: number, song_index: number}) => postRequest('queue/addLike', '5100',{ song_id: likeData.song_id, is_positive: likeData.is_positive, song_index: likeData.song_index}));
+    const addLikeRequest = useMutation((likeData: {song_id : number, is_positive: number, song_index: number}) => postRequest('queue/like', '5100',{ song_id: likeData.song_id, is_positive: likeData.is_positive, song_index: likeData.song_index}));
 
     function clickLikeHandler(song_id: number, is_positive: number, index: number){
         if (userData.display_name) {
@@ -155,7 +150,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
     };
 
-    const queueOrderRequest = useMutation((newOrder: { id: number, queue_number: number}[]) => postRequest('queue/order', '5100', newOrder), options);
+    const queueOrderRequest = useMutation((newOrder: { id: number, queue_number: number}[]) => patchRequest('queue/order', '5100', newOrder), options);
 
     const changeQueueOrder = useCallback((queue_data: QueueEntry[]) => {
         const newOrder = queue_data.map((elem, index) => ({ id: elem.id, queue_number: index }));
@@ -317,20 +312,17 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 </div>
                 :
                 (isLive && <ul className="pleb-view">
-                    {queueData.map((entry, index) => {
-                        if(entry.visible){
-                            visibleQueueCount++;
-                            return (<QueueElement
-                            entry={entry}
-                            like_count={entry.like_count}
-                            index={visibleQueueCount}
-                            user_id={userData.id}
-                            user_likes={queueLikes}
-                            click_like_handler={clickLikeHandler}
-                            key={entry.id}
-                            />)
-                        }
-                        return '';
+                    {queueData.filter((entry) => entry.visible).map((entry, index) => {
+                        return (<QueueElement
+                        entry={entry}
+                        like_count={entry.like_count}
+                        queue_number={entry.queue_number}
+                        index={index}
+                        user_id={userData.id}
+                        user_likes={queueLikes}
+                        click_like_handler={clickLikeHandler}
+                        key={entry.id}
+                        />)
                     })}
                 </ul>)
             }

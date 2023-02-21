@@ -7,6 +7,7 @@ import pathToArrowRight from '../icons/arrow-right.svg';
 interface QueueElementProps {
     user_id: number;
     like_count: number;
+    queue_number: number;
     index: number;
     entry: QueueEntry;
     user_likes: LikesState[];
@@ -16,6 +17,7 @@ interface QueueElementProps {
 export const QueueElement: React.FC<QueueElementProps> = ({
     user_id,
     like_count,
+    queue_number,
     index,
     entry,
     user_likes,
@@ -41,7 +43,7 @@ export const QueueElement: React.FC<QueueElementProps> = ({
             song_id={entry.id} 
             like_count={like_count} 
             clickLikeHandler={click_like_handler} 
-            index={index}
+            index={queue_number}
             />
         </li>
         );

@@ -34,7 +34,7 @@ export default function App() {
     useEffect(() => {
         if(isSuccess){
             setUserData({
-                id: parseInt(data.data.id),
+                id: data.data.id,
                 display_name: data.data.display_name,
                 profile_image_url: data.data.profile_image_url,
                 is_mod: data.data.is_mod,

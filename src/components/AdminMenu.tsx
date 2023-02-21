@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 
 import daIconPath from '../icons/da.svg';
-import { BACKEND_ADDRESS, getRequest, postRequest } from '../utils/api-requests';
+import { BACKEND_ADDRESS, getRequest, patchRequest, postRequest, putRequest } from '../utils/api-requests';
 import { socket } from '../utils/socket-client';
 import { Alert } from './Alert';
 import { LoaderBox } from './LoaderBox';
@@ -11,7 +11,7 @@ import { LoaderBox } from './LoaderBox';
 
 const daLink = `https://${BACKEND_ADDRESS}:5100/da/auth`;
 
-const adminGetTokens = `https://${BACKEND_ADDRESS}:5100/admin/getToken`;
+const adminGetTokens = `https://${BACKEND_ADDRESS}:5100/admin/adminTwitchToken`;
 
 interface AdminMenuProps {
     display_name: string;
@@ -59,7 +59,7 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
         setNewMaxDisplay(response.data.max_display);
     }
 
-    const getAdminData = useQuery(['admin-data'], () => getRequest('admin/get','5100'), {
+    const getAdminData = useQuery(['admin-data'], () => getRequest('admin','5100'), {
         enabled: is_admin,
         refetchOnWindowFocus: false,
     });
@@ -131,18 +131,18 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
     };
 
 
-    const hideInfoText = useMutation((newData: boolean) => postRequest('admin/hideInfoText', '5100', {show_info: newData}), options);
+    const hideInfoText = useMutation((newData: boolean) => patchRequest('admin/infoText', '5100', {show_info: newData}), options);
     const setupDaRequest = useMutation(() => postRequest('da/setup', '5100', {}), options);
     const startDaRequest = useMutation(() => postRequest('da/start', '5100', {}), options);
     const stopDARequest = useMutation(() => postRequest('da/stop', '5100', {}), options);
-    const getTwitchModsRequest = useMutation(() => postRequest('admin/getTwitchMods', '5100', {}), options);
-    const sendNewMaxDisplayRequest = useMutation((newData: number) => postRequest('da/setMaxDisplay', '5100', {new_max_display: newData}), options);
-    const sendNewFontSizeRequest = useMutation((newData: string) => postRequest('admin/changeFontSize', '5100', {fontSize: newData}), options);
+    const getTwitchModsRequest = useMutation(() => getRequest('admin/twitchMods', '5100'), options);
+    const sendNewMaxDisplayRequest = useMutation((newData: number) => putRequest('admin/maxDisplay', '5100', {new_max_display: newData}), options);
+    const sendNewFontSizeRequest = useMutation((newData: string) => putRequest('admin/fontSize', '5100', {fontSize: newData}), options);
     const startQueueRequest = useMutation(() => postRequest('queue/start', '5100', {}), options);
     const stopQueueRequest = useMutation(() => postRequest('queue/stop', '5100', {}), options);
-    const addQueueSongRequest = useMutation(() => postRequest('queue/add', '5100', {}), options);
-    const changeInfoRequest = useMutation((newData: string) => postRequest('admin/changeInfoText', '5100', {infoText: newData}), options);
-    const tokenButtonsVisibilityRequest = useMutation((newData: boolean) => postRequest('admin/changeTokenButtonsVisibility', '5100', {hid_token_buttons: !newData}), options);
+    const addQueueSongRequest = useMutation(() => postRequest('queue/empty', '5100', {}), options);
+    const changeInfoRequest = useMutation((newData: string) => putRequest('admin/infoText', '5100', {infoText: newData}), options);
+    const tokenButtonsVisibilityRequest = useMutation((newData: boolean) => postRequest('admin/tokenButtonsVisibility', '5100', {hid_token_buttons: !newData}), options);
 
     if(getAdminData.isLoading){
         return (<div className='admin-buttons'>

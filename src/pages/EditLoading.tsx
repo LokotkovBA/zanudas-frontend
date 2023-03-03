@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { z } from 'zod';
 import { LoaderBox } from '../components/LoaderBox';
@@ -18,13 +18,13 @@ const loadingMessageValidator = z.object({
     progress: z.number().nullable().optional(),
 });
 
-export type LoadingMessageData = z.infer<typeof loadingMessageValidator>; 
+export type LoadingMessageData = z.infer<typeof loadingMessageValidator>;
 
-async function getMessages(){
+async function getMessages() {
     return z.array(loadingMessageValidator).parse((await (await getRequest('loading', 5100)).data));
 }
 
-const EditLoading: React.FC<EditLoadingProps> = ({is_admin}) => {
+const EditLoading: React.FC<EditLoadingProps> = ({ is_admin }) => {
     const [messagesArray, setMessagesArray] = useState<LoadingMessageData[]>([]);
     const [buttonText, setButtonText] = useState('Add new');
 
@@ -33,9 +33,9 @@ const EditLoading: React.FC<EditLoadingProps> = ({is_admin}) => {
     function searchHandleChange(event: React.ChangeEvent<HTMLInputElement>) {
         setSearchTerm(event.target.value);
         localStorage.setItem('loadingMessagesSearchTerm', event.target.value);
-    };
+    }
 
-    const {refetch: refetchMessages} = useQuery(['loading-messages'], () => getMessages(), {
+    const { refetch: refetchMessages } = useQuery(['loading-messages'], () => getMessages(), {
         onSuccess: (data) => {
             setMessagesArray(data);
         }
@@ -49,25 +49,25 @@ const EditLoading: React.FC<EditLoadingProps> = ({is_admin}) => {
         onError: () => setButtonText('Error!')
     });
 
-    function onClickAdd(){
+    function onClickAdd() {
         sendNewMessage.mutate();
     }
 
-    if(!is_admin){
+    if (!is_admin) {
         return <div></div>;
     }
-    
-    if(messagesArray){
-        return <div className='loading-messages'>
-            <SearchBar searchHandleChange={searchHandleChange} searchTerm={searchTerm}/>
-            <button onClick={onClickAdd}>{buttonText}</button>
-        {messagesArray.filter(elem => {
-            const lowerSearchTerm = searchTerm.toLowerCase();
-            return (elem.message.toLowerCase().includes(lowerSearchTerm) || elem.triple_end_of.toLowerCase().includes(lowerSearchTerm) || elem.message_before?.toLowerCase().includes(lowerSearchTerm) || elem.progress?.toString().includes(lowerSearchTerm));
-        }).map((message) => {
-            return <LoadingMessage key={message.id} message_data={message} refetch_data={refetchMessages}/>
-        })}</div>
+
+    if (messagesArray) {
+        return <div className="loading-messages">
+            <SearchBar searchHandleChange={searchHandleChange} searchTerm={searchTerm} />
+            <button type="button" onClick={onClickAdd}>{buttonText}</button>
+            {messagesArray.filter(elem => {
+                const lowerSearchTerm = searchTerm.toLowerCase();
+                return (elem.message.toLowerCase().includes(lowerSearchTerm) || elem.triple_end_of.toLowerCase().includes(lowerSearchTerm) || elem.message_before?.toLowerCase().includes(lowerSearchTerm) || elem.progress?.toString().includes(lowerSearchTerm));
+            }).map((message) => {
+                return <LoadingMessage key={message.id} message_data={message} refetch_data={refetchMessages} />;
+            })}</div>;
     }
-    return (<LoaderBox/>);
-}
+    return (<LoaderBox />);
+};
 export default EditLoading;

@@ -16,44 +16,44 @@ const Menu: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const url = useLocation();
 
-    function loginClick(){
+    function loginClick() {
         localStorage.setItem('login_clicked', 'yep');
         window.location.href = loginLink;
     }
 
-    function logoutClick(){
+    function logoutClick() {
         localStorage.setItem('login_clicked', 'nop');
         window.location.href = logoutLink;
     }
 
     return (
-        <nav id='menu'>
+        <nav id="menu">
             <p className="label">&gt;3</p>
             <Link to="/queue" style={{ textDecoration: 'none' }}>
-                <button className={`menu ${url.pathname === '/queue' && "pressed"}`}>Queue</button>
+                <button type="button" className={`menu ${url.pathname === '/queue' && 'pressed'}`}>Queue</button>
             </Link>
             <Link to="/songlist" style={{ textDecoration: 'none' }}>
-                <button className={`menu ${url.pathname === '/songlist' && "pressed"}`}>Song list</button>
+                <button type="button" className={`menu ${url.pathname === '/songlist' && 'pressed'}`}>Song list</button>
             </Link>
-            {userData.is_admin && 
-            <Link to="/users" style={{ textDecoration: 'none' }}>
-                <button className={`menu ${url.pathname === '/users' && "pressed"}`}>Users</button>
-            </Link>}
-            {userData.is_admin && 
-            <Link to="/loading" style={{ textDecoration: 'none' }}>
-                <button className={`menu ${url.pathname === '/loading' && "pressed"}`}>Edit Loading Screen</button>
-            </Link>}
-            <a href={donateLink} className='request-link' target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}> 
-                <button className='request-button'>Request<img src={daIconPath} alt="donation alerts icon" height={20} width={18}/></button>
+            {userData.is_admin &&
+                <Link to="/users" style={{ textDecoration: 'none' }}>
+                    <button type="button" className={`menu ${url.pathname === '/users' && 'pressed'}`}>Users</button>
+                </Link>}
+            {userData.is_admin &&
+                <Link to="/loading" style={{ textDecoration: 'none' }}>
+                    <button type="button" className={`menu ${url.pathname === '/loading' && 'pressed'}`}>Edit Loading Screen</button>
+                </Link>}
+            <a href={donateLink} className="request-link" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+                <button type="button" className="request-button">Request<img src={daIconPath} alt="donation alerts icon" height={20} width={18} /></button>
             </a>
             {userData.display_name && <div className="user-info">
-                <img width={45} height={45} src={userData.profile_image_url} alt='user avatar' />
+                <img width={45} height={45} src={userData.profile_image_url} alt="user avatar" />
                 <p>{userData.display_name}</p>
-                <button className="login-btn" onClick={logoutClick}>Log out</button>
+                <button type="button" className="login-btn" onClick={logoutClick}>Log out</button>
             </div>}
-            {!userData.display_name && <button className="login-btn" onClick={loginClick}>Login<img src={twitchIconPath} alt="twitch icon" height={20} width={20} /></button>}
+            {!userData.display_name && <button type="button" className="login-btn" onClick={loginClick}>Login<img src={twitchIconPath} alt="twitch icon" height={20} width={20} /></button>}
         </nav>
     );
-}
+};
 
 export default Menu;

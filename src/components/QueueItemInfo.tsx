@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 interface QueueItemInfoProps {
     index: number;
@@ -12,8 +12,8 @@ interface QueueItemInfoProps {
 }
 
 export const QueueItemInfo: React.FC<QueueItemInfoProps> = ({ index, artist, song_name, donate_amount, currency, donor_name, played, current }) => {
-        return (
-        <div className={(played ? "played " : (current ? "current " : "")) +"queue-item-info"}>
+    return (
+        <div className={(played ? 'played ' : (current ? 'current ' : '')) + 'queue-item-info'}>
             <p className="queue-num">{index + 1}</p>
             <div>
                 <p>{artist} - {song_name}</p>
@@ -21,4 +21,4 @@ export const QueueItemInfo: React.FC<QueueItemInfoProps> = ({ index, artist, son
                 {donor_name && <>from <b>{donor_name}</b></>}
             </div>
         </div>);
-}
+};

@@ -6,7 +6,7 @@ export function getFormatDate() {
 
 export function formatDate(date: string): string | null {
     if (date) {
-        let newDate = Date.parse(date);
+        const newDate = Date.parse(date);
         const d = new Date(newDate);
         let day = `${d.getDate()}`;
         let month = `${d.getMonth() + 1}`;

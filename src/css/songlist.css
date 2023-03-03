@@ -12,23 +12,26 @@
     justify-content: center;
 
 }
+
 .search-bar {
     border-radius: 1em;
     margin: .5em 0;
     grid-column: 2/3;
     font-weight: bolder;
 }
-.search-bar::placeholder{
+
+.search-bar::placeholder {
     color: #38023B;
     font-weight: lighter;
 }
-.search-bar:focus{
+
+.search-bar:focus {
     outline: none;
     border-style: solid;
     border-color: #D81159;
 }
 
-.songlist-edits{
+.songlist-edits {
     display: flex;
     align-items: center;
     color: #FFFFFF;
@@ -53,13 +56,13 @@
     flex-wrap: wrap;
 }
 
-.up-zone{
+.up-zone {
     position: fixed;
     bottom: 10em;
     right: 26%;
 }
 
-.up-zone button{
+.up-zone button {
     margin: 0;
 }
 
@@ -88,7 +91,7 @@
     border-color: #38023B;
     border-width: .2em;
     border-style: solid;
-    
+
     display: flex;
     align-items: center;
 }
@@ -102,28 +105,28 @@
     color: #FFFFFF;
 }
 
-.artist-block>.list-item:hover{
+.artist-block>.list-item:hover {
     cursor: pointer;
     border-color: #F2AF29;
 }
 
 .clicked {
-    color:#33002C;
+    color: #33002C;
     background-color: #F2AF29;
 }
 
-.list-item>.like-text{
+.list-item>.like-text {
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
     justify-items: center;
 }
 
-.list-item>.like-text>img{
+.list-item>.like-text>img {
     width: 1.2em;
 }
 
-.copy-button{
+.copy-button {
     margin: 0;
 }
 
@@ -206,7 +209,7 @@
         grid-column: 2 / 12;
     }
 
-    .up-zone{
+    .up-zone {
         right: 10%;
     }
 }
@@ -217,7 +220,7 @@
         grid-column: 1 / -1;
     }
 
-    .up-zone{
+    .up-zone {
         right: 1%;
     }
 }

@@ -13,7 +13,7 @@ const Users = lazy(() => import('./pages/Users'));
 const EditLoading = lazy(() => import('./pages/EditLoading'));
 
 export default function App() {
-    
+
     const [userData, setUserData] = useState<UserData>({
         id: 0,
         display_name: ``,
@@ -25,14 +25,14 @@ export default function App() {
         is_cookie_alert_shown: true
     });
 
-    const {data, isSuccess } = useQuery(['user-data'],() => getRequest('auth/success','5100'),{
+    const { data, isSuccess } = useQuery(['user-data'], () => getRequest('auth/success', '5100'), {
         retry: false,
         refetchOnWindowFocus: false,
         enabled: localStorage.getItem('login_clicked') === 'yep'
     });
 
     useEffect(() => {
-        if(isSuccess){
+        if (isSuccess) {
             setUserData({
                 id: data.data.id,
                 display_name: data.data.display_name,
@@ -44,29 +44,29 @@ export default function App() {
                 is_cookie_alert_shown: data.data.is_cookie_alert_shown
             });
         }
-    },[data, isSuccess]);
+    }, [data, isSuccess]);
 
-    const cookieAccepted = useMutation(() => postRequest('auth/cookiealert','5100',{ }));
+    const cookieAccepted = useMutation(() => postRequest('auth/cookiealert', '5100', {}));
 
-    function cookieAlertClick(){
+    function cookieAlertClick() {
         cookieAccepted.mutate();
-    };
+    }
 
-    useEffect(() =>{
-        if(cookieAccepted.isSuccess){
+    useEffect(() => {
+        if (cookieAccepted.isSuccess) {
             setUserData(prevUserData => {
-                return {...prevUserData, is_cookie_alert_shown: true};
+                return { ...prevUserData, is_cookie_alert_shown: true };
             });
         }
-    },[cookieAccepted.isSuccess]);
+    }, [cookieAccepted.isSuccess]);
 
     return (
         <div>
             <Menu userData={userData} />
             <div className="content">
-                <Suspense fallback={<LoaderBox/>}>
+                <Suspense fallback={<LoaderBox />}>
                     <Routes>
-                        <Route path='/' element={<Navigate to='/queue' />} />
+                        <Route path="/" element={<Navigate to="/queue" />} />
                         <Route path="/queue" element={<Queue userData={userData} />} />
                         <Route path="/songlist" element={<SongList userData={userData} />} />
                         <Route path="/users" element={<Users userData={userData} />} />
@@ -74,10 +74,10 @@ export default function App() {
                     </Routes>
                 </Suspense>
             </div>
-            {!userData.is_cookie_alert_shown && 
-            <div className='cookie'>
-                <Alert cookieAlertClick={cookieAlertClick} show_button={true} class_name={'alert'} message={`This website uses cookies to keep you logged in!`}/>
-            </div>
+            {!userData.is_cookie_alert_shown &&
+                <div className="cookie">
+                    <Alert cookieAlertClick={cookieAlertClick} show_button={true} class_name={'alert'} message={`This website uses cookies to keep you logged in!`} />
+                </div>
             }
         </div>
     );

@@ -1,0 +1,37 @@
+{
+    "extends": [
+        "react-app",
+        "react-app/jest",
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:react/jsx-runtime",
+        "plugin:react-hooks/recommended"
+    ],
+    "rules": {
+        "no-console": "warn",
+        "semi": "warn",
+        "quotes": [
+            "warn",
+            "single",
+            {
+                "allowTemplateLiterals": true
+            }
+        ],
+        "jsx-quotes": [
+            "warn",
+            "prefer-double"
+        ],
+        "prefer-const": "warn",
+        "eol-last": [
+            "warn",
+            "always"
+        ],
+        "react/prop-types": "warn",
+        "react/display-name": "warn",
+        "react/button-has-type": "error",
+        "react/no-array-index-key": "error"
+    },
+    "globals": {
+        "JSX": "readonly"
+    }
+}

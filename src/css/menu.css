@@ -25,12 +25,12 @@ button {
     gap: .3em;
 }
 
-.request-button{
+.request-button {
     background-color: #DE0D92;
     border-color: #DE0D92;
 }
 
-.request-link{
+.request-link {
     margin-left: auto;
 }
 

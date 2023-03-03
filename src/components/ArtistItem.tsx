@@ -1,13 +1,13 @@
-import React from "react";
-import { SongListEntry, UserData } from "../utils/interfaces";
-import ListItem from "./ListItem";
+import React from 'react';
+import { SongListEntry, UserData } from '../utils/interfaces';
+import ListItem from './ListItem';
 
-interface ArtistItemProps { 
-    songs: SongListEntry[], 
-    artist: string, 
-    userData: UserData, 
-    displayAlert: () => void 
-};
+interface ArtistItemProps {
+    songs: SongListEntry[],
+    artist: string,
+    userData: UserData,
+    displayAlert: () => void
+}
 
 const ArtistItem: React.FC<ArtistItemProps> = ({ songs, artist, userData, displayAlert }) => {
 
@@ -22,7 +22,7 @@ const ArtistItem: React.FC<ArtistItemProps> = ({ songs, artist, userData, displa
                 displayAlert={displayAlert}
             />));
         }
-    }, [songs, userData, displayAlert])
+    }, [songs, userData, displayAlert]);
 
 
     return (

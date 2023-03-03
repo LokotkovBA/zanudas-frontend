@@ -1,8 +1,8 @@
-.user-list{
+.user-list {
     grid-column: 7;
 }
 
-.user-entry{
+.user-entry {
     background-color: #33002C;
 
     border-radius: 1em;
@@ -16,22 +16,21 @@
     align-items: center;
 }
 
-.user-entry>.checkboxes{
+.user-entry>.checkboxes {
     color: #FFF;
 }
 
-.user-entry>b{
+.user-entry>b {
     color: #F2AF29;
     grid-column: 1/3;
 }
 
-.user-entry>.change-button{
+.user-entry>.change-button {
     grid-column: 1;
     margin: 0;
 }
 
-.user-entry>.delete-button{
+.user-entry>.delete-button {
     grid-column: 2;
     margin: 0;
 }
-

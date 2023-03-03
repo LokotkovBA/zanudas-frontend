@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { deleteRequest, patchRequest } from '../utils/api-requests';
 import { UserEntry } from '../utils/interfaces';
@@ -8,70 +8,70 @@ interface UserListItemProps {
     is_admin: boolean
 }
 
-export const UserListItem: React.FC<UserListItemProps> = ({userEntry, is_admin}) => {
+export const UserListItem: React.FC<UserListItemProps> = ({ userEntry, is_admin }) => {
     const [userEntryData, setUserEntryData] = useState<UserEntry>(userEntry);
     const [deleteIntention, setDeleteIntention] = useState<boolean>(false);
     const [deleteButtonText, setDeleteButtonText] = useState<string>('Delete');
     useEffect(() => {
         setUserEntryData(userEntry);
-    },[userEntry]);
+    }, [userEntry]);
 
     function queueEntryChangeEvent(event: React.ChangeEvent<HTMLInputElement>) {
         setUserEntryData(prevUserData => {
             const { name, checked } = event.target;
-            let newUserData = {...prevUserData, [name]: checked};
+            const newUserData = { ...prevUserData, [name]: checked };
             return newUserData;
         });
-    };
+    }
 
     const changeUserRequest = useMutation((newUserData: UserEntry) => patchRequest('admin/user', '5100', newUserData));
     const deleteUserRequest = useMutation((userId: number) => deleteRequest('admin/user', '5100', { id: userId }));
 
-    function changeUser(){
-        if(is_admin){
+    function changeUser() {
+        if (is_admin) {
             changeUserRequest.mutate(userEntryData);
         }
-    };
+    }
 
-    function deleteUser(){
-        if(is_admin){
-            if(deleteIntention){
+    function deleteUser() {
+        if (is_admin) {
+            if (deleteIntention) {
                 deleteUserRequest.mutate(userEntryData.id);
-            }else{
+            } else {
                 setDeleteButtonText('Sure?');
                 setDeleteIntention(true);
             }
         }
-    };
+    }
 
     useEffect(() => {
-        if(deleteUserRequest.isSuccess){
+        if (deleteUserRequest.isSuccess) {
             setDeleteButtonText('Deleted');
             setDeleteIntention(false);
         }
-    },[deleteUserRequest.isSuccess]);
+    }, [deleteUserRequest.isSuccess]);
 
     useEffect(() => {
-        if(deleteUserRequest.isError){
+        if (deleteUserRequest.isError) {
             setDeleteButtonText('Error!');
         }
-    },[deleteUserRequest.isError]);
+    }, [deleteUserRequest.isError]);
 
     return (
-        <div className='user-entry'>
+        <div className="user-entry">
             <b>{userEntryData.login}</b>
             <div className="checkboxes">
-                <input type='checkbox' name='is_mod' checked={userEntryData.is_mod} onChange={queueEntryChangeEvent} />
-                <label htmlFor='is_mod'>is_mod</label>
-                <input type='checkbox' name='is_admin' checked={userEntryData.is_admin} onChange={queueEntryChangeEvent} />
-                <label htmlFor='is_admin'>is_admin</label>
-                <input type='checkbox' name='is_cthulhu' checked={userEntryData.is_cthulhu} onChange={queueEntryChangeEvent} />
-                <label htmlFor='is_cthulhu'>is_cthulhu</label>
-                <input type='checkbox' name='is_queen' checked={userEntryData.is_queen} onChange={queueEntryChangeEvent} />
-                <label htmlFor='is_queen'>is_queen</label>
+                <input type="checkbox" name="is_mod" checked={userEntryData.is_mod} onChange={queueEntryChangeEvent} />
+                <label htmlFor="is_mod">is_mod</label>
+                <input type="checkbox" name="is_admin" checked={userEntryData.is_admin} onChange={queueEntryChangeEvent} />
+                <label htmlFor="is_admin">is_admin</label>
+                <input type="checkbox" name="is_cthulhu" checked={userEntryData.is_cthulhu} onChange={queueEntryChangeEvent} />
+                <label htmlFor="is_cthulhu">is_cthulhu</label>
+                <input type="checkbox" name="is_queen" checked={userEntryData.is_queen} onChange={queueEntryChangeEvent} />
+                <label htmlFor="is_queen">is_queen</label>
             </div>
-            <button className='change-button' onClick={changeUser}>Change</button>
-            <button className='delete-button' onClick={deleteUser}>{deleteButtonText}</button>
+            <button type="button" className="change-button" onClick={changeUser}>Change</button>
+            <button type="button" className="delete-button" onClick={deleteUser}>{deleteButtonText}</button>
         </div>
     );
-}
+};

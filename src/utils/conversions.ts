@@ -1,4 +1,4 @@
-import { DBQueueEntry, QueueEntry } from "./interfaces";
+import { DBQueueEntry, QueueEntry } from './interfaces';
 
 export function queueDBtoData(input: DBQueueEntry): QueueEntry {
     return ({

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { LoaderBox } from '../components/LoaderBox';
 import { SearchBar } from '../components/SearchBar';
@@ -12,7 +12,7 @@ interface UsersProps {
     userData: UserData
 }
 
-const Users: React.FC<UsersProps> = ({userData}) => {
+const Users: React.FC<UsersProps> = ({ userData }) => {
     const [userListData, setUserListData] = useState<UserEntry[]>();
     const [userList, setUserList] = useState<JSX.Element[]>();
 
@@ -22,47 +22,47 @@ const Users: React.FC<UsersProps> = ({userData}) => {
     const [onlyModsButtonText, setOnlyModsButtonText] = useState<string>('Only mods');
 
     const { data, isLoading } = useQuery(['users-data'], () => getRequest('admin/users', '5100'));
-    
+
     useEffect(() => {
-        if(data){
+        if (data) {
             setUserListData(data.data);
         }
-    },[data]);
+    }, [data]);
 
-    useEffect(() =>{
-        if(userListData){
-            setUserList(userListData.filter(entry => (!onlyModsToggle || (onlyModsToggle && (entry.is_admin || entry.is_mod))) && entry.login.includes(searchTerm)).map((entry, index) => {
-                return <UserListItem key={index} userEntry={entry} is_admin={userData.is_admin}/>
-            }))
+    useEffect(() => {
+        if (userListData) {
+            setUserList(userListData.filter(entry => (!onlyModsToggle || (onlyModsToggle && (entry.is_admin || entry.is_mod))) && entry.login.includes(searchTerm)).map((entry) => {
+                return <UserListItem key={entry.id} userEntry={entry} is_admin={userData.is_admin} />;
+            }));
         }
-    },[userListData, userData.is_admin, searchTerm, onlyModsToggle]);
+    }, [userListData, userData.is_admin, searchTerm, onlyModsToggle]);
 
     function searchHandleChange(event: React.ChangeEvent<HTMLInputElement>) {
         setSearchTerm(event.target.value);
         localStorage.setItem('usersSearchTerm', event.target.value);
-    };
+    }
 
-    function toggleOnlyMods(){
-        let prevOnlyMods = !onlyModsToggle;
+    function toggleOnlyMods() {
+        const prevOnlyMods = !onlyModsToggle;
         setOnlyModsToggle(prevOnlyMods);
-        setOnlyModsButtonText(prevOnlyMods ? 'All users' : 'Only mods')
-    };
+        setOnlyModsButtonText(prevOnlyMods ? 'All users' : 'Only mods');
+    }
 
-    if(isLoading){
-        return  <div className="song-list">
-                    <LoaderBox/>
-                </div>
-    };
+    if (isLoading) {
+        return <div className="song-list">
+            <LoaderBox />
+        </div>;
+    }
 
     return (
-        <div className='user-list'>
+        <div className="user-list">
             {userData.is_admin &&
-            <div className='background-menu set-sticky'>
-                <SearchBar searchHandleChange={searchHandleChange} searchTerm={searchTerm}/>
-                <button onClick={toggleOnlyMods}>{onlyModsButtonText}</button>
-            </div>}
+                <div className="background-menu set-sticky">
+                    <SearchBar searchHandleChange={searchHandleChange} searchTerm={searchTerm} />
+                    <button type="button" onClick={toggleOnlyMods}>{onlyModsButtonText}</button>
+                </div>}
             {userList}
-            <UpButton/>
+            <UpButton />
         </div>
     );
 };

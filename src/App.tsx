@@ -27,8 +27,8 @@ export default function App() {
 
     const { data, isSuccess } = useQuery(['user-data'], () => getRequest('auth/success', '5100'), {
         retry: false,
-        refetchOnWindowFocus: false,
-        enabled: localStorage.getItem('login_clicked') === 'yep'
+        enabled: localStorage.getItem('login_clicked') === 'yep',
+        onError: () => localStorage.setItem('login_clicked', 'nop')
     });
 
     useEffect(() => {

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { UserData } from '../utils/interfaces';
 
 import twitchIconPath from '../icons/twitch.svg';
@@ -12,37 +12,34 @@ const loginLink = `https://${BACKEND_ADDRESS}:5100/auth`;
 const logoutLink = `https://${BACKEND_ADDRESS}:5100/auth/logout`;
 const donateLink = `https://www.donationalerts.com/r/zanuda`;
 
+function loginClick() {
+    localStorage.setItem('login_clicked', 'yep');
+    window.location.href = loginLink;
+}
+
+function logoutClick() {
+    localStorage.setItem('login_clicked', 'nop');
+    window.location.href = logoutLink;
+}
+
 const Menu: React.FC<{ userData: UserData }> = ({ userData }) => {
-
-    const url = useLocation();
-
-    function loginClick() {
-        localStorage.setItem('login_clicked', 'yep');
-        window.location.href = loginLink;
-    }
-
-    function logoutClick() {
-        localStorage.setItem('login_clicked', 'nop');
-        window.location.href = logoutLink;
-    }
-
     return (
         <nav id="menu">
             <p className="label">&gt;3</p>
-            <Link to="/queue" style={{ textDecoration: 'none' }}>
-                <button type="button" className={`menu ${url.pathname === '/queue' && 'pressed'}`}>Queue</button>
-            </Link>
-            <Link to="/songlist" style={{ textDecoration: 'none' }}>
-                <button type="button" className={`menu ${url.pathname === '/songlist' && 'pressed'}`}>Song list</button>
-            </Link>
+            <NavLink to="/queue" style={{ textDecoration: 'none' }}>
+                <button type="button" className={`menu`}>Queue</button>
+            </NavLink>
+            <NavLink to="/songlist" style={{ textDecoration: 'none' }}>
+                <button type="button" className={`menu`}>Song list</button>
+            </NavLink>
             {userData.is_admin &&
-                <Link to="/users" style={{ textDecoration: 'none' }}>
-                    <button type="button" className={`menu ${url.pathname === '/users' && 'pressed'}`}>Users</button>
-                </Link>}
+                <NavLink to="/users" style={{ textDecoration: 'none' }}>
+                    <button type="button" className={`menu`}>Users</button>
+                </NavLink>}
             {userData.is_admin &&
-                <Link to="/loading" style={{ textDecoration: 'none' }}>
-                    <button type="button" className={`menu ${url.pathname === '/loading' && 'pressed'}`}>Edit Loading Screen</button>
-                </Link>}
+                <NavLink to="/loading" style={{ textDecoration: 'none' }}>
+                    <button type="button" className={`menu}`}>Edit Loading Screen</button>
+                </NavLink>}
             <a href={donateLink} className="request-link" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
                 <button type="button" className="request-button">Request<img src={daIconPath} alt="donation alerts icon" height={20} width={18} /></button>
             </a>

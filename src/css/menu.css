@@ -40,12 +40,22 @@ button {
     color: #23001E;
 }
 
+.active>button {
+    background-color: #F2AF29;
+    border-color: #F2AF29;
+    color: #23001E;
+}
+
 button:hover {
     border-color: #F2AF29;
 
 }
 
 .pressed:hover {
+    border-color: #D81159;
+}
+
+.active>button:hover {
     border-color: #D81159;
 }
 

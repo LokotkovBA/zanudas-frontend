@@ -71,6 +71,7 @@ export default function App() {
                         <Route path="/songlist" element={<SongList userData={userData} />} />
                         <Route path="/users" element={<Users userData={userData} />} />
                         <Route path="/loading" element={<EditLoading is_admin={userData.is_admin} />} />
+                        <Route path="*" element={<Navigate to="/" />} />
                     </Routes>
                 </Suspense>
             </div>

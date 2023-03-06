@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react';
-import { WindowDimensions } from './interfaces';
+
+type WindowDimensions = {
+    width: number;
+    height: number;
+}
 
 
 function getWindowsDimensions(): WindowDimensions {

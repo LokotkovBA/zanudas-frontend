@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { getRequest, postRequest } from '../utils/api-requests';
 import { formatDate, getFormatDate } from '../utils/date';
-import { DBSongListEntry, Filters, SongListEntry, UserData } from '../utils/interfaces';
 
 import ArtistItem from '../components/ArtistItem';
 import { Link } from 'react-scroll';
 import { SearchBar } from '../components/SearchBar';
-import useWindowDimensions from '../utils/useWindowDimensions';
+import useWindowDimensions from '../hooks/useWindowDimensions';
 
 import pathToArrowUp from '../icons/arrow-up.svg';
 import pathToArrowDown from '../icons/arrow-down.svg';
@@ -15,17 +14,31 @@ import { UpButton } from '../components/UpButton';
 
 import { useMutation, useQuery } from 'react-query';
 import { LoaderBox } from '../components/LoaderBox';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
+import { z } from 'zod';
+import { UserData } from '../App';
 
 let copyTimeoutCount = 0;
 let successTimeoutCount = 0;
+
+const songListEntrySchema = z.object({
+    id: z.number(),
+    artist: z.string(),
+    song_name: z.string(),
+    date: z.string().nullable(),
+    tag: z.string(),
+    count: z.number(),
+    likes: z.number()
+});
+
+export type SongListEntry = z.infer<typeof songListEntrySchema>;
 
 const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const { width } = useWindowDimensions();
     const [showLetterButtons, setShowLetterButtons] = useState<boolean>(false);
     const [arrowState, setArrowState] = useState(pathToArrowDown);
 
-    const [pressedButtons, setPressedButtons] = useState<Filters>({
+    const [pressedButtons, setPressedButtons] = useState({
         foreign: false,
         russian: false,
         ost: false,
@@ -58,6 +71,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     }
 
     const emptyNewSong: SongListEntry = {
+        id: 0,
         artist: '',
         song_name: '',
         date: getFormatDate(),
@@ -92,26 +106,22 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         });
     }, [searchTerm, songListData]);
 
-    function updateSonglistData(response: AxiosResponse) {
-        const artistL: string[] = [];
-        setSongListData(() => {
-            return response.data.songs.map((entry: DBSongListEntry) => {
-                if (!(artistL.includes(entry.artist))) {
-                    artistL.push(entry.artist);
-                }
-                return { ...entry, date: formatDate(entry.date), id: parseInt(entry.id), likes: parseInt(entry.likes) };
-            }); //format date
-        });
-        setArtistList(artistL);
-    }
 
-    const { data, isError, isLoading } = useQuery(['songlist-data'], () => getRequest('songlist', '5100'));
-
-    useEffect(() => {
-        if (data) {
-            updateSonglistData(data);
+    const { isError, isLoading } = useQuery(['songlist-data'], async () => z.array(songListEntrySchema).parse((await getRequest('songlist', '5100')).data.songs), {
+        onSuccess: (data) => {
+            const artistL: string[] = [];
+            setSongListData(() => {
+                return data.map((entry) => {
+                    if (!(artistL.includes(entry.artist))) {
+                        artistL.push(entry.artist);
+                    }
+                    return { ...entry, date: formatDate(entry.date) };
+                });
+            });
+            setArtistList(artistL);
         }
-    }, [data]);
+    });
+
 
     const songlistAddRequest = useMutation((songData: SongListEntry) => postRequest(`songlist`, '5100', songData), {
         onError: (error: AxiosError) => {

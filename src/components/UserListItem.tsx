@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
+import { UserEntry } from '../pages/Users';
 import { deleteRequest, patchRequest } from '../utils/api-requests';
-import { UserEntry } from '../utils/interfaces';
 
 interface UserListItemProps {
     userEntry: UserEntry;

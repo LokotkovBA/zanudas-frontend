@@ -2,8 +2,8 @@ import React from 'react';
 
 interface QueueItemInfoProps {
     index: number;
-    artist: string;
-    song_name: string;
+    artist: string | null;
+    song_name: string | null;
     donate_amount: number;
     currency: string;
     donor_name: string;

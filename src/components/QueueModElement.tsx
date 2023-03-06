@@ -2,7 +2,7 @@ import { Draggable } from '@hello-pangea/dnd';
 import { AxiosResponse } from 'axios';
 import React from 'react';
 import { UseMutationResult } from 'react-query';
-import { LikesState, QueueEntry } from '../utils/interfaces';
+import { LikesState, QueueEntry } from '../pages/Queue';
 import { LikeBlock } from './LikeBlock';
 import { QueueItemInfo } from './QueueItemInfo';
 
@@ -61,11 +61,11 @@ export const QueueModElement: React.FC<QueueModElementProps> = ({
                             <p className="queue-num">{index + 1}</p>
                             <input type="text" name="artist" placeholder="artist" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.artist ? entry.artist : ''} />
                             <input type="text" name="song_name" placeholder="song name" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.song_name ? entry.song_name : ''} />
-                            <input type="text" name="donor_name" placeholder="donor name" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.donor_name} />
-                            <input type="text" name="donate_amount" placeholder="amount" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.donate_amount} />
-                            <input type="text" name="currency" placeholder="currency" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.currency} />
+                            <input type="text" name="donor_name" placeholder="donor name" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.donor_name!} />
+                            <input type="text" name="donate_amount" placeholder="amount" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.donate_amount!} />
+                            <input type="text" name="currency" placeholder="currency" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.currency!} />
                             <input type="text" name="tag" placeholder="tag" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.tag ? entry.tag : ''} />
-                            <textarea name="donor_text" className={entry.id.toString()} onChange={(event) => queue_entry_text_area_change_event(event, index)} value={entry.donor_text} />
+                            <textarea name="donor_text" className={entry.id.toString()} onChange={(event) => queue_entry_text_area_change_event(event, index)} value={entry.donor_text!} />
                         </>}
                         {!entry.mod_view &&
                             <QueueItemInfo index={index}

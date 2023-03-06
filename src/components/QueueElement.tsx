@@ -1,8 +1,8 @@
 import React from 'react';
-import { LikesState, QueueEntry } from '../utils/interfaces';
 import { LikeBlock } from './LikeBlock';
 import { QueueItemInfo } from './QueueItemInfo';
 import pathToArrowRight from '../icons/arrow-right.svg';
+import { LikesState, QueueEntry } from '../pages/Queue';
 
 interface QueueElementProps {
     user_id: number;

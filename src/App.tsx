@@ -1,16 +1,30 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { z } from 'zod';
 import { Alert } from './components/Alert';
 import { LoaderBox } from './components/LoaderBox';
 import Menu from './components/Menu';
 import { getRequest, postRequest } from './utils/api-requests';
-import { UserData } from './utils/interfaces';
 
 const Queue = lazy(() => import('./pages/Queue'));
 const SongList = lazy(() => import('./pages/SongList'));
 const Users = lazy(() => import('./pages/Users'));
 const EditLoading = lazy(() => import('./pages/EditLoading'));
+
+
+const userDataSchema = z.object({
+    id: z.number(),
+    display_name: z.string(),
+    profile_image_url: z.string(),
+    is_mod: z.boolean(),
+    is_admin: z.boolean(),
+    is_cookie_alert_shown: z.boolean(),
+    is_cthulhu: z.boolean(),
+    is_queen: z.boolean()
+});
+
+export type UserData = z.infer<typeof userDataSchema>
 
 export default function App() {
 
@@ -25,26 +39,14 @@ export default function App() {
         is_cookie_alert_shown: true
     });
 
-    const { data, isSuccess } = useQuery(['user-data'], () => getRequest('auth/success', '5100'), {
+    useQuery(['user-data'], async () => userDataSchema.parse((await getRequest('auth/success', '5100')).data), {
         retry: false,
         enabled: localStorage.getItem('login_clicked') === 'yep',
+        onSuccess: (data) => {
+            setUserData(data);
+        },
         onError: () => localStorage.setItem('login_clicked', 'nop')
     });
-
-    useEffect(() => {
-        if (isSuccess) {
-            setUserData({
-                id: data.data.id,
-                display_name: data.data.display_name,
-                profile_image_url: data.data.profile_image_url,
-                is_mod: data.data.is_mod,
-                is_admin: data.data.is_admin,
-                is_cthulhu: data.data.is_cthulhu,
-                is_queen: data.data.is_queen,
-                is_cookie_alert_shown: data.data.is_cookie_alert_shown
-            });
-        }
-    }, [data, isSuccess]);
 
     const cookieAccepted = useMutation(() => postRequest('auth/cookiealert', '5100', {}));
 

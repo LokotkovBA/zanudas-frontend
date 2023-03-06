@@ -1,7 +1,6 @@
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { deleteRequest, getRequest, patchRequest, postRequest } from '../utils/api-requests';
-import { DBLikesState, DBQueueEntry, LikesState, QueueEntry, QueueOrderEntry, UserData } from '../utils/interfaces';
 
 import telegramIconPath from '../icons/telegram.svg';
 import twitchIconPath from '../icons/twitch.svg';
@@ -13,10 +12,59 @@ import { LoaderBox } from '../components/LoaderBox';
 import { socket } from '../utils/socket-client';
 import { QueueModElement } from '../components/QueueModElement';
 import { QueueElement } from '../components/QueueElement';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
 import { Alert } from '../components/Alert';
+import { z } from 'zod';
+import { UserData } from '../App';
 
 let timeoutCount = 0;
+
+const queueEntrySchema = z.object({
+    id: z.number(),
+    artist: z.string().nullable(),
+    song_name: z.string().nullable(),
+    donor_name: z.string(),
+    donate_amount: z.number(),
+    currency: z.string(),
+    donor_text: z.string(),
+    tag: z.string().nullable(),
+    queue_number: z.number(),
+    like_count: z.number(),
+    played: z.boolean(),
+    will_add: z.boolean(),
+    visible: z.boolean(),
+    current: z.boolean()
+});
+
+const queueSchema = z.object({
+    songs: z.array(queueEntrySchema),
+    max_display: z.number(),
+    current: z.number(),
+    is_live: z.boolean()
+});
+
+const likeSchema = z.object({
+    is_positive: z.number(),
+    song_id: z.number()
+});
+
+const likesSchema = z.object({
+    likes: z.array(likeSchema),
+    is_empty: z.boolean()
+});
+
+export type DBQueueEntry = z.infer<typeof queueEntrySchema>;
+
+export type QueueEntry = DBQueueEntry & {
+    mod_view: boolean;
+    style: 'simple-view' | 'mod-view';
+    button_text: 'More' | 'Hide';
+    classN?: string;
+    delete_intention: boolean;
+    delete_button_text: 'Delete' | 'Sure?' | 'Error!';
+}
+
+export type LikesState = z.infer<typeof likeSchema>;
 
 const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [queueData, setQueueData] = useState<QueueEntry[]>([]);
@@ -26,15 +74,11 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const [isLive, setIsLive] = useState<boolean>(false);
 
-    function updateQueueData(response: AxiosResponse<any, any>) {
-        setQueueData(response.data.songs.map((song: DBQueueEntry) => queueDBtoData(song)));
-        setIsLive(response.data.is_live);
-    }
-
-    const { isLoading, isError, isSuccess } = useQuery(['queue-data'], () => getRequest('queue', '5100'), {
+    const { isLoading, isError, isSuccess } = useQuery(['queue-data'], async () => queueSchema.parse((await getRequest('queue', '5100')).data), {
         refetchOnWindowFocus: false,
         onSuccess: (data) => {
-            updateQueueData(data);
+            setQueueData(data.songs.map((entry) => queueDBtoData(entry)));
+            setIsLive(data.is_live);
         }
     });
 
@@ -88,23 +132,17 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         });
     }
 
-    const getLikes = useQuery(['likes-data'], () => getRequest('queue/likes', '5100'), {
+    useQuery(['likes-data'], async () => likesSchema.parse((await getRequest('queue/likes', '5100')).data), {
         enabled: userData.display_name !== '',
-        onSuccess: (response) => {
-            if (response.data.is_empty) {
+        onSuccess: (data) => {
+            if (data.is_empty) {
                 setQueueLikes([]);
             } else {
-                setQueueLikes(response.data.map((like: DBLikesState) => ({ ...like, song_id: parseInt(like.song_id) })));
+                setQueueLikes(data.likes);
             }
         },
         refetchOnWindowFocus: false
     });
-
-    useEffect(() => {
-        if (getLikes.data) {
-            setQueueLikes(getLikes.data.data.map((like: DBLikesState) => ({ ...like, song_id: parseInt(like.song_id) })));
-        }
-    }, [getLikes.data]);
 
     const addLikeRequest = useMutation((likeData: { song_id: number, is_positive: number, song_index: number }) => postRequest('queue/like', '5100', { song_id: likeData.song_id, is_positive: likeData.is_positive, song_index: likeData.song_index }));
 
@@ -218,7 +256,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             });
         });
 
-        socket.on('queue order update', ({ order }: { order: QueueOrderEntry[] }) => {
+        socket.on('queue order update', ({ order }: { order: { id: number, queue_number: number }[] }) => {
             setQueueData(oldQueueData => {
                 const newQueueData = [...oldQueueData];
                 const bufferQueueData = [...oldQueueData];
@@ -261,8 +299,8 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     useEffect(() => {
         if (userData.display_name) {
-            socket.on('likes change', (likes: DBLikesState[]) => {
-                setQueueLikes(likes.map(like => { return { ...like, song_id: parseInt(like.song_id) }; }));
+            socket.on('likes change', (likes: LikesState[]) => {
+                setQueueLikes(likes);
             });
             socket.on('connect', () => {
                 socket.emit('sub likes', userData.display_name);

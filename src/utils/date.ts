@@ -4,7 +4,7 @@ export function getFormatDate() {
     return formatDate(d.toString());
 }
 
-export function formatDate(date: string): string | null {
+export function formatDate(date: string | null): string | null {
     if (date) {
         const newDate = Date.parse(date);
         const d = new Date(newDate);

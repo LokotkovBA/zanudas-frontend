@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useMutation } from 'react-query';
+import { AxiosError } from 'axios';
 
-import { DBQueueEntry, SongListEntry, UserData } from '../utils/interfaces';
+import { deleteRequest, patchRequest, postRequest } from '../utils/api-requests';
+import { Alert } from './Alert';
+import { DBQueueEntry } from '../pages/Queue';
+import { SongListEntry } from '../pages/SongList';
+import { UserData } from '../App';
 
 import pathToThumbsUp from '../icons/thumbs-up-green.svg';
 import pathToThumbsDown from '../icons/thumbs-down-red.svg';
-import { useMutation } from 'react-query';
-import { deleteRequest, patchRequest, postRequest } from '../utils/api-requests';
-import { AxiosError } from 'axios';
-import { Alert } from './Alert';
 
 export interface ListItemProps {
     song: SongListEntry,
@@ -95,14 +97,20 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
         event.stopPropagation();
         if (userData.is_mod || userData.is_admin) {
             addQueueRequest.mutate({
+                id: 0,
                 artist: song.artist,
                 song_name: song.song_name,
                 donor_name: '',
-                donate_amount: '0',
+                donate_amount: 0,
                 currency: 'RUB',
                 donor_text: '',
                 tag: song.tag,
-                queue_number: '0'
+                queue_number: 0,
+                like_count: 0,
+                played: false,
+                will_add: false,
+                visible: false,
+                current: false
             });
         }
     }

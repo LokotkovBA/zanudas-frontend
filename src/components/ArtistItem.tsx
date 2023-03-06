@@ -1,5 +1,6 @@
 import React from 'react';
-import { SongListEntry, UserData } from '../utils/interfaces';
+import { UserData } from '../App';
+import { SongListEntry } from '../pages/SongList';
 import ListItem from './ListItem';
 
 interface ArtistItemProps {

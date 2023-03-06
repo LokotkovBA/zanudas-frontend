@@ -1,12 +1,12 @@
 import React from 'react';
 
 import { NavLink } from 'react-router-dom';
-import { UserData } from '../utils/interfaces';
 
 import twitchIconPath from '../icons/twitch.svg';
 import { BACKEND_ADDRESS } from '../utils/api-requests';
 
 import daIconPath from '../icons/da.svg';
+import { UserData } from '../App';
 
 const loginLink = `https://${BACKEND_ADDRESS}:5100/auth`;
 const logoutLink = `https://${BACKEND_ADDRESS}:5100/auth/logout`;

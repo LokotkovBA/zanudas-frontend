@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LikesState } from '../utils/interfaces';
+import { LikesState } from '../pages/Queue';
 
 interface LikeBlockProps {
     user_id: number;

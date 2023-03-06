@@ -58,6 +58,9 @@ const Users: React.FC<UsersProps> = ({ userData }) => {
                 text: prevState.toggle ? 'Only mods' : 'All users'
             };
         });
+        if (data) {
+            setUserList(filterUserList(data, searchTerm, !onlyModsState.toggle, userData.is_admin));
+        }
     }
 
     if (isLoading) {

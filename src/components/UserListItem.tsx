@@ -25,7 +25,13 @@ export const UserListItem: React.FC<UserListItemProps> = ({ userEntry, is_admin 
     }
 
     const changeUserRequest = useMutation((newUserData: UserEntry) => patchRequest('admin/user', '5100', newUserData));
-    const deleteUserRequest = useMutation((userId: number) => deleteRequest('admin/user', '5100', { id: userId }));
+    const deleteUserRequest = useMutation((userId: number) => deleteRequest('admin/user', '5100', { id: userId }), {
+        onSuccess: () => {
+            setDeleteButtonText('Deleted');
+            setDeleteIntention(false);
+        },
+        onError: () => setDeleteButtonText('Error!')
+    });
 
     function changeUser() {
         if (is_admin) {
@@ -44,18 +50,6 @@ export const UserListItem: React.FC<UserListItemProps> = ({ userEntry, is_admin 
         }
     }
 
-    useEffect(() => {
-        if (deleteUserRequest.isSuccess) {
-            setDeleteButtonText('Deleted');
-            setDeleteIntention(false);
-        }
-    }, [deleteUserRequest.isSuccess]);
-
-    useEffect(() => {
-        if (deleteUserRequest.isError) {
-            setDeleteButtonText('Error!');
-        }
-    }, [deleteUserRequest.isError]);
 
     return (
         <div className="user-entry">

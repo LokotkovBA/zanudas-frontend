@@ -1,6 +1,7 @@
-import { AxiosError, AxiosResponse } from 'axios';
-import React, { useEffect, useState } from 'react';
+import { AxiosError } from 'axios';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useMutation, useQuery } from 'react-query';
+import { z } from 'zod';
 
 import daIconPath from '../icons/da.svg';
 import { BACKEND_ADDRESS, getRequest, patchRequest, postRequest, putRequest } from '../utils/api-requests';
@@ -18,6 +19,16 @@ interface AdminMenuProps {
     is_admin: boolean;
     is_live: boolean;
 }
+
+const adminDataSchema = z.object({
+    centrifuge_is_setup: z.boolean(),
+    fontSize: z.string(),
+    hid_token_buttons: z.boolean(),
+    is_listening_da: z.boolean(),
+    max_display: z.number(),
+    showInfo: z.boolean(),
+    textInfo: z.string(),
+});
 
 export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display_name }) => {
     const [newMaxDisplay, setNewMaxDisplay] = useState<number>(0);
@@ -49,26 +60,20 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
         setShowInfo(event.target.checked);
     }
 
-    function updateAdminData(response: AxiosResponse<any, any>) {
-        setInfoText(response.data.textInfo);
-        setShowInfo(response.data.showInfo);
-        setNewFontSize(response.data.fontSize);
-        setIsSetupDA(response.data.centrifuge_is_setup);
-        setIsListeningToDA(response.data.is_listening_da);
-        setHidTokenButtons(response.data.hid_token_buttons);
-        setNewMaxDisplay(response.data.max_display);
-    }
-
-    const getAdminData = useQuery(['admin-data'], () => getRequest('admin', '5100'), {
+    const getAdminData = useQuery(['admin-data'], async () => adminDataSchema.parse((await getRequest('admin', '5100')).data), {
         enabled: is_admin,
         refetchOnWindowFocus: false,
+        onSuccess: (data) => {
+            setInfoText(data.textInfo);
+            setShowInfo(data.showInfo);
+            setNewFontSize(data.fontSize);
+            setIsSetupDA(data.centrifuge_is_setup);
+            setIsListeningToDA(data.is_listening_da);
+            setHidTokenButtons(data.hid_token_buttons);
+            setNewMaxDisplay(data.max_display);
+        }
     });
 
-    useEffect(() => {
-        if (getAdminData.data) {
-            updateAdminData(getAdminData.data);
-        }
-    }, [getAdminData.data]);
 
     useEffect(() => {
         if (is_admin) {
@@ -116,20 +121,21 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
         };
     }, []);
 
-    const options = {
-        onError: (error: AxiosError) => {
-            setAlertMessage(error.message);
-            setSliding('');
-        },
-        onSuccess: () => {
-            setSliding('');
-            setAlertMessage('Success!');
-            setTimeout(() => {
-                setSliding('sliding');
-            }, 3000);
-        }
-    };
-
+    const options = useMemo(() => {
+        return {
+            onError: (error: AxiosError) => {
+                setAlertMessage(error.message);
+                setSliding('');
+            },
+            onSuccess: () => {
+                setSliding('');
+                setAlertMessage('Success!');
+                setTimeout(() => {
+                    setSliding('sliding');
+                }, 3000);
+            }
+        };
+    }, []);
 
     const hideInfoText = useMutation((newData: boolean) => patchRequest('admin/infoText', '5100', { show_info: newData }), options);
     const setupDaRequest = useMutation(() => postRequest('da/setup', '5100', {}), options);

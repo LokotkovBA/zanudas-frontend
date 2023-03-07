@@ -82,14 +82,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     const [newSongData, setNewSongData] = useState<SongListEntry>(emptyNewSong);
 
-    const [searchTerm, setSearchTerm] = useState<string>('');
-
-    useEffect(() => {
-        const savedSearchTerm = localStorage.getItem('searchTerm');
-        if (savedSearchTerm) {
-            setSearchTerm(savedSearchTerm);
-        }
-    }, []);
+    const [searchTerm, setSearchTerm] = useState<string>(localStorage.getItem('searchTerm') ? localStorage.getItem('searchTerm')! : '');
 
     const filteredSongListData = useMemo(() => {
         return songListData.filter(elem => {

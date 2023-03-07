@@ -1,5 +1,5 @@
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { deleteRequest, getRequest, patchRequest, postRequest } from '../utils/api-requests';
 
 import telegramIconPath from '../icons/telegram.svg';
@@ -82,23 +82,25 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
     });
 
-    const options = {
-        onError: (error: AxiosError) => {
-            setAlertMessage(error.message);
-            setSliding('');
-        },
-        onSuccess: () => {
-            setSliding('');
-            setAlertMessage('Success!');
-            timeoutCount++;
-            setTimeout(() => {
-                timeoutCount--;
-                if (!timeoutCount) {
-                    setSliding('sliding');
-                }
-            }, 3000);
-        }
-    };
+    const options = useMemo(() => {
+        return {
+            onError: (error: AxiosError) => {
+                setAlertMessage(error.message);
+                setSliding('');
+            },
+            onSuccess: () => {
+                setSliding('');
+                setAlertMessage('Success!');
+                timeoutCount++;
+                setTimeout(() => {
+                    timeoutCount--;
+                    if (!timeoutCount) {
+                        setSliding('sliding');
+                    }
+                }, 3000);
+            }
+        };
+    }, []);
 
     const queueChangeRequest = useMutation((newQueueData: { queueEntry: QueueEntry, index: number }) => patchRequest(`queue?index=${newQueueData.index}`, '5100', newQueueData.queueEntry), options);
 

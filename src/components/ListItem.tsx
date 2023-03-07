@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useMutation } from 'react-query';
 import { AxiosError } from 'axios';
 
@@ -24,8 +24,6 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
     const [deleteButtonText, setDeleteButtonText] = useState<string>('Delete');
     const [clickedState, setClickedState] = useState<string>('');
 
-    const [curLike, setCurLike] = useState<string>(pathToThumbsUp);
-
     const [alertMessage, setAlertMessage] = useState<string>('');
     const [sliding, setSliding] = useState<string>('sliding');
 
@@ -34,21 +32,33 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
     const [editButtonState, setEditButtonState] = useState<'' | 'pressed'>('');
     const [deleteButtonState, setDeleteButtonState] = useState<'' | 'pressed'>('');
 
-    const options = {
-        onError: (error: AxiosError) => {
-            setAlertMessage(error.message);
-            setSliding('');
-        },
-        onSuccess: () => {
-            setSliding('');
-            setAlertMessage('Success!');
-            setTimeout(() => {
-                setSliding('sliding');
-            }, 3000);
-        }
-    };
+    const options = useMemo(() => {
+        return {
+            onError: (error: AxiosError) => {
+                setAlertMessage(error.message);
+                setSliding('');
+            },
+            onSuccess: () => {
+                setSliding('');
+                setAlertMessage('Success!');
+                setTimeout(() => {
+                    setSliding('sliding');
+                }, 3000);
+            }
+        };
+    }, []);
 
-    const deleteSongRequest = useMutation((songId: number) => deleteRequest('songlist', '5100', { id: songId }), options);
+    const deleteSongRequest = useMutation((songId: number) => deleteRequest('songlist', '5100', { id: songId }), {
+        onSuccess: () => {
+            options.onSuccess();
+            setDeleteIntention(false);
+            setDeleteButtonText('Deleted');
+        },
+        onError: (error: AxiosError) => {
+            options.onError(error);
+            setDeleteButtonText('Error!');
+        }
+    });
     const addQueueRequest = useMutation((newSong: DBQueueEntry) => postRequest('queue', '5100', newSong), options);
     const changeSongRequest = useMutation((songData: SongListEntry) => patchRequest(`songlist?id=${songData.id}`, '5100', songData), options);
 
@@ -79,19 +89,6 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
             setDeleteButtonText('Sure?');
         }
     }
-
-    useEffect(() => {
-        if (deleteSongRequest.isSuccess) {
-            setDeleteIntention(false);
-            setDeleteButtonText('Deleted');
-        }
-    }, [deleteSongRequest.isSuccess]);
-
-    useEffect(() => {
-        if (deleteSongRequest.isError) {
-            setDeleteButtonText('Error!');
-        }
-    }, [deleteSongRequest.isError]);
 
     function addToQueue(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.stopPropagation();
@@ -134,10 +131,6 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
         event.stopPropagation();
     }
 
-    useEffect(() => {
-        setCurLike(song.likes > 0 ? pathToThumbsUp : pathToThumbsDown);
-    }, [song.likes]);
-
     return (
         <div className={`list-item ${clickedState}`} onClick={copyClick} onMouseUp={mouseUp} onMouseDown={mouseDown}>
             {!showEditFields && <p className="song-info">{song.song_name}</p>}
@@ -161,7 +154,7 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
                 </>}
             {(song.likes !== 0) &&
                 <div className="like-text">
-                    <img src={curLike} alt="Like" width={18} height={18} /> {song.likes}
+                    <img src={song.likes > 0 ? pathToThumbsUp : pathToThumbsDown} alt="Like" width={18} height={18} /> {song.likes}
                 </div>}
             {userData.is_admin &&
                 <>

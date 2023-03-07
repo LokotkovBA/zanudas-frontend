@@ -1,11 +1,11 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { z } from 'zod';
 import { Alert } from './components/Alert';
 import { LoaderBox } from './components/LoaderBox';
 import Menu from './components/Menu';
-import { getRequest, postRequest } from './utils/api-requests';
+import { getRequest, patchRequest } from './utils/api-requests';
 
 const Queue = lazy(() => import('./pages/Queue'));
 const SongList = lazy(() => import('./pages/SongList'));
@@ -48,19 +48,17 @@ export default function App() {
         onError: () => localStorage.setItem('login_clicked', 'nop')
     });
 
-    const cookieAccepted = useMutation(() => postRequest('auth/cookiealert', '5100', {}));
-
-    function cookieAlertClick() {
-        cookieAccepted.mutate();
-    }
-
-    useEffect(() => {
-        if (cookieAccepted.isSuccess) {
+    const cookieAccepted = useMutation(() => patchRequest('auth', '5100', {}), {
+        onSuccess: () => {
             setUserData(prevUserData => {
                 return { ...prevUserData, is_cookie_alert_shown: true };
             });
         }
-    }, [cookieAccepted.isSuccess]);
+    });
+
+    function cookieAlertClick() {
+        cookieAccepted.mutate();
+    }
 
     return (
         <div>

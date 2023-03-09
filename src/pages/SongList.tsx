@@ -1,21 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
+import { Link } from 'react-scroll';
 import { getRequest, postRequest } from '../utils/api-requests';
 import { formatDate, getFormatDate } from '../utils/date';
-
-import ArtistItem from '../components/ArtistItem';
-import { Link } from 'react-scroll';
-import { SearchBar } from '../components/SearchBar';
-import useWindowDimensions from '../hooks/useWindowDimensions';
-
-import pathToArrowUp from '../icons/arrow-up.svg';
-import pathToArrowDown from '../icons/arrow-down.svg';
-import { Alert } from '../components/Alert';
-import { UpButton } from '../components/UpButton';
-
-import { useMutation, useQuery } from 'react-query';
 import { AxiosError } from 'axios';
 import { z } from 'zod';
+import { SearchBar } from '../components/SearchBar';
+import { Alert } from '../components/Alert';
+import { UpButton } from '../components/UpButton';
 import { UserData } from '../App';
+import ArtistItem from '../components/ArtistItem';
+import useWindowDimensions from '../hooks/useWindowDimensions';
+import pathToArrowUp from '../icons/arrow-up.svg';
+import pathToArrowDown from '../icons/arrow-down.svg';
 
 import '../css/songlist.scss';
 
@@ -326,7 +323,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                     <button type="button" className={pressedButtons.russian ? 'pressed' : ''} onClick={russianFilter}>Russian</button>
                     <button type="button" className={pressedButtons.ost ? 'pressed' : ''} onClick={ostFilter}>OST</button>
                     <button type="button" className={pressedButtons.wide_racks ? 'pressed' : ''} onClick={wideRacksFilter}>Original</button>
-                    {(width <= 728) && <button type="button" className="show-more-icon" onClick={changeShowLetterButtons}><img src={arrowState} alt="show more icon" /></button>}
+                    {(width <= 728) && <button type="button" className="show-more-icon" onClick={changeShowLetterButtons}><img width={24} height={24} src={arrowState} alt="show more icon" /></button>}
                 </div>
                 {(width > 728 || showLetterButtons) &&
                     <div className="page-nav__letter-buttons">

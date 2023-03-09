@@ -5,10 +5,8 @@ import { UserData } from '../App';
 import { SearchBar } from '../components/SearchBar';
 import { UpButton } from '../components/UpButton';
 import { UserListItem } from '../components/UserListItem';
-
 import { getRequest } from '../utils/api-requests';
 
-import '../css/songlist.scss';
 import '../css/users.scss';
 
 interface UsersProps {

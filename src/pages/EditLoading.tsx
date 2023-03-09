@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { z } from 'zod';
-import LoadingMessage from '../components/LoadingMessage';
 import { SearchBar } from '../components/SearchBar';
 import { getRequest, postRequest } from '../utils/api-requests';
-
-import '../css/songlist.scss';
-import '../css/editloading.scss';
 import { UpButton } from '../components/UpButton';
+import LoadingMessage from '../components/LoadingMessage';
+
+import '../css/editloading.scss';
 
 interface EditLoadingProps {
     is_admin: boolean

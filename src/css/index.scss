@@ -181,6 +181,87 @@ button {
     }
 }
 
+.page-nav {
+    background-color: var(--foreground-color);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: .5em 1em 1em;
+    margin: 0 25vw;
+    position: sticky;
+    top: 0;
+
+    &__filters {
+        display: flex;
+        gap: .5em;
+        flex-wrap: wrap;
+    }
+
+    &__letter-buttons {
+        margin-top: .5em;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .7em;
+
+        &>a {
+            background-color: var(--button-color);
+            color: #fff;
+            cursor: pointer;
+
+            text-align: center;
+            font-size: 1.1rem;
+            border-radius: .5ch;
+
+            padding: .1em .2em;
+            min-width: 1.5ch;
+        }
+    }
+}
+
+.entry {
+    background-color: var(--foreground-alt-color);
+    color: var(--text-color);
+    border: var(--foreground-alt-color) .2em solid;
+    border-radius: 1em;
+    margin: .5em 0;
+    padding: .6em;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+
+    &__editfields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .3em;
+        align-items: center;
+    }
+
+    &__modbuttons {
+        display: flex;
+        margin-left: auto;
+    }
+
+    &__likeinfo {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: .2em;
+    }
+
+    &--clicked {
+        color: var(--foreground-color);
+        background-color: var(--active-button-color);
+    }
+
+    &:hover {
+        border-color: var(--active-button-color);
+        cursor: pointer;
+    }
+
+    &__admin-input {
+        width: 30ch;
+    }
+}
+
 .loader {
     position: absolute;
     left: 50%;

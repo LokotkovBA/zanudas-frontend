@@ -56,16 +56,18 @@ export const QueueModElement: React.FC<QueueModElementProps> = ({
         <Draggable key={entry.id} draggableId={entry.id.toString()} index={index}>
             {(provided) => {
                 return (
-                    <li className={`${entry.style} ${entry.classN}`} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+                    <li className={`item item--mod item--${entry.style}`} {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
                         {entry.mod_view && <>
-                            <p className="queue-num">{index + 1}</p>
-                            <input type="text" name="artist" placeholder="artist" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.artist ? entry.artist : ''} />
-                            <input type="text" name="song_name" placeholder="song name" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.song_name ? entry.song_name : ''} />
-                            <input type="text" name="donor_name" placeholder="donor name" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.donor_name!} />
-                            <input type="text" name="donate_amount" placeholder="amount" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.donate_amount!} />
-                            <input type="text" name="currency" placeholder="currency" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.currency!} />
-                            <input type="text" name="tag" placeholder="tag" className={entry.id.toString()} onChange={(event) => queue_entry_change_event(event, index)} value={entry.tag ? entry.tag : ''} />
-                            <textarea name="donor_text" className={entry.id.toString()} onChange={(event) => queue_entry_text_area_change_event(event, index)} value={entry.donor_text!} />
+                            <p className="info__number">{index + 1}</p>
+                            <div className="item__edit">
+                                <input type="text" name="artist" placeholder="artist" className={`${entry.id.toString()} admin-input`} onChange={(event) => queue_entry_change_event(event, index)} value={entry.artist ? entry.artist : ''} />
+                                <input type="text" name="song_name" placeholder="song name" className={`${entry.id.toString()} admin-input`} onChange={(event) => queue_entry_change_event(event, index)} value={entry.song_name ? entry.song_name : ''} />
+                                <input type="text" name="donor_name" placeholder="donor name" className={`${entry.id.toString()} admin-input`} onChange={(event) => queue_entry_change_event(event, index)} value={entry.donor_name!} />
+                                <input type="text" name="donate_amount" placeholder="amount" className={`${entry.id.toString()} admin-input`} onChange={(event) => queue_entry_change_event(event, index)} value={entry.donate_amount!} />
+                                <input type="text" name="currency" placeholder="currency" className={`${entry.id.toString()} admin-input`} onChange={(event) => queue_entry_change_event(event, index)} value={entry.currency!} />
+                                <input type="text" name="tag" placeholder="tag" className={`${entry.id.toString()} admin-input`} onChange={(event) => queue_entry_change_event(event, index)} value={entry.tag ? entry.tag : ''} />
+                                <textarea name="donor_text" className={`${entry.id.toString()} admin-input admin-textarea`} onChange={(event) => queue_entry_text_area_change_event(event, index)} value={entry.donor_text!} />
+                            </div>
                         </>}
                         {!entry.mod_view &&
                             <QueueItemInfo index={index}
@@ -79,30 +81,28 @@ export const QueueModElement: React.FC<QueueModElementProps> = ({
                                 key={entry.id}
                             />
                         }
-                        <div className="button-group">
+                        <div className="item__buttons">
                             <button type="button" onClick={changeQueueEntry}>Apply</button>
                             <button type="button" onClick={deleteQueueEntry}>{entry.delete_button_text}</button>
                             <button type="button" onClick={() => change_mod_view(index)}>{entry.button_text}</button>
                         </div>
-                        <div className="last-block">
-                            <LikeBlock like_state={user_likes[curLikeIndex]}
-                                user_id={user_id}
-                                song_id={entry.id}
-                                like_count={like_count}
-                                clickLikeHandler={click_like_handler}
-                                index={index}
-                            />
-                            <div className="checkboxes">
-                                <input type="checkbox" className={entry.id.toString()} name="played" checked={entry.played} onChange={(event) => queue_entry_change_event(event, index)} />
-                                <label htmlFor="played">played</label>
-                                <input type="checkbox" className={entry.id.toString()} name="will_add" checked={entry.will_add} onChange={(event) => queue_entry_change_event(event, index)} />
-                                <label htmlFor="will_add">will add</label>
-                                <input type="checkbox" className={entry.id.toString()} name="visible" checked={entry.visible} onChange={(event) => queue_entry_change_event(event, index)} />
-                                <label htmlFor="visible">visible</label>
-                                <input type="checkbox" className={entry.id.toString()} name="current" checked={entry.current} onChange={(event) => queue_entry_change_event(event, index)} />
-                                <label htmlFor="current">current</label>
-                            </div>
+                        <div className="item__checkboxes">
+                            <input type="checkbox" className={entry.id.toString()} name="played" checked={entry.played} onChange={(event) => queue_entry_change_event(event, index)} />
+                            <label htmlFor="played">played</label>
+                            <input type="checkbox" className={entry.id.toString()} name="will_add" checked={entry.will_add} onChange={(event) => queue_entry_change_event(event, index)} />
+                            <label htmlFor="will_add">will add</label>
+                            <input type="checkbox" className={entry.id.toString()} name="visible" checked={entry.visible} onChange={(event) => queue_entry_change_event(event, index)} />
+                            <label htmlFor="visible">visible</label>
+                            <input type="checkbox" className={entry.id.toString()} name="current" checked={entry.current} onChange={(event) => queue_entry_change_event(event, index)} />
+                            <label htmlFor="current">current</label>
                         </div>
+                        <LikeBlock like_state={curLikeIndex !== -1 ? user_likes[curLikeIndex] : { is_positive: 0, song_id: entry.id }}
+                            user_id={user_id}
+                            song_id={entry.id}
+                            like_count={like_count}
+                            clickLikeHandler={click_like_handler}
+                            index={index}
+                        />
                     </li>);
             }
             }

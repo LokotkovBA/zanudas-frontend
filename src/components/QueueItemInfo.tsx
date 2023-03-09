@@ -1,4 +1,5 @@
 import React from 'react';
+import pathToArrowRight from '../icons/arrow-right.svg';
 
 interface QueueItemInfoProps {
     index: number;
@@ -13,9 +14,10 @@ interface QueueItemInfoProps {
 
 export const QueueItemInfo: React.FC<QueueItemInfoProps> = ({ index, artist, song_name, donate_amount, currency, donor_name, played, current }) => {
     return (
-        <div className={(played ? 'played ' : (current ? 'current ' : '')) + 'queue-item-info'}>
-            <p className="queue-num">{index + 1}</p>
-            <div>
+        <div className={`info`}>
+            {current && <img src={pathToArrowRight} alt="arrow pointing right" height={40} width={24} />}
+            <p className="info__number">{index + 1}</p>
+            <div className={`info__text info__text--${played ? 'played' : ''} info__text--${current ? 'current' : ''}`}>
                 <p>{artist} - {song_name}</p>
                 {donate_amount > 0 && <>{donate_amount} {currency} </>}
                 {donor_name && <>from <b>{donor_name}</b></>}

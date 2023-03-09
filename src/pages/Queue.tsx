@@ -8,7 +8,6 @@ import twitchIconPath from '../icons/twitch.svg';
 import { queueDBtoData } from '../utils/conversions';
 import { AdminMenu } from '../components/AdminMenu';
 import { useMutation, useQuery } from 'react-query';
-import { LoaderBox } from '../components/LoaderBox';
 import { socket } from '../utils/socket-client';
 import { QueueModElement } from '../components/QueueModElement';
 import { QueueElement } from '../components/QueueElement';
@@ -16,6 +15,8 @@ import { AxiosError } from 'axios';
 import { Alert } from '../components/Alert';
 import { z } from 'zod';
 import { UserData } from '../App';
+
+import '../css/queue.scss';
 
 let timeoutCount = 0;
 
@@ -57,7 +58,7 @@ export type DBQueueEntry = z.infer<typeof queueEntrySchema>;
 
 export type QueueEntry = DBQueueEntry & {
     mod_view: boolean;
-    style: 'simple-view' | 'mod-view';
+    style: 'simple' | 'complex';
     button_text: 'More' | 'Hide';
     classN?: string;
     delete_intention: boolean;
@@ -70,7 +71,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [queueData, setQueueData] = useState<QueueEntry[]>([]);
     const [queueLikes, setQueueLikes] = useState<LikesState[]>([]);
     const [alertMessage, setAlertMessage] = useState<string>('');
-    const [sliding, setSliding] = useState<string>('sliding');
+    const [sliding, setSliding] = useState<boolean>(false);
 
     const [isLive, setIsLive] = useState<boolean>(false);
 
@@ -86,16 +87,16 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         return {
             onError: (error: AxiosError) => {
                 setAlertMessage(error.message);
-                setSliding('');
+                setSliding(true);
             },
             onSuccess: () => {
-                setSliding('');
+                setSliding(true);
                 setAlertMessage('Success!');
                 timeoutCount++;
                 setTimeout(() => {
                     timeoutCount--;
                     if (!timeoutCount) {
-                        setSliding('sliding');
+                        setSliding(false);
                     }
                 }, 3000);
             }
@@ -128,7 +129,7 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         setQueueData(prevQueueData => {
             const newQueuedata = [...prevQueueData];
             newQueuedata[index].mod_view = !prevQueueData[index].mod_view;
-            newQueuedata[index].style = newQueuedata[index].mod_view ? 'mod-view' : 'simple-view';
+            newQueuedata[index].style = newQueuedata[index].mod_view ? 'complex' : 'simple';
             newQueuedata[index].button_text = newQueuedata[index].mod_view ? 'Hide' : 'More';
             return newQueuedata;
         });
@@ -317,42 +318,41 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
     }, [userData.display_name]);
 
     if (isLoading) {
-        return <div className="song-list">
-            <LoaderBox />
-        </div>;
+        return (
+            <div className="loader">
+                <div className="loader__circle" />
+            </div>);
     }
 
     return (
-        <div className="queue-list">
+        <>
             {userData.is_mod ?
-                <div className="chad-view">
-                    <DragDropContext onDragEnd={queueHandleOnDragEnd}>
-                        <Droppable droppableId="queue">
-                            {provided => (
-                                <ul {...provided.droppableProps} ref={provided.innerRef}>
-                                    {queueData.map((entry, index) => <QueueModElement
-                                        entry={entry}
-                                        like_count={entry.like_count}
-                                        index={index}
-                                        user_likes={queueLikes}
-                                        user_id={userData.id}
-                                        change_mod_view={changeModView}
-                                        queue_entry_change_event={queueEntryChangeEvent}
-                                        queue_entry_text_area_change_event={queueEntryTextAreaChangeEvent}
-                                        queue_change_request={queueChangeRequest}
-                                        delete_queue_entry_request={deleteQueueEntryRequest}
-                                        change_delete_intention={changeDeleteIntention}
-                                        click_like_handler={clickLikeHandler}
-                                        key={entry.id}
-                                    />)}
-                                    {provided.placeholder}
-                                </ul>
-                            )}
-                        </Droppable>
-                    </DragDropContext>
-                </div>
+                <DragDropContext onDragEnd={queueHandleOnDragEnd}>
+                    <Droppable droppableId="queue">
+                        {provided => (
+                            <ul className="queue queue--mod" {...provided.droppableProps} ref={provided.innerRef}>
+                                {queueData.map((entry, index) => <QueueModElement
+                                    entry={entry}
+                                    like_count={entry.like_count}
+                                    index={index}
+                                    user_likes={queueLikes}
+                                    user_id={userData.id}
+                                    change_mod_view={changeModView}
+                                    queue_entry_change_event={queueEntryChangeEvent}
+                                    queue_entry_text_area_change_event={queueEntryTextAreaChangeEvent}
+                                    queue_change_request={queueChangeRequest}
+                                    delete_queue_entry_request={deleteQueueEntryRequest}
+                                    change_delete_intention={changeDeleteIntention}
+                                    click_like_handler={clickLikeHandler}
+                                    key={entry.id}
+                                />)}
+                                {provided.placeholder}
+                            </ul>
+                        )}
+                    </Droppable>
+                </DragDropContext>
                 :
-                (isLive && <ul className="pleb-view">
+                (isLive && <ul className="queue queue--pleb">
                     {queueData.filter((entry) => entry.visible).map((entry, index) => {
                         return (<QueueElement
                             entry={entry}
@@ -368,25 +368,23 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 </ul>)
             }
             {userData.is_admin &&
-                <ul className="admin-menu">
-                    <AdminMenu
-                        display_name={userData.display_name}
-                        is_admin={userData.is_admin}
-                        is_live={isLive}
-                    />
-                </ul>}
+                <AdminMenu
+                    display_name={userData.display_name}
+                    is_admin={userData.is_admin}
+                    is_live={isLive}
+                />}
             {isSuccess && !userData.is_mod && !userData.is_admin && !isLive && (
-                <div className="dead-queue">
+                <div className="alert alert--error">
                     Queue is not live!
-                    <div>
+                    <div className="alert__referrals">
                         Check out
                         <a rel="noreferrer" target="_blank" href="https://www.twitch.tv/zanuda"><img src={twitchIconPath} alt="twitch icon" width={30} height={30} /></a>
                         <a rel="noreferrer" target="_blank" href="https://t.me/etzalert"><img src={telegramIconPath} alt="telegram icon" width={30} height={30} /></a>
                     </div>
                 </div>)}
-            {isError && <Alert message="Couldn't load queue!" class_name="alert loading-error" />}
-            <Alert class_name={`alert fetch ${sliding}`} message={alertMessage} />
-        </div>
+            {isError && <Alert message="Couldn't load queue!" class_name="alert alert--error" />}
+            <Alert class_name={`alert alert--fetch${sliding ? ' alert--sliding' : ''}`} message={alertMessage} />
+        </>
     );
 };
 

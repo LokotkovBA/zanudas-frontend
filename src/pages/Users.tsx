@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { z } from 'zod';
 import { UserData } from '../App';
-import { LoaderBox } from '../components/LoaderBox';
 import { SearchBar } from '../components/SearchBar';
 import { UpButton } from '../components/UpButton';
 import { UserListItem } from '../components/UserListItem';
 
 import { getRequest } from '../utils/api-requests';
+
+import '../css/songlist.scss';
+import '../css/users.scss';
 
 interface UsersProps {
     userData: UserData
@@ -64,21 +66,24 @@ const Users: React.FC<UsersProps> = ({ userData }) => {
     }
 
     if (isLoading) {
-        return <div className="song-list">
-            <LoaderBox />
-        </div>;
+        return (
+            <div className="loader">
+                <div className="loader__circle" />
+            </div>);
     }
 
     return (
-        <div className="user-list">
+        <>
             {userData.is_admin &&
-                <div className="background-menu set-sticky">
+                <div className="page-nav">
                     <SearchBar searchHandleChange={searchHandleChange} searchTerm={searchTerm} />
                     <button type="button" onClick={toggleOnlyMods}>{onlyModsState.text}</button>
                 </div>}
-            {userList}
-            <UpButton />
-        </div>
+            <ul className="user-list">
+                {userList}
+            </ul>
+            <UpButton show={true} />
+        </>
     );
 };
 

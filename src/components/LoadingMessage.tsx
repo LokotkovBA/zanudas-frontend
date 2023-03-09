@@ -62,24 +62,24 @@ const LoadingMessage: React.FC<LoadingMessageProps> = ({ message_data, refetch_d
 
     return (
         <form className="loading-message" onSubmit={submit}>
-            <div className="loading-message-message">
+            <div className="loading-message__input-label">
                 <label htmlFor="message">Message</label>
-                <input name="message" type="string" value={messageData.message} onChange={inputChangeHandler} />
+                <input className="admin-input loading-message__admin-input" name="message" type="string" value={messageData.message} onChange={inputChangeHandler} />
             </div>
-            <div className="loading-message-triple_end_of">
+            <div className="loading-message__input-label">
                 <label htmlFor="triple_end_of">Tripple end of</label>
-                <input name="triple_end_of" type="string" value={messageData.triple_end_of} onChange={inputChangeHandler} />
+                <input className="admin-input" name="triple_end_of" type="string" value={messageData.triple_end_of} onChange={inputChangeHandler} />
             </div>
-            <div className="loading-message-message_before">
+            <div className="loading-message__input-label">
                 <label htmlFor="message_before">Message before</label>
-                <input name="message_before" type="string" value={messageData.message_before ? messageData.message_before : ''} onChange={inputChangeHandler} />
+                <input className="admin-input loading-message__admin-input" name="message_before" type="string" value={messageData.message_before ? messageData.message_before : ''} onChange={inputChangeHandler} />
             </div>
-            <div className="loading-message-progress">
+            <div className="loading-message__input-label">
                 <label htmlFor="progress">Progress</label>
-                <input name="progress" type="string" value={messageData.progress ? messageData.progress : ''} onChange={inputChangeHandler} />
+                <input className="admin-input" name="progress" type="string" value={messageData.progress ? messageData.progress : ''} onChange={inputChangeHandler} />
             </div>
             <button type="submit">{buttonText}</button>
-            <button type="button" onClick={clickDelete} className="loading-message-delete-button">{deleteButtonText}</button>
+            <button className="loading-message__delete-button" type="button" onClick={clickDelete}>{deleteButtonText}</button>
         </form>);
 };
 

@@ -6,8 +6,5 @@ interface SearchBarProps {
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({ searchHandleChange, searchTerm }) => {
-    return (
-        <div className="top-bar">
-            <input className="search-bar" type="text" placeholder="Search" onChange={searchHandleChange} value={searchTerm} />
-        </div>);
+    return (<input className="search" type="text" placeholder="Search" onChange={searchHandleChange} value={searchTerm} />);
 };

@@ -7,7 +7,6 @@ import daIconPath from '../icons/da.svg';
 import { BACKEND_ADDRESS, getRequest, patchRequest, postRequest, putRequest } from '../utils/api-requests';
 import { socket } from '../utils/socket-client';
 import { Alert } from './Alert';
-import { LoaderBox } from './LoaderBox';
 
 
 const daLink = `https://${BACKEND_ADDRESS}:5100/da/auth`;
@@ -30,6 +29,8 @@ const adminDataSchema = z.object({
     textInfo: z.string(),
 });
 
+let successCount = 0;
+
 export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display_name }) => {
     const [newMaxDisplay, setNewMaxDisplay] = useState<number>(0);
     const [newFontSize, setNewFontSize] = useState<string>('');
@@ -39,7 +40,7 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
     const [isListeningToDA, setIsListeningToDA] = useState<boolean>(false);
     const [HidTokenButtons, setHidTokenButtons] = useState<boolean>(false);
     const [alertMessage, setAlertMessage] = useState<string>('');
-    const [sliding, setSliding] = useState<string>('sliding');
+    const [sliding, setSliding] = useState<boolean>(false);
 
     function onMaxDisplayChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNewMaxDisplay(parseInt(event.target.value));
@@ -125,14 +126,18 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
         return {
             onError: (error: AxiosError) => {
                 setAlertMessage(error.message);
-                setSliding('');
+                setSliding(true);
             },
             onSuccess: () => {
-                setSliding('');
+                setSliding(true);
                 setAlertMessage('Success!');
+                successCount++;
                 setTimeout(() => {
-                    setSliding('sliding');
-                }, 3000);
+                    successCount--;
+                    if (!successCount) {
+                        setSliding(false);
+                    }
+                }, 1000);
             }
         };
     }, []);
@@ -151,9 +156,10 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
     const tokenButtonsVisibilityRequest = useMutation((newData: boolean) => postRequest('admin/tokenButtonsVisibility', '5100', { hid_token_buttons: !newData }), options);
 
     if (getAdminData.isLoading) {
-        return (<div className="admin-buttons">
-            <LoaderBox />
-        </div>);
+        return (
+            <div className="loader">
+                <div className="loader__circle" />
+            </div>);
     }
 
     function setupDA() {
@@ -223,7 +229,7 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
     }
 
     return (
-        <div className="admin-buttons">
+        <div className="admin-panel">
             {is_admin && <>
                 <button type="button" className={HidTokenButtons ? '' : 'pressed'} onClick={changeTokenButtonsVisibility}>{HidTokenButtons ? 'Show' : 'Hide'}</button>
                 {!HidTokenButtons && <button type="button" onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>}
@@ -239,22 +245,22 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
                 {is_live && <button type="button" className="pressed" onClick={stopQueue}>Stop queue</button>}
                 <button type="button" onClick={addQueueSong}>Add song</button>
                 <div>
-                    <input type="string" value={newFontSize} onChange={onFontSizeChange} />
+                    <input className="admin-input" type="string" value={newFontSize} onChange={onFontSizeChange} />
                     <button type="button" onClick={sendNewFontSize}>Set font size of overlay</button>
                 </div>
                 <div>
-                    <input type="number" value={newMaxDisplay} onChange={onMaxDisplayChange} />
+                    <input className="admin-input" type="number" value={newMaxDisplay} onChange={onMaxDisplayChange} />
                     <button type="button" onClick={sendNewMaxDisplay}>Set max overlay display</button>
                 </div>
                 <div className="edit-info">
-                    <textarea name="text-info" className="text-info" onChange={onTextInfoAreaChange} value={infoText} />
+                    <textarea name="text-info" className="admin-input admin-textarea" onChange={onTextInfoAreaChange} value={infoText} />
                     <div className="edit-checkbox">
-                        <input type="checkbox" className="show-info" name="show-info" checked={showInfo} onChange={onShowInfoChange} />
+                        <input type="checkbox" className="show-info" id="show-info" name="show-info" checked={showInfo} onChange={onShowInfoChange} />
                         <label htmlFor="show-info">show info</label>
                     </div>
                     <button type="button" onClick={changeInfo}>Change info</button>
                 </div>
-                {<Alert class_name={`alert admin ${sliding}`} message={alertMessage} />}
+                {<Alert class_name={`alert alert--admin${sliding ? ' alert--sliding' : ''}`} message={alertMessage} />}
             </>}
         </div>
     );

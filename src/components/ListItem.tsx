@@ -22,7 +22,7 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
     const [songData, setSongData] = useState<SongListEntry>(song);
     const [deleteIntention, setDeleteIntention] = useState<boolean>(false);
     const [deleteButtonText, setDeleteButtonText] = useState<string>('Delete');
-    const [clickedState, setClickedState] = useState<string>('');
+    const [clickedState, setClickedState] = useState(false);
 
     const [alertMessage, setAlertMessage] = useState<string>('');
     const [sliding, setSliding] = useState<string>('sliding');
@@ -65,14 +65,6 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
     function copyClick() {
         navigator.clipboard.writeText(`${song.artist} - ${song.song_name}`);
         displayAlert();
-    }
-
-    function mouseDown() {
-        setClickedState('clicked');
-    }
-
-    function mouseUp() {
-        setClickedState('');
     }
 
     function toggleEditFields(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -132,13 +124,19 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
     }
 
     return (
-        <div className={`list-item ${clickedState}`} onClick={copyClick} onMouseUp={mouseUp} onMouseDown={mouseDown}>
-            {!showEditFields && <p className="song-info">{song.song_name}</p>}
+        <div className={`entry ${clickedState ? 'entry--clicked' : ''} ${showEditFields ? 'entry--edit' : ''}`}
+            onClick={copyClick} onMouseUp={() => setClickedState(false)} onMouseDown={() => setClickedState(true)}>
+            {!showEditFields && <p>{song.song_name}</p>}
             {showEditFields && userData.is_admin &&
                 <>
-                    <input type="text" name="artist" placeholder="artist" onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.artist ? songData.artist : ''} />
-                    <input type="text" name="song_name" placeholder="song name" className="song-info" onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.song_name ? songData.song_name : ''} />
-                    <input type="text" name="tag" placeholder="tag" className="song-info" onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.tag ? songData.tag : ''} />
+                    <div className="entry__editfields">
+                        <input className="admin-input" type="text" name="artist" placeholder="artist" onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.artist ? songData.artist : ''} />
+                        <label htmlFor="artist">Artist</label>
+                        <input className="admin-input" type="text" name="song_name" placeholder="entry name" onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.song_name ? songData.song_name : ''} />
+                        <label htmlFor="song_name">Song name</label>
+                        <input className="admin-input" type="text" name="tag" placeholder="tag" onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.tag ? songData.tag : ''} />
+                        <label htmlFor="tag">Tag</label>
+                    </div>
                     <button
                         type="button"
                         className={changeButtonState}
@@ -153,49 +151,55 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
                         onClick={(event) => sendNewSongData(event)}>Change</button>
                 </>}
             {(song.likes !== 0) &&
-                <div className="like-text">
+                <div className="entry__likeinfo">
                     <img src={song.likes > 0 ? pathToThumbsUp : pathToThumbsDown} alt="Like" width={18} height={18} /> {song.likes}
                 </div>}
-            {userData.is_admin &&
-                <>
+            {userData.is_mod &&
+                <div className="entry__modbuttons">
+                    {userData.is_admin &&
+                        <>
+                            <button
+                                type="button"
+                                className={editButtonState}
+                                onMouseDown={(event) => {
+                                    event.stopPropagation();
+                                    setEditButtonState('pressed');
+                                }}
+                                onMouseUp={(event) => {
+                                    event.stopPropagation();
+                                    setEditButtonState('');
+                                }}
+                                onClick={(event) => toggleEditFields(event)}>
+                                Edit
+                            </button>
+                            <button
+                                type="button"
+                                className={deleteButtonState}
+                                onMouseDown={(event) => {
+                                    event.stopPropagation();
+                                    setDeleteButtonState('pressed');
+                                }}
+                                onMouseUp={(event) => {
+                                    event.stopPropagation();
+                                    setDeleteButtonState('');
+                                }}
+                                onClick={(event) => deleteItem(event)}>
+                                {deleteButtonText}
+                            </button>
+                        </>}
                     <button
                         type="button"
-                        className={editButtonState}
+                        className={addButtonState}
                         onMouseDown={(event) => {
                             event.stopPropagation();
-                            setEditButtonState('pressed');
+                            setAddButtonState('pressed');
                         }}
                         onMouseUp={(event) => {
                             event.stopPropagation();
-                            setEditButtonState('');
+                            setAddButtonState('');
                         }}
-                        onClick={(event) => toggleEditFields(event)}>Edit</button>
-                    <button
-                        type="button"
-                        className={deleteButtonState}
-                        onMouseDown={(event) => {
-                            event.stopPropagation();
-                            setDeleteButtonState('pressed');
-                        }}
-                        onMouseUp={(event) => {
-                            event.stopPropagation();
-                            setDeleteButtonState('');
-                        }}
-                        onClick={(event) => deleteItem(event)}>{deleteButtonText}</button>
-                </>}
-            {(userData.is_admin || userData.is_mod) &&
-                <button
-                    type="button"
-                    className={addButtonState}
-                    onMouseDown={(event) => {
-                        event.stopPropagation();
-                        setAddButtonState('pressed');
-                    }}
-                    onMouseUp={(event) => {
-                        event.stopPropagation();
-                        setAddButtonState('');
-                    }}
-                    onClick={(event) => addToQueue(event)}>Add</button>}
+                        onClick={(event) => addToQueue(event)}>Add</button>
+                </div>}
             <Alert message={alertMessage} class_name={`alert fetch ${sliding}`} />
         </div>
     );

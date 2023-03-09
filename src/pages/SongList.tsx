@@ -13,13 +13,16 @@ import { Alert } from '../components/Alert';
 import { UpButton } from '../components/UpButton';
 
 import { useMutation, useQuery } from 'react-query';
-import { LoaderBox } from '../components/LoaderBox';
 import { AxiosError } from 'axios';
 import { z } from 'zod';
 import { UserData } from '../App';
 
+import '../css/songlist.scss';
+
 let copyTimeoutCount = 0;
 let successTimeoutCount = 0;
+
+let scrolled = false;
 
 const songListEntrySchema = z.object({
     id: z.number(),
@@ -35,6 +38,7 @@ export type SongListEntry = z.infer<typeof songListEntrySchema>;
 
 const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const { width } = useWindowDimensions();
+    const [showUpButton, setShowUpButton] = useState(false);
     const [showLetterButtons, setShowLetterButtons] = useState<boolean>(false);
     const [arrowState, setArrowState] = useState(pathToArrowDown);
 
@@ -54,18 +58,18 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const [showAddField, setShowAddField] = useState<boolean>(false);
     const [artistList, setArtistList] = useState<string[]>([]);
 
-    const [copyAlertSliding, setCopyAlertSliding] = useState<string>('alert sliding');
+    const [copyAlertSliding, setCopyAlertSliding] = useState<boolean>(false);
 
     const [alertMessage, setAlertMessage] = useState<string>('');
-    const [sliding, setSliding] = useState<string>('sliding');
+    const [sliding, setSliding] = useState<boolean>(false);
 
     function displayAlert() {
-        setCopyAlertSliding('alert');
+        setCopyAlertSliding(true);
         copyTimeoutCount++;
         setTimeout(() => {
             copyTimeoutCount--;
             if (!copyTimeoutCount) {
-                setCopyAlertSliding('alert sliding');
+                setCopyAlertSliding(false);
             }
         }, 3000);
     }
@@ -119,17 +123,17 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const songlistAddRequest = useMutation((songData: SongListEntry) => postRequest(`songlist`, '5100', songData), {
         onError: (error: AxiosError) => {
             setAlertMessage(error.message);
-            setSliding('');
+            setSliding(true);
         },
         onSuccess: () => {
             setNewSongData(emptyNewSong);
-            setSliding('');
+            setSliding(true);
             setAlertMessage('Success!');
             successTimeoutCount++;
             setTimeout(() => {
                 successTimeoutCount--;
                 if (!successTimeoutCount) {
-                    setSliding('sliding');
+                    setSliding(false);
                 }
             }, 3000);
         }
@@ -205,13 +209,13 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     const addMultipleRequest = useMutation((songs: SongListEntry[]) => postRequest('songlist/many', 5100, { songs: songs }), {
         onError: (error: AxiosError) => {
             setAlertMessage(error.message);
-            setSliding('');
+            setSliding(true);
         },
         onSuccess: () => {
-            setSliding('');
+            setSliding(true);
             setAlertMessage('Success!');
             setTimeout(() => {
-                setSliding('sliding');
+                setSliding(false);
             }, 3000);
         }
     });
@@ -251,9 +255,9 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                     const curBlocksCopy = [...curBlocks];
                     const copyPrevFL = prevFirstLetter;
                     setArtistBlocks(prevBlocks => [...prevBlocks,
-                    <div className="letter-block" key={copyPrevFL} id={copyPrevFL}>
+                    <li key={copyPrevFL} id={copyPrevFL}>
                         {curBlocksCopy.map(block => <ArtistItem key={block.key} artist={block.artist} songs={block.songs} userData={userData} displayAlert={displayAlert} />)}
-                    </div>
+                    </li>
                     ]);
                     curBlocks = [];
                     letterArray.push(prevFirstLetter);
@@ -289,51 +293,71 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         if (filteredSongListData && artistList[0]) generateArtistBlocks();
     }, [artistList, filteredSongListData, generateArtistBlocks]);
 
+    useEffect(() => {
+        function scrollHandler() {
+            if (window.scrollY === 0) {
+                setShowUpButton(false);
+                scrolled = false;
+            } else if (!scrolled) {
+                scrolled = true;
+                setShowUpButton(true);
+            }
+        }
+        document.addEventListener('scroll', scrollHandler);
+
+        return () => {
+            document.removeEventListener('scroll', scrollHandler);
+        };
+    }, []);
+
     if (isLoading) {
-        return <div className="song-list">
-            <LoaderBox />
-        </div>;
+        return (
+            <div className="loader">
+                <div className="loader__circle" />
+            </div>);
     }
 
     return (
-        <div className="song-list">
-            <div className="background-menu set-sticky">
+        <>
+            <nav className="page-nav">
                 <SearchBar searchHandleChange={searchHandleChange} searchTerm={searchTerm} />
-                <div className="filters">
+                <div className="page-nav__filters">
                     <button type="button" className={pressedButtons.foreign ? 'pressed' : ''} onClick={foreignFilter}>Foreign</button>
                     <button type="button" className={pressedButtons.russian ? 'pressed' : ''} onClick={russianFilter}>Russian</button>
                     <button type="button" className={pressedButtons.ost ? 'pressed' : ''} onClick={ostFilter}>OST</button>
                     <button type="button" className={pressedButtons.wide_racks ? 'pressed' : ''} onClick={wideRacksFilter}>Original</button>
                     {(width <= 728) && <button type="button" className="show-more-icon" onClick={changeShowLetterButtons}><img src={arrowState} alt="show more icon" /></button>}
                 </div>
-                {(width > 728 || showLetterButtons) && <div className="letter-buttons">
-                    {letterButtons}
-                </div>}
-            </div>
-            <div className="add-block">
+                {(width > 728 || showLetterButtons) &&
+                    <div className="page-nav__letter-buttons">
+                        {letterButtons}
+                    </div>}
+            </nav>
+            <ul className="song-list">
                 {userData.is_admin &&
-                    <div className="songlist-edits">
-                        <button type="button" onClick={addClick}>Add</button>
-                        <button type="button" onClick={exportAll}>Export all</button>
-                        <input type="file" onChange={(event) => importSongList(event)} />
-                        <button type="button" onClick={sendFile}>Send file</button>
-                    </div>}
-                {showAddField &&
-                    <div className="list-item">
-                        <input type="text" name="artist" onChange={newSongHandleChangeEvent} placeholder="Artist" value={newSongData.artist} />
-                        <input type="text" name="song_name" onChange={newSongHandleChangeEvent} placeholder="Song name" value={newSongData.song_name} />
-                        <input type="text" name="date" onChange={newSongHandleChangeEvent} placeholder="Date" value={newSongData.date as string} />
-                        <input type="text" name="tag" onChange={newSongHandleChangeEvent} placeholder="Tag" value={newSongData.tag} />
-                    </div>}
-            </div>
-            <div className="song-blocks">
+                    <li className="songs-add" >
+                        <div className="songs-add__edits">
+                            <button type="button" onClick={addClick}>Add</button>
+                            <button type="button" onClick={exportAll}>Export all</button>
+                            <input style={{ display: 'none' }} type="file" id="file" onChange={(event) => importSongList(event)} />
+                            <label className="upload" htmlFor="file">Upload JSON</label>
+                            <button type="button" onClick={sendFile}>Send JSON</button>
+                        </div>
+                        {showAddField &&
+                            <div className="songs-add__entry entry">
+                                <input className="admin-input" type="text" name="artist" onChange={newSongHandleChangeEvent} placeholder="Artist" value={newSongData.artist} />
+                                <input className="admin-input" type="text" name="song_name" onChange={newSongHandleChangeEvent} placeholder="Song name" value={newSongData.song_name} />
+                                <input className="admin-input" type="text" name="date" onChange={newSongHandleChangeEvent} placeholder="Date" value={newSongData.date as string} />
+                                <input className="admin-input" type="text" name="tag" onChange={newSongHandleChangeEvent} placeholder="Tag" value={newSongData.tag} />
+                            </div>}
+                    </li>}
                 {artistBlocks}
-            </div>
-            <UpButton />
-            <Alert message="Copied!" class_name={copyAlertSliding} />
-            {isError && <Alert message="Couldn't load song list!" class_name="alert loading-error" />}
-            <Alert message={alertMessage} class_name={`alert fetch ${sliding}`} />
-        </div>
+            </ul>
+            <UpButton show={showUpButton} />
+            <Alert message="Copied!" class_name={`alert${copyAlertSliding ? ' alert--sliding' : ''}`} />
+            {isError && <Alert message="Couldn't load song list!" class_name="alert alert--error" />}
+            <Alert message={alertMessage} class_name={`alert alert--fetch${sliding ? ' alert--sliding' : ''}`} />
+        </>
     );
 };
 

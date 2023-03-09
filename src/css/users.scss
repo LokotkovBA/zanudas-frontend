@@ -1,0 +1,21 @@
+.user-list {
+    margin: 0 35vw;
+}
+
+.checkboxes {
+    display: grid;
+    grid-template-columns: .1fr 1fr;
+}
+
+.side-buttons {
+    margin-left: auto;
+    display: flex;
+    gap: .5em;
+    flex-direction: column;
+}
+
+@media screen and (width <=60em) {
+    .user-list {
+        margin: 0 10vw;
+    }
+}

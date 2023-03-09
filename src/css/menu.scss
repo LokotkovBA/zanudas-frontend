@@ -1,0 +1,46 @@
+.main-menu {
+    background-color: var(--foreground-color);
+    margin: 0;
+    padding: .5em 1em;
+    color: var(--active-button-color);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 1.125rem;
+    gap: .5em;
+
+    &__label {
+        font-size: 2rem;
+        margin-right: 2em;
+    }
+
+    &__link {
+        &--active>button {
+            background-color: var(--active-button-color);
+            border-color: var(--active-button-color);
+            color: var(--background-color);
+        }
+
+        &--active>button:hover {
+            border-color: var(--button-color);
+        }
+
+
+        &--external>button {
+            background-color: var(--button-alt-color);
+        }
+
+        &--external>button:hover {
+            border-color: var(--active-button-color);
+        }
+
+        &--request {
+            margin-left: auto;
+        }
+    }
+
+    &__picture {
+        border-radius: 2em;
+        border: solid .15em var(--button-alt-color);
+    }
+}

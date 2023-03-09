@@ -1,5 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { LikesState } from '../pages/Queue';
+
+import pathToThumbsUp from '../icons/thumbs-up.svg';
+import pathToThumbsUpWhite from '../icons/thumbs-up-white.svg';
+import pathToThumbsDown from '../icons/thumbs-down.svg';
+import pathToThumbsDownWhite from '../icons/thumbs-down-white.svg';
 
 interface LikeBlockProps {
     user_id: number;
@@ -11,66 +16,14 @@ interface LikeBlockProps {
 }
 
 export const LikeBlock: React.FC<LikeBlockProps> = ({ user_id, song_id, like_count, like_state, clickLikeHandler, index }) => {
-    const [clickable, setClickable] = useState<string>('');
-    const [thumbsUpClicked, setThumbUpClicked] = useState<string>('');
-    const [thumbsDownClicked, setThumbDownClicked] = useState<string>('');
-    useEffect(() => {
-        if (user_id) {
-            setClickable('clickable');
-        }
-    }, [user_id]);
-
-    useEffect(() => {
-        if (like_state) {
-            switch (like_state.is_positive) {
-                case -1:
-                    setThumbDownClicked('thumbs-clicked');
-                    setThumbUpClicked('');
-                    break;
-                case 0:
-                    setThumbDownClicked('');
-                    setThumbUpClicked('');
-                    break;
-                case 1:
-                    setThumbDownClicked('');
-                    setThumbUpClicked('thumbs-clicked');
-                    break;
-                default:
-                    setThumbDownClicked('');
-                    setThumbUpClicked('');
-                    break;
-            }
-        }
-    }, [like_state]);
-
     return (
         <div className="reaction">
-            <p className="like-count">{like_count}</p>
-            <div className="reaction-buttons">
-                <div className={`${thumbsUpClicked} ${clickable} thumbs-up`} onClick={() => {
-                    if (user_id) {
-                        if (thumbsUpClicked) {
-                            clickLikeHandler(song_id, 0, index);
-                            setThumbUpClicked('');
-                        } else {
-                            clickLikeHandler(song_id, 1, index);
-                            setThumbDownClicked('');
-                            setThumbUpClicked('thumbs-clicked');
-                        }
-                    }
-                }} />
-                <div className={`${thumbsDownClicked} ${clickable} thumbs-down`} onClick={() => {
-                    if (user_id) {
-                        if (thumbsDownClicked) {
-                            clickLikeHandler(song_id, 0, index);
-                            setThumbDownClicked('');
-                        } else {
-                            clickLikeHandler(song_id, -1, index);
-                            setThumbUpClicked('');
-                            setThumbDownClicked('thumbs-clicked');
-                        }
-                    }
-                }} />
+            <p className="reaction__count">{like_count}</p>
+            <div className="actions">
+                <img width={24} height={24} alt="thumbs up" className={`actions__action--${user_id ? '' : 'not'}clickable`} src={(like_state?.is_positive === 1) ? pathToThumbsUp : pathToThumbsUpWhite}
+                    onClick={() => clickLikeHandler(song_id, like_state.is_positive === 1 ? 0 : 1, index)} />
+                <img width={24} height={24} alt="thumbs down" className={`actions__action--${user_id ? '' : 'not'}clickable`} src={(like_state?.is_positive === -1) ? pathToThumbsDown : pathToThumbsDownWhite}
+                    onClick={() => clickLikeHandler(song_id, like_state.is_positive === -1 ? 0 : -1, index)} />
             </div>
         </div>
     );

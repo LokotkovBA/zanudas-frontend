@@ -3,9 +3,9 @@ import { useMutation, useQuery } from 'react-query';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { z } from 'zod';
 import { Alert } from './components/Alert';
-import { LoaderBox } from './components/LoaderBox';
 import Menu from './components/Menu';
 import { getRequest, patchRequest } from './utils/api-requests';
+import './css/menu.scss';
 
 const Queue = lazy(() => import('./pages/Queue'));
 const SongList = lazy(() => import('./pages/SongList'));
@@ -61,25 +61,21 @@ export default function App() {
     }
 
     return (
-        <div>
+        <>
             <Menu userData={userData} />
-            <div className="content">
-                <Suspense fallback={<LoaderBox />}>
-                    <Routes>
-                        <Route path="/" element={<Navigate to="/queue" />} />
-                        <Route path="/queue" element={<Queue userData={userData} />} />
-                        <Route path="/songlist" element={<SongList userData={userData} />} />
-                        <Route path="/users" element={<Users userData={userData} />} />
-                        <Route path="/loading" element={<EditLoading is_admin={userData.is_admin} />} />
-                        <Route path="*" element={<Navigate to="/" />} />
-                    </Routes>
-                </Suspense>
-            </div>
+            <Suspense fallback={<div className="loader" />}>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/queue" />} />
+                    <Route path="/queue" element={<Queue userData={userData} />} />
+                    <Route path="/songlist" element={<SongList userData={userData} />} />
+                    <Route path="/users" element={<Users userData={userData} />} />
+                    <Route path="/loading" element={<EditLoading is_admin={userData.is_admin} />} />
+                    <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+            </Suspense>
             {!userData.is_cookie_alert_shown &&
-                <div className="cookie">
-                    <Alert cookieAlertClick={cookieAlertClick} show_button={true} class_name={'alert'} message={`This website uses cookies to keep you logged in!`} />
-                </div>
+                <Alert cookieAlertClick={cookieAlertClick} show_button={true} class_name="alert alert--cookie" message="This website uses cookies to keep you logged in!" />
             }
-        </div>
+        </>
     );
 }

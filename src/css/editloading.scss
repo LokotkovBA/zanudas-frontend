@@ -1,0 +1,53 @@
+.loading__page-nav {
+    margin-left: 50vw;
+    transform: translate(-50%, 0%);
+    width: 20em;
+}
+
+.loading-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 10vw;
+}
+
+.loading-message {
+    width: 22em;
+    background-color: var(--foreground-alt-color);
+    padding: 1em;
+    margin: 1em;
+
+    color: var(--text-color);
+
+    border-radius: 8px;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5em;
+
+    &__delete-button {
+        margin-left: auto;
+    }
+
+    & label {
+        color: var(--active-button-color);
+    }
+
+    &__admin-input {
+        width: auto;
+    }
+
+    &__input-label {
+        display: grid;
+
+    }
+}
+
+@media screen and (width <=40em) {
+    .loading-list {
+        margin-left: 0;
+    }
+
+    .loading__page-nav {
+        width: 90vw;
+    }
+}

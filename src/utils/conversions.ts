@@ -5,7 +5,7 @@ export function queueDBtoData(input: DBQueueEntry): QueueEntry {
         ...input,
         classN: '',
         mod_view: false,
-        style: 'simple-view',
+        style: 'simple',
         button_text: 'More',
         delete_button_text: 'Delete',
         delete_intention: false

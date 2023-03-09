@@ -52,7 +52,7 @@ export const UserListItem: React.FC<UserListItemProps> = ({ userEntry, is_admin 
 
 
     return (
-        <div className="user-entry">
+        <li className="entry user-list__entry">
             <b>{userEntryData.login}</b>
             <div className="checkboxes">
                 <input type="checkbox" name="is_mod" checked={userEntryData.is_mod} onChange={queueEntryChangeEvent} />
@@ -64,8 +64,10 @@ export const UserListItem: React.FC<UserListItemProps> = ({ userEntry, is_admin 
                 <input type="checkbox" name="is_queen" checked={userEntryData.is_queen} onChange={queueEntryChangeEvent} />
                 <label htmlFor="is_queen">is_queen</label>
             </div>
-            <button type="button" className="change-button" onClick={changeUser}>Change</button>
-            <button type="button" className="delete-button" onClick={deleteUser}>{deleteButtonText}</button>
-        </div>
+            <div className="side-buttons">
+                <button type="button" className="change-button" onClick={changeUser}>Change</button>
+                <button type="button" className="delete-button" onClick={deleteUser}>{deleteButtonText}</button>
+            </div>
+        </li>
     );
 };

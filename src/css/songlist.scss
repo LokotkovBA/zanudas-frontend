@@ -1,7 +1,6 @@
 .song-list {
     margin: .5em 30vw;
     list-style: none;
-
 }
 
 .artist {
@@ -49,14 +48,6 @@
     .artist__song--edit {
         width: 80vw;
     }
-
-    .page-nav {
-        margin: 0 10vw;
-    }
-
-    .up-button {
-        right: 10vw;
-    }
 }
 
 @media screen and (width <=45em) {
@@ -66,19 +57,5 @@
 
     .artist__song--edit {
         width: auto;
-    }
-
-    .page-nav {
-        margin: 0;
-    }
-
-    .up-button {
-        right: 5vw;
-    }
-}
-
-@media screen and (width <=36em) {
-    .entry {
-        flex-wrap: wrap;
     }
 }

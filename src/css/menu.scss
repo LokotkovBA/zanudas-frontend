@@ -28,6 +28,7 @@
 
         &--external>button {
             background-color: var(--button-alt-color);
+            border-color: var(--button-alt-color);
         }
 
         &--external>button:hover {

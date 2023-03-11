@@ -81,7 +81,7 @@ b {
     }
 }
 
-button {
+.button {
     padding: .3em;
     color: var(--text-color);
     background-color: var(--button-color);
@@ -98,7 +98,7 @@ button {
         border-color: var(--active-button-color);
     }
 
-    &.pressed {
+    &--pressed {
         color: var(--foreground-color);
         background-color: var(--active-button-color);
         border-color: var(--active-button-color);
@@ -116,7 +116,7 @@ button {
     bottom: -10vh;
     transition: all .3s ease-in-out;
 
-    &>button {
+    &__button {
         border-radius: 2em;
     }
 
@@ -196,24 +196,19 @@ button {
         flex-wrap: wrap;
     }
 
-    &__letter-buttons {
-        margin-top: .5em;
-        display: flex;
-        flex-wrap: wrap;
-        gap: .7em;
+}
 
-        &>a {
-            background-color: var(--button-color);
-            color: #fff;
-            cursor: pointer;
+.letter-buttons {
+    margin-top: .5em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .7em;
 
-            text-align: center;
-            font-size: 1.1rem;
-            border-radius: .5ch;
-
-            padding: .1em .2em;
-            min-width: 1.5ch;
-        }
+    &__button {
+        justify-content: center;
+        padding: .1em .2em;
+        border-radius: .5ch;
+        min-width: 1.5ch;
     }
 }
 

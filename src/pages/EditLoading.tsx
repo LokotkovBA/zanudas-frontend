@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { z } from 'zod';
-import { SearchBar } from '../components/SearchBar';
 import { getRequest, postRequest } from '../utils/api-requests';
-import { UpButton } from '../components/UpButton';
 import LoadingMessage from '../components/LoadingMessage';
 
 import '../css/editloading.scss';
+import { Link as ScrollLink } from 'react-scroll';
 
 interface EditLoadingProps {
     is_admin: boolean
@@ -49,11 +48,11 @@ const EditLoading: React.FC<EditLoadingProps> = ({ is_admin }) => {
         return (
             <>
                 <div className="page-nav loading__page-nav">
-                    <SearchBar searchHandleChange={(event) => {
+                    <input className="search" type="text" placeholder="Search" onChange={(event) => {
                         setSearchTerm(event.target.value);
                         localStorage.setItem('loadingMessagesSearchTerm', event.target.value);
-                    }} searchTerm={searchTerm} />
-                    <button type="button" onClick={() => sendNewMessage.mutate()}>{buttonText}</button>
+                    }} value={searchTerm} />
+                    <button className="button" type="button" onClick={() => sendNewMessage.mutate()}>{buttonText}</button>
                 </div>
                 <div className="loading-list">
                     {messagesArray.filter(elem => {
@@ -63,7 +62,9 @@ const EditLoading: React.FC<EditLoadingProps> = ({ is_admin }) => {
                         return <LoadingMessage key={message.id} message_data={message} refetch_data={refetchMessages} />;
                     })}
                 </div>
-                <UpButton show={true} />
+                <ScrollLink className={`up-button`} to="menu" smooth={true}>
+                    <button type="button" className="button up-button__button">Up</button>
+                </ScrollLink>
             </>);
     }
     return (

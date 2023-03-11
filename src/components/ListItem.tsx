@@ -25,25 +25,25 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
     const [clickedState, setClickedState] = useState(false);
 
     const [alertMessage, setAlertMessage] = useState<string>('');
-    const [sliding, setSliding] = useState<string>('sliding');
+    const [sliding, setSliding] = useState<boolean>(false);
 
-    const [changeButtonState, setChangeButtonState] = useState<'' | 'pressed'>('');
-    const [addButtonState, setAddButtonState] = useState<'' | 'pressed'>('');
-    const [editButtonState, setEditButtonState] = useState<'' | 'pressed'>('');
-    const [deleteButtonState, setDeleteButtonState] = useState<'' | 'pressed'>('');
+    const [changeButtonState, setChangeButtonState] = useState<boolean>(false);
+    const [addButtonState, setAddButtonState] = useState<boolean>(false);
+    const [editButtonState, setEditButtonState] = useState<boolean>(false);
+    const [deleteButtonState, setDeleteButtonState] = useState<boolean>(false);
 
     const options = useMemo(() => {
         return {
             onError: (error: AxiosError) => {
                 setAlertMessage(error.message);
-                setSliding('');
+                setSliding(true);
             },
             onSuccess: () => {
-                setSliding('');
+                setSliding(true);
                 setAlertMessage('Success!');
                 setTimeout(() => {
-                    setSliding('sliding');
-                }, 3000);
+                    setSliding(false);
+                }, 1000);
             }
         };
     }, []);
@@ -139,14 +139,14 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
                     </div>
                     <button
                         type="button"
-                        className={changeButtonState}
+                        className={`button${changeButtonState ? ' button--pressed' : ''}`}
                         onMouseDown={(event) => {
                             event.stopPropagation();
-                            setChangeButtonState('pressed');
+                            setChangeButtonState(true);
                         }}
                         onMouseUp={(event) => {
                             event.stopPropagation();
-                            setChangeButtonState('');
+                            setChangeButtonState(false);
                         }}
                         onClick={(event) => sendNewSongData(event)}>Change</button>
                 </>}
@@ -160,28 +160,28 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
                         <>
                             <button
                                 type="button"
-                                className={editButtonState}
+                                className={`button${editButtonState ? ' button--pressed' : ''}`}
                                 onMouseDown={(event) => {
                                     event.stopPropagation();
-                                    setEditButtonState('pressed');
+                                    setEditButtonState(true);
                                 }}
                                 onMouseUp={(event) => {
                                     event.stopPropagation();
-                                    setEditButtonState('');
+                                    setEditButtonState(false);
                                 }}
                                 onClick={(event) => toggleEditFields(event)}>
                                 Edit
                             </button>
                             <button
                                 type="button"
-                                className={deleteButtonState}
+                                className={`button${deleteButtonState ? ' button--pressed' : ''}`}
                                 onMouseDown={(event) => {
                                     event.stopPropagation();
-                                    setDeleteButtonState('pressed');
+                                    setDeleteButtonState(true);
                                 }}
                                 onMouseUp={(event) => {
                                     event.stopPropagation();
-                                    setDeleteButtonState('');
+                                    setDeleteButtonState(false);
                                 }}
                                 onClick={(event) => deleteItem(event)}>
                                 {deleteButtonText}
@@ -189,18 +189,18 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
                         </>}
                     <button
                         type="button"
-                        className={addButtonState}
+                        className={`button${addButtonState ? ' button--pressed' : ''}`}
                         onMouseDown={(event) => {
                             event.stopPropagation();
-                            setAddButtonState('pressed');
+                            setAddButtonState(true);
                         }}
                         onMouseUp={(event) => {
                             event.stopPropagation();
-                            setAddButtonState('');
+                            setAddButtonState(false);
                         }}
                         onClick={(event) => addToQueue(event)}>Add</button>
                 </div>}
-            <Alert message={alertMessage} class_name={`alert fetch ${sliding}`} />
+            <Alert message={alertMessage} class_name={`alert alert--fetch${sliding ? 'alert--sliding' : ''}`} />
         </div>
     );
 };

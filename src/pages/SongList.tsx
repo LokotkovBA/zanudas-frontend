@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
-import { Link } from 'react-scroll';
+import { Link as ScrollLink } from 'react-scroll';
 import { getRequest, postRequest } from '../utils/api-requests';
 import { formatDate, getFormatDate } from '../utils/date';
 import { AxiosError } from 'axios';
 import { z } from 'zod';
-import { SearchBar } from '../components/SearchBar';
 import { Alert } from '../components/Alert';
-import { UpButton } from '../components/UpButton';
 import { UserData } from '../App';
 import ArtistItem from '../components/ArtistItem';
 import useWindowDimensions from '../hooks/useWindowDimensions';
@@ -283,7 +281,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                 artistNumber++;
             }
         }
-        setLetterButtons(letterArray.map(letter => <Link key={letter} smooth={true} offset={-200} to={letter}>{letter}</Link>)); //todo: change offset to different css class on scroll
+        setLetterButtons(letterArray.map(letter => <ScrollLink className="button letter-buttons__button" key={letter} smooth={true} offset={-200} to={letter}>{letter}</ScrollLink>)); //todo: change offset to different css class on scroll
     }, [artistList, filteredSongListData, pressedButtons, userData]);
 
     useEffect(() => {
@@ -317,28 +315,28 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     return (
         <>
             <nav className="page-nav">
-                <SearchBar searchHandleChange={searchHandleChange} searchTerm={searchTerm} />
+                <input className="search" type="text" placeholder="Search" onChange={searchHandleChange} value={searchTerm} />
                 <div className="page-nav__filters">
-                    <button type="button" className={pressedButtons.foreign ? 'pressed' : ''} onClick={foreignFilter}>Foreign</button>
-                    <button type="button" className={pressedButtons.russian ? 'pressed' : ''} onClick={russianFilter}>Russian</button>
-                    <button type="button" className={pressedButtons.ost ? 'pressed' : ''} onClick={ostFilter}>OST</button>
-                    <button type="button" className={pressedButtons.wide_racks ? 'pressed' : ''} onClick={wideRacksFilter}>Original</button>
-                    {(width <= 728) && <button type="button" className="show-more-icon" onClick={changeShowLetterButtons}><img width={24} height={24} src={arrowState} alt="show more icon" /></button>}
+                    <button type="button" className={`button${pressedButtons.foreign ? ' button--pressed' : ''}`} onClick={foreignFilter}>Foreign</button>
+                    <button type="button" className={`button${pressedButtons.russian ? ' button--pressed' : ''}`} onClick={russianFilter}>Russian</button>
+                    <button type="button" className={`button${pressedButtons.ost ? ' button--pressed' : ''}`} onClick={ostFilter}>OST</button>
+                    <button type="button" className={`button${pressedButtons.wide_racks ? ' button--pressed' : ''}`} onClick={wideRacksFilter}>Original</button>
+                    {(width <= 728) && <button type="button" className="button" onClick={changeShowLetterButtons}><img width={24} height={24} src={arrowState} alt="show more icon" /></button>}
                 </div>
                 {(width > 728 || showLetterButtons) &&
-                    <div className="page-nav__letter-buttons">
+                    <nav className="letter-buttons">
                         {letterButtons}
-                    </div>}
+                    </nav>}
             </nav>
             <ul className="song-list">
                 {userData.is_admin &&
                     <li className="songs-add" >
                         <div className="songs-add__edits">
-                            <button type="button" onClick={addClick}>Add</button>
-                            <button type="button" onClick={exportAll}>Export all</button>
+                            <button className="button" type="button" onClick={addClick}>Add</button>
+                            <button className="button" type="button" onClick={exportAll}>Export all</button>
                             <input style={{ display: 'none' }} type="file" id="file" onChange={(event) => importSongList(event)} />
                             <label className="upload" htmlFor="file">Upload JSON</label>
-                            <button type="button" onClick={sendFile}>Send JSON</button>
+                            <button className="button" type="button" onClick={sendFile}>Send JSON</button>
                         </div>
                         {showAddField &&
                             <div className="songs-add__entry entry">
@@ -350,7 +348,9 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                     </li>}
                 {artistBlocks}
             </ul>
-            <UpButton show={showUpButton} />
+            <ScrollLink className={`up-button up-button--${showUpButton ? 'show' : 'hide'}`} to="menu" smooth={true}>
+                <button type="button" className="button up-button__button">Up</button>
+            </ScrollLink>
             <Alert message="Copied!" class_name={`alert${copyAlertSliding ? ' alert--sliding' : ''}`} />
             {isError && <Alert message="Couldn't load song list!" class_name="alert alert--error" />}
             <Alert message={alertMessage} class_name={`alert alert--fetch${sliding ? ' alert--sliding' : ''}`} />

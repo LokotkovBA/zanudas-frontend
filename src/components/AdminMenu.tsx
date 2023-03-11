@@ -231,26 +231,26 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
     return (
         <div className="admin-panel">
             {is_admin && <>
-                <button type="button" className={HidTokenButtons ? '' : 'pressed'} onClick={changeTokenButtonsVisibility}>{HidTokenButtons ? 'Show' : 'Hide'}</button>
-                {!HidTokenButtons && <button type="button" onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>}
-                {!isSetupDA && <button type="button" onClick={setupDA}>Setup<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>}
+                <button type="button" className={`button${HidTokenButtons ? '' : ' button--pressed'}`} onClick={changeTokenButtonsVisibility}>{HidTokenButtons ? 'Show' : 'Hide'}</button>
+                {!HidTokenButtons && <button className="button" type="button" onClick={() => window.location.href = daLink}>DA<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>}
+                <button className="button" type="button" onClick={setupDA}>Setup<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>
                 {isSetupDA && (isListeningToDA ?
-                    <button type="button" className="pressed" onClick={stopDA}>Stop<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>
+                    <button type="button" className="button button--pressed" onClick={stopDA}>Stop<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>
                     :
-                    <button type="button" onClick={startDA}>Start<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>)
+                    <button type="button" className="button" onClick={startDA}>Start<img src={daIconPath} alt="donation alerts icon" height={21} width={18}></img></button>)
                 }
-                {!HidTokenButtons && <button type="button" onClick={() => window.location.href = adminGetTokens}>Twitch Token</button>}
-                <button type="button" onClick={getTwitchMods}>Twitch Mods</button>
-                {!is_live && <button type="button" onClick={startQueue}>Start queue</button>}
-                {is_live && <button type="button" className="pressed" onClick={stopQueue}>Stop queue</button>}
-                <button type="button" onClick={addQueueSong}>Add song</button>
+                {!HidTokenButtons && <button className="button" type="button" onClick={() => window.location.href = adminGetTokens}>Twitch Token</button>}
+                <button className="button" type="button" onClick={getTwitchMods}>Twitch Mods</button>
+                {!is_live && <button className="button" type="button" onClick={startQueue}>Start queue</button>}
+                {is_live && <button type="button" className="button button--pressed" onClick={stopQueue}>Stop queue</button>}
+                <button className="button" type="button" onClick={addQueueSong}>Add song</button>
                 <div>
                     <input className="admin-input" type="string" value={newFontSize} onChange={onFontSizeChange} />
-                    <button type="button" onClick={sendNewFontSize}>Set font size of overlay</button>
+                    <button className="button" type="button" onClick={sendNewFontSize}>Set font size of overlay</button>
                 </div>
                 <div>
                     <input className="admin-input" type="number" value={newMaxDisplay} onChange={onMaxDisplayChange} />
-                    <button type="button" onClick={sendNewMaxDisplay}>Set max overlay display</button>
+                    <button className="button" type="button" onClick={sendNewMaxDisplay}>Set max overlay display</button>
                 </div>
                 <div className="edit-info">
                     <textarea name="text-info" className="admin-input admin-textarea" onChange={onTextInfoAreaChange} value={infoText} />
@@ -258,7 +258,7 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
                         <input type="checkbox" className="show-info" id="show-info" name="show-info" checked={showInfo} onChange={onShowInfoChange} />
                         <label htmlFor="show-info">show info</label>
                     </div>
-                    <button type="button" onClick={changeInfo}>Change info</button>
+                    <button className="button" type="button" onClick={changeInfo}>Change info</button>
                 </div>
                 {<Alert class_name={`alert alert--admin${sliding ? ' alert--sliding' : ''}`} message={alertMessage} />}
             </>}

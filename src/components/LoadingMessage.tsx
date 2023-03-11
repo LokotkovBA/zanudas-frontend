@@ -78,8 +78,8 @@ const LoadingMessage: React.FC<LoadingMessageProps> = ({ message_data, refetch_d
                 <label htmlFor="progress">Progress</label>
                 <input className="admin-input" name="progress" type="string" value={messageData.progress ? messageData.progress : ''} onChange={inputChangeHandler} />
             </div>
-            <button type="submit">{buttonText}</button>
-            <button className="loading-message__delete-button" type="button" onClick={clickDelete}>{deleteButtonText}</button>
+            <button className="button" type="submit">{buttonText}</button>
+            <button className="button loading-message__button" type="button" onClick={clickDelete}>{deleteButtonText}</button>
         </form>);
 };
 

@@ -65,8 +65,8 @@ export const UserListItem: React.FC<UserListItemProps> = ({ userEntry, is_admin 
                 <label htmlFor="is_queen">is_queen</label>
             </div>
             <div className="side-buttons">
-                <button type="button" className="change-button" onClick={changeUser}>Change</button>
-                <button type="button" className="delete-button" onClick={deleteUser}>{deleteButtonText}</button>
+                <button type="button" className="button" onClick={changeUser}>Change</button>
+                <button type="button" className="button" onClick={deleteUser}>{deleteButtonText}</button>
             </div>
         </li>
     );

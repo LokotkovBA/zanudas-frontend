@@ -11,7 +11,7 @@ export const Alert: React.FC<AlertProps> = ({ cookieAlertClick, message, show_bu
     return (
         <div className={class_name}>
             {message}
-            {show_button && <button type="button" onClick={cookieAlertClick}>Ok</button>}
+            {show_button && <button className="button" type="button" onClick={cookieAlertClick}>Ok</button>}
         </div>
     );
 };

@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { z } from 'zod';
 import { UserData } from '../App';
-import { SearchBar } from '../components/SearchBar';
-import { UpButton } from '../components/UpButton';
 import { UserListItem } from '../components/UserListItem';
 import { getRequest } from '../utils/api-requests';
 
 import '../css/users.scss';
+import { Link as ScrollLink } from 'react-scroll';
 
 interface UsersProps {
     userData: UserData
@@ -74,13 +73,15 @@ const Users: React.FC<UsersProps> = ({ userData }) => {
         <>
             {userData.is_admin &&
                 <div className="page-nav">
-                    <SearchBar searchHandleChange={searchHandleChange} searchTerm={searchTerm} />
-                    <button type="button" onClick={toggleOnlyMods}>{onlyModsState.text}</button>
+                    <input className="search" type="text" placeholder="Search" onChange={searchHandleChange} value={searchTerm} />
+                    <button className="button" type="button" onClick={toggleOnlyMods}>{onlyModsState.text}</button>
                 </div>}
             <ul className="user-list">
                 {userList}
             </ul>
-            <UpButton show={true} />
+            <ScrollLink className={`up-button`} to="menu" smooth={true}>
+                <button type="button" className="button up-button__button">Up</button>
+            </ScrollLink>
         </>
     );
 };

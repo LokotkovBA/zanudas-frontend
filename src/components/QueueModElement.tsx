@@ -82,9 +82,9 @@ export const QueueModElement: React.FC<QueueModElementProps> = ({
                             />
                         }
                         <div className="item__buttons">
-                            <button type="button" onClick={changeQueueEntry}>Apply</button>
-                            <button type="button" onClick={deleteQueueEntry}>{entry.delete_button_text}</button>
-                            <button type="button" onClick={() => change_mod_view(index)}>{entry.button_text}</button>
+                            <button className="button" type="button" onClick={changeQueueEntry}>Apply</button>
+                            <button className="button" type="button" onClick={deleteQueueEntry}>{entry.delete_button_text}</button>
+                            <button className="button" type="button" onClick={() => change_mod_view(index)}>{entry.button_text}</button>
                         </div>
                         <div className="item__checkboxes">
                             <input type="checkbox" className={entry.id.toString()} name="played" checked={entry.played} onChange={(event) => queue_entry_change_event(event, index)} />

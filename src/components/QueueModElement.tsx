@@ -7,11 +7,10 @@ import { LikeBlock } from './LikeBlock';
 import { QueueItemInfo } from './QueueItemInfo';
 
 interface QueueModElementProps {
-    user_id: number;
     like_count: number;
     index: number;
     entry: QueueEntry;
-    user_likes: LikesState[];
+    user_like: LikesState | undefined;
     delete_queue_entry_request: UseMutationResult<AxiosResponse<any, any>, unknown, {
         id: number;
         index: number;
@@ -25,11 +24,10 @@ interface QueueModElementProps {
 }
 
 export const QueueModElement: React.FC<QueueModElementProps> = ({
-    user_id,
     like_count,
     index,
     entry,
-    user_likes,
+    user_like,
     delete_queue_entry_request,
     queue_change_request,
     queue_entry_change_event,
@@ -50,7 +48,6 @@ export const QueueModElement: React.FC<QueueModElementProps> = ({
     function changeQueueEntry() {
         queue_change_request.mutate({ queueEntry: entry, index: index });
     }
-    const curLikeIndex = user_likes.findIndex(like => like.song_id === entry.id);
 
     return (
         <Draggable key={entry.id} draggableId={entry.id.toString()} index={index}>
@@ -96,8 +93,7 @@ export const QueueModElement: React.FC<QueueModElementProps> = ({
                             <input type="checkbox" className={entry.id.toString()} name="current" checked={entry.current} onChange={(event) => queue_entry_change_event(event, index)} />
                             <label htmlFor="current">current</label>
                         </div>
-                        <LikeBlock like_state={curLikeIndex !== -1 ? user_likes[curLikeIndex] : { is_positive: 0, song_id: entry.id }}
-                            user_id={user_id}
+                        <LikeBlock like_state={user_like}
                             song_id={entry.id}
                             like_count={like_count}
                             clickLikeHandler={click_like_handler}

@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
-import { BACKEND_ADDRESS } from './api-requests';
+import { getSocketServerAddress } from './environment';
 
-const SERVER_URL = `https://${BACKEND_ADDRESS}:5200`;
+const SERVER_URL = `https://${getSocketServerAddress()}`;
 
 export const socket = io(SERVER_URL);

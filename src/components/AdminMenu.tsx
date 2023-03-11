@@ -2,6 +2,7 @@ import { AxiosError } from 'axios';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { z } from 'zod';
+import { useTypedSelector } from '../hooks/redux';
 
 import daIconPath from '../icons/da.svg';
 import { BACKEND_ADDRESS, getRequest, patchRequest, postRequest, putRequest } from '../utils/api-requests';
@@ -14,8 +15,6 @@ const daLink = `https://${BACKEND_ADDRESS}:5100/da/auth`;
 const adminGetTokens = `https://${BACKEND_ADDRESS}:5100/admin/adminTwitchToken`;
 
 interface AdminMenuProps {
-    display_name: string;
-    is_admin: boolean;
     is_live: boolean;
 }
 
@@ -31,7 +30,9 @@ const adminDataSchema = z.object({
 
 let successCount = 0;
 
-export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display_name }) => {
+export const AdminMenu: React.FC<AdminMenuProps> = ({ is_live }) => {
+    const is_admin = useTypedSelector(state => state.auth.userData.is_admin);
+    const display_name = useTypedSelector(state => state.auth.userData.display_name);
     const [newMaxDisplay, setNewMaxDisplay] = useState<number>(0);
     const [newFontSize, setNewFontSize] = useState<string>('');
     const [infoText, setInfoText] = useState<string>('');
@@ -61,7 +62,7 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
         setShowInfo(event.target.checked);
     }
 
-    const getAdminData = useQuery(['admin-data'], async () => adminDataSchema.parse((await getRequest('admin', '5100')).data), {
+    const getAdminData = useQuery(['admin-data'], async () => adminDataSchema.parse((await getRequest('admin')).data), {
         enabled: is_admin,
         refetchOnWindowFocus: false,
         onSuccess: (data) => {
@@ -77,17 +78,21 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
 
 
     useEffect(() => {
-        if (is_admin) {
+        if (display_name) {
             socket.emit('sub admin', display_name);
             socket.on('connect', () => {
                 socket.emit('sub admin', display_name);
             });
         }
         return () => {
-            socket.emit('unsub admin', display_name);
-            socket.off('connect');
+            if (display_name) {
+                socket.emit('sub admin', display_name);
+                socket.on('connect', () => {
+                    socket.emit('sub admin', display_name);
+                });
+            }
         };
-    }, [display_name, is_admin]);
+    }, [display_name]);
 
     useEffect(() => {
         socket.on('max display changed', (data) => {
@@ -142,18 +147,18 @@ export const AdminMenu: React.FC<AdminMenuProps> = ({ is_admin, is_live, display
         };
     }, []);
 
-    const hideInfoText = useMutation((newData: boolean) => patchRequest('admin/infoText', '5100', { show_info: newData }), options);
-    const setupDaRequest = useMutation(() => postRequest('da/setup', '5100', {}), options);
-    const startDaRequest = useMutation(() => postRequest('da/start', '5100', {}), options);
-    const stopDARequest = useMutation(() => postRequest('da/stop', '5100', {}), options);
-    const getTwitchModsRequest = useMutation(() => getRequest('admin/twitchMods', '5100'), options);
-    const sendNewMaxDisplayRequest = useMutation((newData: number) => putRequest('admin/maxDisplay', '5100', { new_max_display: newData }), options);
-    const sendNewFontSizeRequest = useMutation((newData: string) => putRequest('admin/fontSize', '5100', { fontSize: newData }), options);
-    const startQueueRequest = useMutation(() => postRequest('queue/start', '5100', {}), options);
-    const stopQueueRequest = useMutation(() => postRequest('queue/stop', '5100', {}), options);
-    const addQueueSongRequest = useMutation(() => postRequest('queue/empty', '5100', {}), options);
-    const changeInfoRequest = useMutation((newData: string) => putRequest('admin/infoText', '5100', { infoText: newData }), options);
-    const tokenButtonsVisibilityRequest = useMutation((newData: boolean) => postRequest('admin/tokenButtonsVisibility', '5100', { hid_token_buttons: !newData }), options);
+    const hideInfoText = useMutation((newData: boolean) => patchRequest('admin/infoText', { show_info: newData }), options);
+    const setupDaRequest = useMutation(() => postRequest('da/setup', {}), options);
+    const startDaRequest = useMutation(() => postRequest('da/start', {}), options);
+    const stopDARequest = useMutation(() => postRequest('da/stop', {}), options);
+    const getTwitchModsRequest = useMutation(() => getRequest('admin/twitchMods'), options);
+    const sendNewMaxDisplayRequest = useMutation((newData: number) => putRequest('admin/maxDisplay', { new_max_display: newData }), options);
+    const sendNewFontSizeRequest = useMutation((newData: string) => putRequest('admin/fontSize', { fontSize: newData }), options);
+    const startQueueRequest = useMutation(() => postRequest('queue/start', {}), options);
+    const stopQueueRequest = useMutation(() => postRequest('queue/stop', {}), options);
+    const addQueueSongRequest = useMutation(() => postRequest('queue/empty', {}), options);
+    const changeInfoRequest = useMutation((newData: string) => putRequest('admin/infoText', { infoText: newData }), options);
+    const tokenButtonsVisibilityRequest = useMutation((newData: boolean) => postRequest('admin/tokenButtonsVisibility', { hid_token_buttons: !newData }), options);
 
     if (getAdminData.isLoading) {
         return (

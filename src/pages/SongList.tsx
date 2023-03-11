@@ -6,13 +6,13 @@ import { formatDate, getFormatDate } from '../utils/date';
 import { AxiosError } from 'axios';
 import { z } from 'zod';
 import { Alert } from '../components/Alert';
-import { UserData } from '../App';
 import ArtistItem from '../components/ArtistItem';
 import useWindowDimensions from '../hooks/useWindowDimensions';
 import pathToArrowUp from '../icons/arrow-up.svg';
 import pathToArrowDown from '../icons/arrow-down.svg';
 
 import '../css/songlist.scss';
+import { useTypedSelector } from '../hooks/redux';
 
 let copyTimeoutCount = 0;
 let successTimeoutCount = 0;
@@ -31,7 +31,8 @@ const songListEntrySchema = z.object({
 
 export type SongListEntry = z.infer<typeof songListEntrySchema>;
 
-const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
+const SongList: React.FC = () => {
+    const is_admin = useTypedSelector(state => state.auth.userData.is_admin);
     const { width } = useWindowDimensions();
     const [showUpButton, setShowUpButton] = useState(false);
     const [showLetterButtons, setShowLetterButtons] = useState<boolean>(false);
@@ -99,7 +100,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     }, [searchTerm, songListData]);
 
 
-    const { isError, isLoading } = useQuery(['songlist-data'], async () => z.array(songListEntrySchema).parse((await getRequest('songlist', '5100')).data.songs), {
+    const { isError, isLoading } = useQuery(['songlist-data'], async () => z.array(songListEntrySchema).parse((await getRequest('songlist')).data.songs), {
         onSuccess: (data) => {
             const artistL: string[] = [];
             setSongListData(() => {
@@ -115,7 +116,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     });
 
 
-    const songlistAddRequest = useMutation((songData: SongListEntry) => postRequest(`songlist`, '5100', songData), {
+    const songlistAddRequest = useMutation((songData: SongListEntry) => postRequest(`songlist`, songData), {
         onError: (error: AxiosError) => {
             setAlertMessage(error.message);
             setSliding(true);
@@ -201,7 +202,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
     }
 
-    const addMultipleRequest = useMutation((songs: SongListEntry[]) => postRequest('songlist/many', 5100, { songs: songs }), {
+    const addMultipleRequest = useMutation((songs: SongListEntry[]) => postRequest('songlist/many', { songs: songs }), {
         onError: (error: AxiosError) => {
             setAlertMessage(error.message);
             setSliding(true);
@@ -216,7 +217,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
     });
 
     function sendFile() {
-        if (userData.is_admin && importedSongListData[0]) {
+        if (is_admin && importedSongListData[0]) {
             addMultipleRequest.mutate(importedSongListData);
         }
     }
@@ -251,7 +252,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                     const copyPrevFL = prevFirstLetter;
                     setArtistBlocks(prevBlocks => [...prevBlocks,
                     <li key={copyPrevFL} id={copyPrevFL}>
-                        {curBlocksCopy.map(block => <ArtistItem key={block.key} artist={block.artist} songs={block.songs} userData={userData} displayAlert={displayAlert} />)}
+                        {curBlocksCopy.map(block => <ArtistItem key={block.key} artist={block.artist} songs={block.songs} displayAlert={displayAlert} />)}
                     </li>
                     ]);
                     curBlocks = [];
@@ -282,7 +283,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
             }
         }
         setLetterButtons(letterArray.map(letter => <ScrollLink className="button letter-buttons__button" key={letter} smooth={true} offset={-200} to={letter}>{letter}</ScrollLink>)); //todo: change offset to different css class on scroll
-    }, [artistList, filteredSongListData, pressedButtons, userData]);
+    }, [artistList, filteredSongListData, pressedButtons]);
 
     useEffect(() => {
         if (filteredSongListData && artistList[0]) generateArtistBlocks();
@@ -329,7 +330,7 @@ const SongList: React.FC<{ userData: UserData }> = ({ userData }) => {
                     </nav>}
             </nav>
             <ul className="song-list">
-                {userData.is_admin &&
+                {is_admin &&
                     <li className="songs-add" >
                         <div className="songs-add__edits">
                             <button className="button" type="button" onClick={addClick}>Add</button>

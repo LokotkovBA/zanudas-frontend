@@ -6,10 +6,7 @@ import LoadingMessage from '../components/LoadingMessage';
 
 import '../css/editloading.scss';
 import { Link as ScrollLink } from 'react-scroll';
-
-interface EditLoadingProps {
-    is_admin: boolean
-}
+import { useTypedSelector } from '../hooks/redux';
 
 export const loadingMessageSchema = z.object({
     id: z.number(),
@@ -21,19 +18,20 @@ export const loadingMessageSchema = z.object({
 
 export type LoadingMessageData = z.infer<typeof loadingMessageSchema>;
 
-const EditLoading: React.FC<EditLoadingProps> = ({ is_admin }) => {
+const EditLoading: React.FC = () => {
+    const is_admin = useTypedSelector(state => state.auth.userData.is_admin);
     const [messagesArray, setMessagesArray] = useState<LoadingMessageData[]>([]);
     const [buttonText, setButtonText] = useState('Add new');
 
     const [searchTerm, setSearchTerm] = useState<string>(localStorage.getItem('loadingMessagesSearchTerm') ? localStorage.getItem('loadingMessagesSearchTerm')! : '');
 
-    const { refetch: refetchMessages } = useQuery(['loading-messages'], async () => z.array(loadingMessageSchema).parse((await getRequest('loading', 5100)).data), {
+    const { refetch: refetchMessages } = useQuery(['loading-messages'], async () => z.array(loadingMessageSchema).parse((await getRequest('loading')).data), {
         onSuccess: (data) => {
             setMessagesArray(data);
         }
     });
 
-    const sendNewMessage = useMutation(() => postRequest('loading', 5100, {}), {
+    const sendNewMessage = useMutation(() => postRequest('loading', {}), {
         onSuccess: () => {
             refetchMessages();
             setButtonText('Success!');

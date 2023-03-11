@@ -37,12 +37,12 @@ const LoadingMessage: React.FC<LoadingMessageProps> = ({ message_data, refetch_d
         sendMessageData.mutate(messageData);
     }
 
-    const sendMessageData = useMutation((newMessageData: LoadingMessageData) => patchRequest('loading', 5100, newMessageData), {
+    const sendMessageData = useMutation((newMessageData: LoadingMessageData) => patchRequest('loading', newMessageData), {
         onSuccess: () => setButtonText('Success!'),
         onError: () => setButtonText('Error!')
     });
 
-    const deleteLoadingMessage = useMutation((id: number) => deleteRequest('loading', 5100, { id: id }), {
+    const deleteLoadingMessage = useMutation((id: number) => deleteRequest('loading', { id: id }), {
         onSuccess: () => {
             setDeleteButtonText('Success!');
             refetch_data();

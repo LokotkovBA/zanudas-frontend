@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { z } from 'zod';
-import { UserData } from '../App';
 import { UserListItem } from '../components/UserListItem';
 import { getRequest } from '../utils/api-requests';
 
 import '../css/users.scss';
 import { Link as ScrollLink } from 'react-scroll';
+import { useTypedSelector } from '../hooks/redux';
 
-interface UsersProps {
-    userData: UserData
-}
 
 const userListSchema = z.object({
     id: z.number(),
@@ -24,21 +21,22 @@ const userListSchema = z.object({
 
 export type UserEntry = z.infer<typeof userListSchema>;
 
-function filterUserList(data: UserEntry[], searchTerm: string, onlyModsToggle: boolean, is_admin: boolean) {
+function filterUserList(data: UserEntry[], searchTerm: string, onlyModsToggle: boolean) {
     return data.filter(entry => (!onlyModsToggle || (onlyModsToggle && (entry.is_admin || entry.is_mod))) && entry.login.includes(searchTerm))
-        .map((entry) => <UserListItem key={entry.id} userEntry={entry} is_admin={is_admin} />);
+        .map((entry) => <UserListItem key={entry.id} userEntry={entry} />);
 }
 
-const Users: React.FC<UsersProps> = ({ userData }) => {
+const Users: React.FC = () => {
+    const is_admin = useTypedSelector(state => state.auth.userData.is_admin);
     const [userList, setUserList] = useState<JSX.Element[]>();
 
     const [searchTerm, setSearchTerm] = useState<string>(localStorage.getItem('usersSearchTerm') ? localStorage.getItem('usersSearchTerm')! : '');
 
     const [onlyModsState, setOnlyModsState] = useState<{ toggle: boolean, text: 'Only mods' | 'All users' }>({ toggle: false, text: 'Only mods' });
 
-    const { data, isLoading } = useQuery(['users-data'], async () => z.array(userListSchema).parse((await getRequest('admin/users', '5100')).data), {
+    const { data, isLoading } = useQuery(['users-data'], async () => z.array(userListSchema).parse((await getRequest('admin/users')).data), {
         onSuccess: (data) => {
-            setUserList(filterUserList(data, searchTerm, onlyModsState.toggle, userData.is_admin));
+            setUserList(filterUserList(data, searchTerm, onlyModsState.toggle));
         }
     });
 
@@ -46,7 +44,7 @@ const Users: React.FC<UsersProps> = ({ userData }) => {
         setSearchTerm(event.target.value);
         localStorage.setItem('usersSearchTerm', event.target.value);
         if (data) {
-            setUserList(filterUserList(data, event.target.value, onlyModsState.toggle, userData.is_admin));
+            setUserList(filterUserList(data, event.target.value, onlyModsState.toggle));
         }
     }
 
@@ -58,7 +56,7 @@ const Users: React.FC<UsersProps> = ({ userData }) => {
             };
         });
         if (data) {
-            setUserList(filterUserList(data, searchTerm, !onlyModsState.toggle, userData.is_admin));
+            setUserList(filterUserList(data, searchTerm, !onlyModsState.toggle));
         }
     }
 
@@ -71,14 +69,16 @@ const Users: React.FC<UsersProps> = ({ userData }) => {
 
     return (
         <>
-            {userData.is_admin &&
-                <div className="page-nav">
-                    <input className="search" type="text" placeholder="Search" onChange={searchHandleChange} value={searchTerm} />
-                    <button className="button" type="button" onClick={toggleOnlyMods}>{onlyModsState.text}</button>
-                </div>}
-            <ul className="user-list">
-                {userList}
-            </ul>
+            {is_admin &&
+                <>
+                    <div className="page-nav">
+                        <input className="search" type="text" placeholder="Search" onChange={searchHandleChange} value={searchTerm} />
+                        <button className="button" type="button" onClick={toggleOnlyMods}>{onlyModsState.text}</button>
+                    </div>
+                    <ul className="user-list">
+                        {userList}
+                    </ul>
+                </>}
             <ScrollLink className={`up-button`} to="menu" smooth={true}>
                 <button type="button" className="button up-button__button">Up</button>
             </ScrollLink>

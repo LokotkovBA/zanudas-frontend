@@ -6,18 +6,19 @@ import { deleteRequest, patchRequest, postRequest } from '../utils/api-requests'
 import { Alert } from './Alert';
 import { DBQueueEntry } from '../pages/Queue';
 import { SongListEntry } from '../pages/SongList';
-import { UserData } from '../App';
 
 import pathToThumbsUp from '../icons/thumbs-up-green.svg';
 import pathToThumbsDown from '../icons/thumbs-down-red.svg';
+import { useTypedSelector } from '../hooks/redux';
 
 export interface ListItemProps {
     song: SongListEntry,
-    userData: UserData,
     displayAlert: () => void
 }
 
-const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => {
+const ListItem: React.FC<ListItemProps> = ({ song, displayAlert }) => {
+    const is_admin = useTypedSelector(state => state.auth.userData.is_admin);
+    const is_mod = useTypedSelector(state => state.auth.userData.is_mod);
     const [showEditFields, setShowEditFields] = useState<boolean>(false);
     const [songData, setSongData] = useState<SongListEntry>(song);
     const [deleteIntention, setDeleteIntention] = useState<boolean>(false);
@@ -48,7 +49,7 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
         };
     }, []);
 
-    const deleteSongRequest = useMutation((songId: number) => deleteRequest('songlist', '5100', { id: songId }), {
+    const deleteSongRequest = useMutation((songId: number) => deleteRequest('songlist', { id: songId }), {
         onSuccess: () => {
             options.onSuccess();
             setDeleteIntention(false);
@@ -59,8 +60,8 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
             setDeleteButtonText('Error!');
         }
     });
-    const addQueueRequest = useMutation((newSong: DBQueueEntry) => postRequest('queue', '5100', newSong), options);
-    const changeSongRequest = useMutation((songData: SongListEntry) => patchRequest(`songlist?id=${songData.id}`, '5100', songData), options);
+    const addQueueRequest = useMutation((newSong: DBQueueEntry) => postRequest('queue', newSong), options);
+    const changeSongRequest = useMutation((songData: SongListEntry) => patchRequest(`songlist?id=${songData.id}`, songData), options);
 
     function copyClick() {
         navigator.clipboard.writeText(`${song.artist} - ${song.song_name}`);
@@ -74,7 +75,7 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
 
     function deleteItem(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.stopPropagation();
-        if (deleteIntention && userData.is_admin) {
+        if (deleteIntention && is_admin) {
             deleteSongRequest.mutate(songData.id!);
         } else {
             setDeleteIntention(true);
@@ -84,7 +85,7 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
 
     function addToQueue(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.stopPropagation();
-        if (userData.is_mod || userData.is_admin) {
+        if (is_mod || is_admin) {
             addQueueRequest.mutate({
                 id: 0,
                 artist: song.artist,
@@ -114,7 +115,7 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
 
     function sendNewSongData(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.stopPropagation();
-        if (userData.is_mod || userData.is_admin) {
+        if (is_mod || is_admin) {
             changeSongRequest.mutate(songData);
         }
     }
@@ -127,7 +128,7 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
         <div className={`entry ${clickedState ? 'entry--clicked' : ''} ${showEditFields ? 'entry--edit' : ''}`}
             onClick={copyClick} onMouseUp={() => setClickedState(false)} onMouseDown={() => setClickedState(true)}>
             {!showEditFields && <p>{song.song_name}</p>}
-            {showEditFields && userData.is_admin &&
+            {showEditFields && is_admin &&
                 <>
                     <div className="entry__editfields">
                         <input className="admin-input" type="text" name="artist" placeholder="artist" onClick={(event) => inputClick(event)} onChange={queueEntryChangeEvent} value={songData.artist ? songData.artist : ''} />
@@ -154,9 +155,9 @@ const ListItem: React.FC<ListItemProps> = ({ song, userData, displayAlert }) => 
                 <div className="entry__likeinfo">
                     <img src={song.likes > 0 ? pathToThumbsUp : pathToThumbsDown} alt="Like" width={18} height={18} /> {song.likes}
                 </div>}
-            {userData.is_mod &&
+            {is_mod &&
                 <div className="entry__modbuttons">
-                    {userData.is_admin &&
+                    {is_admin &&
                         <>
                             <button
                                 type="button"

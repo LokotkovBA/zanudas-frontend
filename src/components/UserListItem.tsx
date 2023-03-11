@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
+import { useTypedSelector } from '../hooks/redux';
 import { UserEntry } from '../pages/Users';
 import { deleteRequest, patchRequest } from '../utils/api-requests';
 
 interface UserListItemProps {
     userEntry: UserEntry;
-    is_admin: boolean
 }
 
-export const UserListItem: React.FC<UserListItemProps> = ({ userEntry, is_admin }) => {
+export const UserListItem: React.FC<UserListItemProps> = ({ userEntry }) => {
+    const is_admin = useTypedSelector(state => state.auth.userData.is_admin);
     const [userEntryData, setUserEntryData] = useState<UserEntry>(userEntry);
     const [deleteIntention, setDeleteIntention] = useState<boolean>(false);
     const [deleteButtonText, setDeleteButtonText] = useState<string>('Delete');
@@ -24,8 +25,8 @@ export const UserListItem: React.FC<UserListItemProps> = ({ userEntry, is_admin 
         });
     }
 
-    const changeUserRequest = useMutation((newUserData: UserEntry) => patchRequest('admin/user', '5100', newUserData));
-    const deleteUserRequest = useMutation((userId: number) => deleteRequest('admin/user', '5100', { id: userId }), {
+    const changeUserRequest = useMutation((newUserData: UserEntry) => patchRequest('admin/user', newUserData));
+    const deleteUserRequest = useMutation((userId: number) => deleteRequest('admin/user', { id: userId }), {
         onSuccess: () => {
             setDeleteButtonText('Deleted');
             setDeleteIntention(false);

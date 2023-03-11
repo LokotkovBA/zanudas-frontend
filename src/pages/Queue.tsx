@@ -4,7 +4,6 @@ import { useMutation, useQuery } from 'react-query';
 import { AxiosError } from 'axios';
 import { z } from 'zod';
 import { deleteRequest, getRequest, patchRequest, postRequest } from '../utils/api-requests';
-import { UserData } from '../App';
 import { queueDBtoData } from '../utils/conversions';
 import { AdminMenu } from '../components/AdminMenu';
 import { socket } from '../utils/socket-client';
@@ -14,6 +13,7 @@ import { Alert } from '../components/Alert';
 import telegramIconPath from '../icons/telegram.svg';
 import twitchIconPath from '../icons/twitch.svg';
 import '../css/queue.scss';
+import { useTypedSelector } from '../hooks/redux';
 
 let timeoutCount = 0;
 
@@ -64,15 +64,16 @@ export type QueueEntry = DBQueueEntry & {
 
 export type LikesState = z.infer<typeof likeSchema>;
 
-const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
-    const [queueData, setQueueData] = useState<QueueEntry[]>([]);
+const Queue: React.FC = () => {
+    const { display_name, is_admin, is_mod } = useTypedSelector((state) => state.auth.userData);
+    const [queueSongs, setQueueData] = useState<QueueEntry[]>([]);
     const [queueLikes, setQueueLikes] = useState<LikesState[]>([]);
     const [alertMessage, setAlertMessage] = useState<string>('');
     const [sliding, setSliding] = useState<boolean>(false);
 
-    const [isLive, setIsLive] = useState<boolean>(false);
+    const [isLive, setIsLive] = useState<boolean>(true);
 
-    const { isLoading, isError, isSuccess } = useQuery(['queue-data'], async () => queueSchema.parse((await getRequest('queue', '5100')).data), {
+    const { isLoading, isError } = useQuery(['queue-data'], async () => queueSchema.parse((await getRequest('queue')).data), {
         refetchOnWindowFocus: false,
         onSuccess: (data) => {
             setQueueData(data.songs.map((entry) => queueDBtoData(entry)));
@@ -100,14 +101,15 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         };
     }, []);
 
-    const queueChangeRequest = useMutation((newQueueData: { queueEntry: QueueEntry, index: number }) => patchRequest(`queue?index=${newQueueData.index}`, '5100', newQueueData.queueEntry), options);
+    const queueChangeRequest = useMutation((newQueueData: { queueEntry: QueueEntry, index: number }) => patchRequest(`queue?index=${newQueueData.index}`, newQueueData.queueEntry), options);
 
-    const deleteQueueEntryRequest = useMutation((delEntry: { id: number; index: number }) => deleteRequest('queue', '5100', { id: delEntry.id, index: delEntry.index }), {
+    const deleteQueueEntryRequest = useMutation((delEntry: { id: number; index: number }) => deleteRequest('queue', { id: delEntry.id, index: delEntry.index }), {
         onError: (error, delEntry) => {
             setQueueData(prevQueueData => {
                 const newQueueData = [...prevQueueData];
                 newQueueData[delEntry.index].delete_button_text = 'Error!';
                 newQueueData[delEntry.index].delete_intention = true;
+                changeQueueOrder(newQueueData);
                 return newQueueData;
             });
         }
@@ -132,8 +134,8 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         });
     }
 
-    useQuery(['likes-data'], async () => likesSchema.parse((await getRequest('queue/likes', '5100')).data), {
-        enabled: userData.display_name !== '',
+    useQuery(['likes-data'], async () => likesSchema.parse((await getRequest('queue/likes')).data), {
+        enabled: display_name !== '',
         onSuccess: (data) => {
             if (data.is_empty) {
                 setQueueLikes([]);
@@ -144,10 +146,10 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         refetchOnWindowFocus: false
     });
 
-    const addLikeRequest = useMutation((likeData: { song_id: number, is_positive: number, song_index: number }) => postRequest('queue/like', '5100', { song_id: likeData.song_id, is_positive: likeData.is_positive, song_index: likeData.song_index }));
+    const addLikeRequest = useMutation((likeData: { song_id: number, is_positive: number, song_index: number }) => postRequest('queue/like', { song_id: likeData.song_id, is_positive: likeData.is_positive, song_index: likeData.song_index }));
 
     function clickLikeHandler(song_id: number, is_positive: number, index: number) {
-        if (userData.display_name) {
+        if (display_name) {
             addLikeRequest.mutate({ song_id: song_id, is_positive: is_positive, song_index: index });
         }
     }
@@ -188,11 +190,10 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
         }
     }
 
-    const queueOrderRequest = useMutation((newOrder: { id: number, queue_number: number }[]) => patchRequest('queue/order', '5100', newOrder), options);
+    const queueOrderRequest = useMutation((newOrder: { id: number, queue_number: number }[]) => patchRequest('queue/order', newOrder), options);
 
     const changeQueueOrder = useCallback((queue_data: QueueEntry[]) => {
         const newOrder = queue_data.map((elem, index) => ({ id: elem.id, queue_number: index }));
-        setQueueData(prevQueueData => prevQueueData.map((elem, index) => ({ ...elem, queue_number: index, classN: '' })));
         queueOrderRequest.mutate(newOrder);
     }, [queueOrderRequest]);
 
@@ -272,6 +273,14 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 return newQueueData;
             });
         });
+
+        socket.on('queue entry delete', ({ index }) => {
+            setQueueData(oldQueueData => {
+                const newQueueData = [...oldQueueData];
+                newQueueData.splice(index, 1);
+                return newQueueData;
+            });
+        });
         return (() => {
             socket.off('queue status');
             socket.off('queue change');
@@ -280,39 +289,26 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
             socket.off('new current');
             socket.off('queue entry add');
             socket.off('queue order update');
+            socket.off('queue entry delete');
         });
     }, []);
 
     useEffect(() => {
-        socket.on('queue entry delete', ({ index }) => {
-            setQueueData(oldQueueData => {
-                const newQueueData = [...oldQueueData];
-                newQueueData.splice(index, 1);
-                changeQueueOrder(newQueueData);
-                return newQueueData;
-            });
-        });
-        return (() => {
-            socket.off('queue entry delete');
-        });
-    }, [changeQueueOrder]);
-
-    useEffect(() => {
-        if (userData.display_name) {
+        if (display_name) {
             socket.on('likes change', (likes: LikesState[]) => {
                 setQueueLikes(likes);
             });
             socket.on('connect', () => {
-                socket.emit('sub likes', userData.display_name);
+                socket.emit('sub likes', display_name);
             });
-            socket.emit('sub likes', userData.display_name);
+            socket.emit('sub likes', display_name);
         }
         return (() => {
-            socket.emit('unsub likes', userData.display_name);
+            socket.emit('unsub likes', display_name);
             socket.off('likes change');
             socket.off('connect');
         });
-    }, [userData.display_name]);
+    }, [display_name]);
 
     if (isLoading) {
         return (
@@ -323,17 +319,16 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
 
     return (
         <>
-            {userData.is_mod ?
+            {is_mod ?
                 <DragDropContext onDragEnd={queueHandleOnDragEnd}>
                     <Droppable droppableId="queue">
                         {provided => (
                             <ul className="queue queue--mod" {...provided.droppableProps} ref={provided.innerRef}>
-                                {queueData.map((entry, index) => <QueueModElement
+                                {queueSongs.map((entry, index) => <QueueModElement
                                     entry={entry}
                                     like_count={entry.like_count}
                                     index={index}
-                                    user_likes={queueLikes}
-                                    user_id={userData.id}
+                                    user_like={queueLikes.find((like) => like.song_id === entry.id)}
                                     change_mod_view={changeModView}
                                     queue_entry_change_event={queueEntryChangeEvent}
                                     queue_entry_text_area_change_event={queueEntryTextAreaChangeEvent}
@@ -350,27 +345,22 @@ const Queue: React.FC<{ userData: UserData }> = ({ userData }) => {
                 </DragDropContext>
                 :
                 (isLive && <ul className="queue queue--pleb">
-                    {queueData.filter((entry) => entry.visible).map((entry, index) => {
-                        return (<QueueElement
-                            entry={entry}
-                            like_count={entry.like_count}
-                            queue_number={entry.queue_number}
-                            index={index}
-                            user_id={userData.id}
-                            user_likes={queueLikes}
-                            click_like_handler={clickLikeHandler}
-                            key={entry.id}
-                        />);
-                    })}
+                    {queueSongs.filter((entry) => entry.visible).map((entry, index) => <QueueElement
+                        entry={entry}
+                        like_count={entry.like_count}
+                        queue_number={entry.queue_number}
+                        index={index}
+                        user_like={queueLikes.find((like) => like.song_id === entry.id)}
+                        click_like_handler={clickLikeHandler}
+                        key={entry.id}
+                    />)}
                 </ul>)
             }
-            {userData.is_admin &&
+            {is_admin &&
                 <AdminMenu
-                    display_name={userData.display_name}
-                    is_admin={userData.is_admin}
                     is_live={isLive}
                 />}
-            {isSuccess && !userData.is_mod && !userData.is_admin && !isLive && (
+            {!is_mod && !is_admin && !isLive && (
                 <div className="alert alert--error">
                     Queue is not live!
                     <div className="alert__referrals">

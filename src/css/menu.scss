@@ -15,23 +15,23 @@
     }
 
     &__link {
-        &--active>button {
+        &--active {
             background-color: var(--active-button-color);
             border-color: var(--active-button-color);
             color: var(--background-color);
         }
 
-        &--active>button:hover {
+        &--active:hover {
             border-color: var(--button-color);
         }
 
 
-        &--external>button {
+        &--external {
             background-color: var(--button-alt-color);
             border-color: var(--button-alt-color);
         }
 
-        &--external>button:hover {
+        &--external:hover {
             border-color: var(--active-button-color);
         }
 

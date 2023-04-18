@@ -20,34 +20,34 @@ const Menu: React.FC = () => {
     return (
         <nav id="menu" className="main-menu">
             <p className="main-menu__label">&gt;3</p>
-            <NavLink className={({ isActive }) => `main-menu__link ${isActive ? 'main-menu__link--active' : ''}`} to="/queue">
-                <button className="button" type="button">Queue</button>
+            <NavLink className={({ isActive }) => `main-menu__link button main-menu__button${isActive ? ' main-menu__link--active' : ''}`} to="/queue">
+                Queue
             </NavLink>
-            <NavLink className={({ isActive }) => `main-menu__link ${isActive ? 'main-menu__link--active' : ''}`} to="/songlist">
-                <button className="button main-menu__button" type="button">Song list</button>
+            <NavLink className={({ isActive }) => `main-menu__link button main-menu__button${isActive ? ' main-menu__link--active' : ''}`} to="/songlist">
+                Song list
             </NavLink>
             {is_admin &&
-                <NavLink className={({ isActive }) => `main-menu__link ${isActive ? 'main-menu__link--active' : ''}`} to="/users">
+                <NavLink className={({ isActive }) => `main-menu__link button main-menu__button${isActive ? ' main-menu__link--active' : ''}`} to="/users">
                     <button className="button main-menu__button" type="button">Users</button>
                 </NavLink>}
             {is_admin &&
-                <NavLink className={({ isActive }) => `main-menu__link ${isActive ? 'main-menu__link--active' : ''}`} to="/loading">
-                    <button className="button main-menu__button" type="button">Edit Loading Screen</button>
+                <NavLink className={({ isActive }) => `main-menu__link button main-menu__button${isActive ? ' main-menu__link--active' : ''}`} to="/loading">
+                    Edit Loading Screen
                 </NavLink>}
-            <a href={donateLink} className="main-menu__link main-menu__link--external main-menu__link--request" target="_blank" rel="noreferrer">
-                <button className="button" type="button">Request<img src={daIconPath} alt="donation alerts icon" height={20} width={18} /></button>
+            <a href={donateLink} className="main-menu__link main-menu__link--external main-menu__link--request button" target="_blank" rel="noreferrer">
+                Request<img src={daIconPath} alt="donation alerts icon" height={20} width={18} />
             </a>
             {display_name &&
                 <>
                     <img className="main-menu__picture" width={45} height={45} src={profile_image_url} alt="user avatar" />
                     <p>{display_name}</p>
-                    <a className="main-menu__link main-menu__link--external" href={logoutLink} rel="noreferrer">
-                        <button className="button" type="button" onClick={() => localStorage.setItem('login_clicked', 'nop')}>Log out</button>
+                    <a onClick={() => localStorage.setItem('login_clicked', 'nop')} className="main-menu__link main-menu__link--external button" href={logoutLink} rel="noreferrer">
+                        Log out
                     </a>
                 </>}
             {!display_name &&
-                <a className="main-menu__link main-menu__link--external" href={loginLink} rel="noreferrer">
-                    <button className="button" type="button" onClick={() => localStorage.setItem('login_clicked', 'yep')}>Login<img src={twitchIconPath} alt="twitch icon" height={20} width={20} /></button>
+                <a onClick={() => localStorage.setItem('login_clicked', 'yep')} className="main-menu__link main-menu__link--external button" href={loginLink} rel="noreferrer">
+                    Login<img src={twitchIconPath} alt="twitch icon" height={20} width={20} />
                 </a>
             }
         </nav>

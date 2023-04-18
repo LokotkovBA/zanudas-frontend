@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './css/index.scss';
+import './css/menu.scss';
 
 const queryClient = new QueryClient();
 

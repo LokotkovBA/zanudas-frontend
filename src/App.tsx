@@ -3,7 +3,6 @@ import { useMutation } from 'react-query';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Alert } from './components/Alert';
 import Menu from './components/Menu';
-import './css/menu.scss';
 import { useTypedDispatch, useTypedSelector } from './hooks/redux';
 import { useGetUserDataQuery } from './redux/slices/authApiSlice';
 import { setCredentials } from './redux/slices/authSlice';

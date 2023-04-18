@@ -28,7 +28,7 @@ const Menu: React.FC = () => {
             </NavLink>
             {is_admin &&
                 <NavLink className={({ isActive }) => `main-menu__link button main-menu__button${isActive ? ' main-menu__link--active' : ''}`} to="/users">
-                    <button className="button main-menu__button" type="button">Users</button>
+                    Users
                 </NavLink>}
             {is_admin &&
                 <NavLink className={({ isActive }) => `main-menu__link button main-menu__button${isActive ? ' main-menu__link--active' : ''}`} to="/loading">
